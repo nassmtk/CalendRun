@@ -975,3 +975,13 @@ select option { background: var(--surface); }
   .next-mini .roll { font-size: 15px; }
   .next-mini .mini-cd { padding: 4px 8px; gap: 4px; }
 }
+
+/* ---------- entrée du hero (CSS pur, ease signature) ---------- */
+@keyframes lineUp { from { transform: translateY(110%); } to { transform: none; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.intro .hero .eyebrow { animation: fadeUp .6s var(--ease) both; }
+.intro h1 .line > span { animation: lineUp .7s var(--ease) both; animation-delay: .25s; }
+.intro h1 .line:nth-child(2) > span { animation-delay: .34s; }
+.intro .hero .lede { animation: fadeUp .6s var(--ease) .5s both; }
+.intro .hero-search { animation: fadeUp .6s var(--ease) .58s both; }
+.intro .hero-stats { animation: fadeUp .6s var(--ease) .66s both; }

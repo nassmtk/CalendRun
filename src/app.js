@@ -339,6 +339,7 @@
     $("#next-mini").innerHTML = `<span class="label">Prochain départ</span><b>${esc(next.name)}</b><span class="mini-cd" id="mini-cd"></span>`;
     // le compte à rebours (affichage animé) est géré par la couche motion via le hook afterHero
     next._startAt = next._date.getTime() + 9 * 3600000; // départ ~9h
+    window.ALLURE.heroNext = next;
     run("afterHero", next);
   }
 
@@ -1007,16 +1008,14 @@
     isRegistered: (id) => registered.has(id),
     scrollTo: (el) => el.scrollIntoView({ behavior: "smooth" }),
     favCount: () => favs.size,
-    boot() {
+    boot({ deferCatalog = false } = {}) {
       readURL();
       syncControls();
       renderHero();
       // le catalogue est sous la ligne de flottaison : rendu juste après le premier affichage du hero
       const deep = location.search.includes("course=") || /^#c\//.test(location.hash);
-      if (typeof requestIdleCallback === "function" && !deep) {
-        renderFilters(); syncTabs(); updateNav();
-        requestIdleCallback(() => this.renderCatalog(), { timeout: 600 });
-      } else render();
+      if (deferCatalog && !deep) { renderFilters(); syncTabs(); updateNav(); } // main.js appellera renderCatalog()
+      else render();
       const p = new URLSearchParams(location.search);
       const m = location.hash.match(/^#c\/(.+)$/) || location.pathname.match(/^\/courses\/(.+)-2027\/?$/);
       const id = p.get("course") || (m && decodeURIComponent(m[1]));

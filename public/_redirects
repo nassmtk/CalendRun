@@ -1,0 +1,6 @@
+# Redirections Cloudflare Pages
+/calendrier   /?view=calendar   301
+/carte        /?view=map        301
+/courses      /?view=cards      301
+/favoris      /?list=favs       302
+/inscrites    /?list=registered 302

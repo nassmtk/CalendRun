@@ -1,5 +1,7 @@
 /* =========================================================
    ALLURE — point d'entrée Vite
+   Chemin critique minimal : styles, données, logique, hero.
+   La couche motion (GSAP, Lenis…) est chargée juste après le premier affichage.
    ========================================================= */
 import "./styles/fonts.css";
 import "./styles/tokens.css";
@@ -11,11 +13,6 @@ import "./analytics.js";
 import "../config.js";
 import "../data/races.js";
 import "./app.js";
-
-import { initCardTilt, initKudos } from "./motion/cards.js";
-import { initSmoothScroll, initHeroIntro, initStats, initNextUp, initNavTimer, initRegisteredFx, initViewSwap, initGridFlow, initFiltersFab, initPills, initMagnetic, initSheetTransition } from "./motion/flow.js";
-import { initDeptMenu, initMapDrawer } from "./ui/drawer.js";
-import { initTurnstile } from "./turnstile.js";
 import { canHover, reduced } from "./motion/env.js";
 
 const A = window.ALLURE;
@@ -23,33 +20,16 @@ const A = window.ALLURE;
 A.loadLeaflet = () => import("./vendor-leaflet.js").then((m) => m.ready);
 
 if (canHover() && !reduced()) document.documentElement.classList.add("tilt-on");
+document.documentElement.classList.add("intro"); // entrée du hero en CSS (aucun JS requis)
 
-// hooks à enregistrer AVANT le premier rendu
-initSmoothScroll(A);
-initNextUp(A);
-initNavTimer(A);
-initRegisteredFx(A);
-initViewSwap(A);
-initGridFlow(A);
-initFiltersFab(A);
-initMapDrawer(A);
-if (window.SITE_CONFIG.ALERTS_ENABLED) initTurnstile(A);
-initPills(A);
-initSheetTransition(A);
+A.boot({ deferCatalog: true });
 
-A.boot();
-
-// tout de suite : l'intro du hero (sinon flash du titre)
-initHeroIntro();
-// juste après le premier affichage : interactions secondaires (hors chemin critique)
-const later = (fn) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: 800 }) : setTimeout(fn, 1));
-later(() => {
-  initStats();
-  initDeptMenu();
-  initKudos();
-  initMagnetic();
-  initCardTilt(document.getElementById("results"));
-});
+// motion puis catalogue (sous la ligne de flottaison), en tâches séparées
+const idle = (fn, t = 600) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: t }) : setTimeout(fn, 1));
+import("./motion/boot.js")
+  .then((m) => m.start(A))
+  .catch((e) => console.warn("[site] animations indisponibles", e))
+  .finally(() => idle(() => A.renderCatalog()));
 
 /* scène 3D : chargée à la demande (code-split), seulement si le hero est visible */
 const host = document.getElementById("hero-3d");

@@ -24,7 +24,12 @@ export const BRAND = {
 
 /** URL publique du site, sans « / » final. Vient de la variable d'environnement SITE_URL. */
 export function siteUrl(env = (typeof process !== "undefined" ? process.env : {})) {
-  return String(env.SITE_URL || "http://localhost:5173").replace(/\/+$/, "");
+  // SITE_URL (domaine final) > CF_PAGES_URL (fourni par Cloudflare Pages au build) > local
+  const url = env.SITE_URL || env.CF_PAGES_URL || "http://localhost:5173";
+  if (!env.SITE_URL && env.CF_PAGES === "1" && typeof console !== "undefined") {
+    console.warn(`[brand] SITE_URL non défini : utilisation de ${url}. Définis SITE_URL dans Cloudflare Pages pour le domaine final.`);
+  }
+  return String(url).replace(/\/+$/, "");
 }
 
 /** remplace {count} dans un texte de marque */
