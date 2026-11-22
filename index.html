@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Allure — Toutes les courses à pied d'Île-de-France 2027</title>
+  <title>{{SITE_NAME}} — {{TAGLINE}} Courses à pied {{YEAR}}</title>
   <meta name="description" content="Le calendrier 2027 des courses à pied à Paris et en Île-de-France : dates, distances, dénivelés, inscriptions et alertes d'ouverture." />
-  <meta name="theme-color" content="#0A0A0B" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23FC4C02'/><path d='M14 44 L28 20 L36 34 L42 26 L50 44' stroke='%230a0a0d' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,12 +17,12 @@
 
   <!-- NAV -->
   <header class="nav">
-    <a href="#" class="brand" aria-label="Allure, accueil">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 64 64"><path d="M10 46 L26 18 L36 34 L43 24 L54 46" /></svg>
+        <svg viewBox="0 0 64 64"><path d="{{LOGO_PATH}}" /></svg>
       </span>
-      <span class="brand-name">Allure</span>
-      <span class="brand-tag">IDF · 2027</span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+      <span class="brand-tag">{{REGION_SHORT}} · {{YEAR}}</span>
     </a>
     <!-- départements : segmented control (desktop) / menu déroulant (< 1100 px) / tiroir (mobile) -->
     <div class="nav-depts" id="nav-depts">
@@ -52,13 +52,14 @@
     <div class="hero-tip" id="hero-tip" aria-hidden="true"></div>
     <div class="hero-legend" aria-hidden="true">
       <span><i style="--c:var(--cat-route)"></i>Route</span><span><i style="--c:var(--cat-trail)"></i>Trail</span><span><i style="--c:var(--cat-urban)"></i>Urban</span><span><i style="--c:var(--cat-ultra)"></i>Ultra</span><span><i style="--c:var(--cat-relais)"></i>Relais</span>
-      <em>Janvier → décembre · survole une colonne, clique pour ouvrir</em>
+      <em class="legend-live">1 barre = 1 mois · survole pour le détail, clique pour voir ses courses</em>
+      <em class="legend-static">Le nombre de courses, mois par mois</em>
     </div>
 
     <div class="hero-content">
       <p class="eyebrow"><span class="pulse"></span> Saison 2027 · Paris &amp; Île-de-France</p>
-      <h1 aria-label="Trouve ta prochaine ligne d'arrivée."><span class="line" aria-hidden="true"><span>Trouve ta prochaine</span></span><span class="line" aria-hidden="true"><span><em>ligne d'arrivée.</em></span></span></h1>
-      <p class="lede">Près de 150 courses à Paris &amp; Île-de-France, de janvier à décembre 2027. Dates précises, formats — et pour chacune le lien direct pour t'inscrire ou te pré-inscrire.</p>
+      <h1 aria-label="{{TAGLINE}}"><span class="line" aria-hidden="true"><span>{{TAGLINE_1}}</span></span><span class="line" aria-hidden="true"><span><em>{{TAGLINE_2}}</em></span></span></h1>
+      <p class="lede"><strong class="subtag">{{SUBTAGLINE}}</strong> De janvier à décembre {{YEAR}}, à Paris et dans toute l'Île-de-France : dates précises, formats, et pour chaque course le lien direct pour t'inscrire ou te pré-inscrire.</p>
 
       <div class="hero-search">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
@@ -68,6 +69,7 @@
 
       <div class="hero-stats" id="hero-stats"></div>
     </div>
+    <div class="hero-months" id="hero-months" role="group" aria-label="Courses par mois — choisir un mois" hidden></div>
   </section>
 
   <!-- NEXT UP -->
@@ -134,11 +136,11 @@
       <h2>Une course manque&nbsp;?</h2>
       <p>On construit le calendrier le plus complet d'Île-de-France. Organisateur ou coureur, signale-nous une course.</p>
     </div>
-    <a class="btn btn--primary magnetic" href="mailto:?subject=Course%20%C3%A0%20ajouter%20sur%20Allure">Proposer une course</a>
+    <a class="btn btn--primary magnetic" href="mailto:?subject=Course%20%C3%A0%20ajouter%20sur%20{{SITE_NAME}}">Proposer une course</a>
   </section>
 
   <footer class="footer">
-    <p><strong>Allure</strong> — V1 Île-de-France · Saison 2027</p>
+    <p><strong>{{SITE_NAME}}</strong> — {{REGION}} · Saison {{YEAR}}</p>
     <p class="muted"><b>Date officielle</b> : publiée par l'organisateur ou la Ville de Paris. <b>Date annoncée</b> : publiée dans les calendriers de courses. <b>Date estimée</b> : déduite des éditions précédentes. Les dénivelés précédés de « ~ » sont approximatifs. Vérifie toujours sur le site de l'organisateur avant de t'engager. Relevé du 21/11/2026.</p>
   </footer>
 

@@ -4,6 +4,7 @@
 import "./styles/tokens.css";
 import "./styles/main.css";
 
+import "./brand-global.js";
 import "../config.js";
 import "../data/races.js";
 import "./app.js";
@@ -47,7 +48,7 @@ if (host) {
   const io = new IntersectionObserver(([e]) => {
     if (!e.isIntersecting) return;
     io.disconnect();
-    import("./hero/index.js").then((m) => m.mountHero(host)).catch((err) => console.warn("[Allure] 3D indisponible", err));
+    import("./hero/index.js").then((m) => m.mountHero(host)).catch((err) => console.warn("[site] 3D indisponible", err));
   });
   io.observe(host);
 }

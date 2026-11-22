@@ -1,261 +1,231 @@
+/* =========================================================
+   Hero WebGL : la saison en 12 barres (une par mois)
+   - hauteur = nombre de courses, segments empilés par catégorie
+   - caméra quasi fixe (légère dérive + parallaxe souris limitée),
+     figée pendant le survol
+   - interaction portée par 12 vrais <button> HTML superposés aux barres :
+     zones de survol élargies, focus clavier, Entrée = clic
+   ========================================================= */
 import * as THREE from "three";
-import { A, tokHex, MONTHS, CAT, L, xOf, dayOf, layout } from "./layout.js";
+import { A, tokHex, MONTHS, MONTHS_LONG, CATS, monthStats, tipHTML } from "./layout.js";
 
 const tok = (n) => new THREE.Color(tokHex(n));
+const SLOT = 3.6;          // espacement entre mois
+const BW = 2.3;            // largeur / profondeur d'une barre
+const GAP = 0.09;          // fin liseré entre segments
+const MAX_H = 15;          // hauteur du mois le plus chargé
 
-/* =========================================================
-   Scène WebGL
-   ========================================================= */
 export function mountScene(host) {
   const tip = document.getElementById("hero-tip");
-  const items = layout(A.races);
+  const zone = host.parentElement;
+  const stats = monthStats(A.races);
+  const maxTotal = Math.max(...stats.map((s) => s.total));
+  const unit = MAX_H / maxTotal;
+  const xOf = (m) => (m - 5.5) * SLOT;
+  const hOf = (m) => stats[m].total * unit;
 
+  /* ---------- renderer / scène ---------- */
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(tok("--bg-0"), 70, 200);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
+  scene.fog = new THREE.Fog(tok("--bg-0"), 60, 130);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 300);
   const world = new THREE.Group();
-  world.rotation.y = -0.2; // légère perspective : décembre un peu plus proche // la saison comme une piste : janvier au premier plan, décembre vers l'horizon
+  world.rotation.y = -0.32; // légère perspective : décembre un peu plus proche
   scene.add(world);
 
   /* ---------- sol : courbes de niveau orange très discrètes ---------- */
   const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(160, 110, 1, 1).rotateX(-Math.PI / 2),
+    new THREE.PlaneGeometry(120, 80).rotateX(-Math.PI / 2),
     new THREE.ShaderMaterial({
       transparent: true, depthWrite: false,
-      uniforms: { uColor: { value: tok("--accent") }, uTime: { value: 0 } },
-      vertexShader: `varying vec2 vP; void main(){ vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+      uniforms: { uColor: { value: tok("--accent") } },
+      vertexShader: "varying vec2 vP; void main(){ vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
       fragmentShader: `
-        varying vec2 vP; uniform vec3 uColor; uniform float uTime;
-        float h(vec2 p){
-          return sin(p.x*.045+1.3)*cos(p.y*.06) + .55*sin(p.x*.09-p.y*.07+2.) + .3*cos(p.x*.16+p.y*.13);
-        }
+        varying vec2 vP; uniform vec3 uColor;
+        float h(vec2 p){ return sin(p.x*.07+1.3)*cos(p.y*.09) + .55*sin(p.x*.13-p.y*.1+2.) + .3*cos(p.x*.23+p.y*.19); }
         void main(){
-          float v = h(vP * 1.6) * 3.5;
-          float f = abs(fract(v) - .5) / fwidth(v);
-          float line = 1. - clamp(f, 0., 1.);
-          float g = max(abs(fract(vP.x/5.)-.5)/fwidth(vP.x/5.), 0.);
-          float grid = (1. - clamp(g, 0., 1.)) * .25;
-          float fade = smoothstep(70., 18., length(vP * vec2(.8, 1.3)));
-          float a = (line * .16 + grid * .05) * fade;
-          gl_FragColor = vec4(uColor, a);
+          float v = h(vP) * 3.2;
+          float line = 1. - clamp(abs(fract(v) - .5) / fwidth(v), 0., 1.);
+          float fade = smoothstep(46., 10., length(vP * vec2(.7, 1.2)));
+          gl_FragColor = vec4(uColor, line * .17 * fade);
         }`
     })
   );
-  floor.position.y = -0.01;
   world.add(floor);
 
-  /* ---------- ligne de temps + graduations des mois ---------- */
-  const axis = new THREE.Mesh(
-    new THREE.PlaneGeometry(2 * L, 0.1).rotateX(-Math.PI / 2),
+  // axe janvier → décembre + graduations
+  const axisPts = [xOf(0) - SLOT / 2, 0.02, BW / 2 + 0.9, xOf(11) + SLOT / 2, 0.02, BW / 2 + 0.9];
+  for (let m = 0; m < 12; m++) axisPts.push(xOf(m), 0.02, BW / 2 + 0.6, xOf(m), 0.02, BW / 2 + 1.2);
+  world.add(new THREE.LineSegments(
+    new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(axisPts, 3)),
+    new THREE.LineBasicMaterial({ color: tok("--accent"), transparent: true, opacity: 0.55 })
+  ));
+
+  // halo au sol sous le mois survolé
+  const halo = new THREE.Mesh(
+    new THREE.PlaneGeometry(SLOT * 2.2, SLOT * 2.2).rotateX(-Math.PI / 2),
     new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      uniforms: { a: { value: tok("--accent") }, b: { value: tok("--accent-2") }, uDraw: { value: 0 } },
+      uniforms: { uColor: { value: tok("--accent") }, uA: { value: 0 } },
       vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-      fragmentShader: "varying vec2 vUv; uniform vec3 a; uniform vec3 b; uniform float uDraw; void main(){ if (vUv.x > uDraw) discard; gl_FragColor = vec4(mix(a,b,vUv.x), .9); }"
+      fragmentShader: "varying vec2 vUv; uniform vec3 uColor; uniform float uA; void main(){ float d = length(vUv - .5) * 2.; gl_FragColor = vec4(uColor, smoothstep(1., 0., d) * .55 * uA); }"
     })
   );
-  axis.position.set(0, 0.02, 3.2);
-  world.add(axis);
+  halo.position.y = 0.03;
+  world.add(halo);
 
-  const labelTex = (text) => {
-    const c = document.createElement("canvas"); c.width = 256; c.height = 64;
-    const g = c.getContext("2d");
-    g.font = "600 30px 'JetBrains Mono', monospace"; g.fillStyle = tokHex("--muted"); g.textAlign = "center"; g.textBaseline = "middle";
-    g.fillText(text, 128, 32);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
-  };
-  const tickMat = new THREE.LineBasicMaterial({ color: tok("--accent"), transparent: true, opacity: 0.35 });
-  const tickPts = [];
-  for (let m = 0; m < 12; m++) {
-    const x = xOf(dayOf(new Date(2027, m, 1)));
-    tickPts.push(x, 0.02, 2.6, x, 0.02, 3.8);
-    const mid = xOf(dayOf(new Date(2027, m, 15)));
-    const lab = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 0.8).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: labelTex(MONTHS[m]), transparent: true, depthWrite: false }));
-    lab.position.set(mid, 0.03, 4.6);
-    world.add(lab);
-  }
-  const ticks = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(tickPts, 3)), tickMat);
-  world.add(ticks);
-
-  /* ---------- colonnes (instanciées) ---------- */
-  const N = items.length;
-  const box = new THREE.BoxGeometry(0.42, 1, 0.42).translate(0, 0.5, 0);
-  const aColor = new Float32Array(N * 3), aDelay = new Float32Array(N), aIndex = new Float32Array(N);
-  const colMat = new THREE.ShaderMaterial({
-    transparent: true,
+  /* ---------- barres : segments instanciés ---------- */
+  const segs = [];
+  stats.forEach((s) => {
+    let y = 0;
+    CATS.forEach((c) => {
+      const n = s.parts[c.id];
+      if (!n) return;
+      const h = n * unit;
+      segs.push({ m: s.m, y, h: Math.max(0.05, h - GAP), color: tok(c.token) });
+      y += h;
+    });
+  });
+  const N = segs.length;
+  const geo = new THREE.BoxGeometry(BW, 1, BW).translate(0, 0.5, 0);
+  const aColor = new Float32Array(N * 3), aMonth = new Float32Array(N);
+  const mat4 = new THREE.Matrix4();
+  const bars = new THREE.InstancedMesh(geo, null, N);
+  segs.forEach((g, i) => {
+    mat4.makeScale(1, g.h, 1).setPosition(xOf(g.m), g.y, 0);
+    bars.setMatrixAt(i, mat4);
+    aColor.set([g.color.r, g.color.g, g.color.b], i * 3);
+    aMonth[i] = g.m;
+  });
+  geo.setAttribute("aColor", new THREE.InstancedBufferAttribute(aColor, 3));
+  geo.setAttribute("aMonth", new THREE.InstancedBufferAttribute(aMonth, 1));
+  bars.material = new THREE.ShaderMaterial({
     uniforms: { uTime: { value: 0 }, uHover: { value: -1 }, uWhite: { value: tok("--text") } },
     vertexShader: `
-      attribute vec3 aColor; attribute float aDelay; attribute float aIndex;
+      attribute vec3 aColor; attribute float aMonth;
       uniform float uTime; uniform float uHover;
-      varying vec3 vC; varying float vY; varying float vH; varying vec3 vN;
+      varying vec3 vC; varying float vLY; varying vec3 vN; varying float vH; varying float vDim;
       void main(){
-        float g = clamp((uTime - aDelay) / .9, 0., 1.);
+        float g = clamp((uTime - .2 - aMonth * .07) / .9, 0., 1.);
         g = 1. - pow(1. - g, 4.);
-        vec3 p = position; p.y *= max(g, .001);
-        vC = aColor; vY = position.y; vH = step(abs(aIndex - uHover), .5); vN = normal;
-        gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(p, 1.0);
+        vec4 wp = instanceMatrix * vec4(position, 1.0);
+        wp.y *= max(g, .002);
+        vC = aColor; vLY = position.y; vN = normal;
+        vH = step(abs(aMonth - uHover), .5);
+        vDim = step(0., uHover) * (1. - vH);
+        gl_Position = projectionMatrix * modelViewMatrix * wp;
       }`,
     fragmentShader: `
-      varying vec3 vC; varying float vY; varying float vH; varying vec3 vN; uniform vec3 uWhite;
+      varying vec3 vC; varying float vLY; varying vec3 vN; varying float vH; varying float vDim; uniform vec3 uWhite;
       void main(){
-        float side = .55 + .45 * abs(vN.x) + .25 * vN.y;
-        vec3 c = vC * (.28 + .9 * pow(vY, 1.4)) * side;
-        c = mix(c, uWhite, vH * (.35 + .4 * vY));
-        float a = .55 + .45 * vY + vH * .3;
-        gl_FragColor = vec4(c * (1. + vH * .6), a);
+        float light = .62 + .38 * max(dot(normalize(vN), normalize(vec3(.4, .9, .6))), 0.);
+        vec3 c = vC * light * (.82 + .18 * vLY);
+        c += step(.965, vLY) * .18;                // liseré clair en haut de chaque segment
+        c = mix(c, c * .38, vDim);                 // les autres mois s'effacent pendant le survol
+        c = mix(c, mix(c, uWhite, .18), vH);       // le mois survolé s'illumine
+        gl_FragColor = vec4(c * (1. + vH * .25), 1.);
       }`
   });
-  const cols = new THREE.InstancedMesh(box, colMat, N);
-  const m4 = new THREE.Matrix4(), tops = new Float32Array(N * 3), topCol = new Float32Array(N * 3), topSize = new Float32Array(N);
-  items.forEach((it, i) => {
-    m4.makeScale(1, it.h, 1).setPosition(it.x, 0, it.z);
-    cols.setMatrixAt(i, m4);
-    const c = tok(it.cat);
-    aColor.set([c.r, c.g, c.b], i * 3); topCol.set([c.r, c.g, c.b], i * 3);
-    aDelay[i] = 0.25 + (it.day / 364) * 1.6 + Math.abs(it.z) * 0.03;
-    aIndex[i] = i;
-    tops.set([it.x, it.h, it.z], i * 3);
-    topSize[i] = it.r.compact ? 2.2 : 3.4;
-    it.top = new THREE.Vector3(it.x, it.h, it.z);
+  world.add(bars);
+
+  /* ---------- boutons HTML superposés (interaction + clavier) ---------- */
+  const layer = document.getElementById("hero-months");
+  layer.innerHTML = stats.map((s) => `<button class="hm-btn" type="button" data-hm="${s.m}" aria-label="${MONTHS_LONG[s.m]} : ${s.total} course${s.total > 1 ? "s" : ""} — afficher ce mois"><span class="hm-label">${MONTHS[s.m]}</span></button>`).join("");
+  layer.hidden = false;
+  const btns = [...layer.querySelectorAll(".hm-btn")];
+  let hovered = -1;
+  const setHover = (m) => {
+    if (m === hovered) return;
+    hovered = m;
+    bars.material.uniforms.uHover.value = m;
+    btns.forEach((b, i) => b.classList.toggle("is-hot", i === m));
+    if (m < 0) { tip.classList.remove("show"); return; }
+    tip.innerHTML = tipHTML(stats[m]);
+    tip.classList.add("show");
+    halo.position.x = xOf(m);
+  };
+  btns.forEach((b, m) => {
+    b.addEventListener("pointerenter", () => setHover(m));
+    b.addEventListener("pointerleave", () => setHover(-1));
+    b.addEventListener("focus", () => setHover(m));
+    b.addEventListener("blur", () => setHover(-1));
+    b.addEventListener("click", () => A.filterMonth(m));
   });
-  box.setAttribute("aColor", new THREE.InstancedBufferAttribute(aColor, 3));
-  box.setAttribute("aDelay", new THREE.InstancedBufferAttribute(aDelay, 1));
-  box.setAttribute("aIndex", new THREE.InstancedBufferAttribute(aIndex, 1));
-  cols.instanceMatrix.needsUpdate = true;
-  cols.computeBoundingSphere();
-  world.add(cols);
-  // zone de survol plus large que la colonne visible (colonnes fines = cibles difficiles)
-  const hit = new THREE.InstancedMesh(new THREE.BoxGeometry(1.3, 1, 1.3).translate(0, 0.5, 0), new THREE.MeshBasicMaterial(), N);
-  hit.visible = false;
-  for (let i = 0; i < N; i++) { cols.getMatrixAt(i, m4); hit.setMatrixAt(i, m4); }
-  hit.computeBoundingSphere();
-  world.add(hit);
 
-  // halo au sommet de chaque colonne
-  const glowTex = (() => {
-    const c = document.createElement("canvas"); c.width = c.height = 64;
-    const g = c.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.2, "rgba(255,255,255,.8)"); gr.addColorStop(0.55, "rgba(255,255,255,.15)"); gr.addColorStop(1, "rgba(255,255,255,0)");
-    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
-    return new THREE.CanvasTexture(c);
-  })();
-  const topGeo = new THREE.BufferGeometry();
-  topGeo.setAttribute("position", new THREE.BufferAttribute(tops, 3));
-  topGeo.setAttribute("aColor", new THREE.BufferAttribute(topCol, 3));
-  topGeo.setAttribute("aSize", new THREE.BufferAttribute(topSize, 1));
-  topGeo.setAttribute("aDelay", new THREE.BufferAttribute(aDelay, 1));
-  topGeo.setAttribute("aIndex", new THREE.BufferAttribute(aIndex, 1));
-  const topMat = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    uniforms: { uTex: { value: glowTex }, uTime: { value: 0 }, uHover: { value: -1 }, uPR: { value: renderer.getPixelRatio() } },
-    vertexShader: `
-      attribute vec3 aColor; attribute float aSize; attribute float aDelay; attribute float aIndex;
-      uniform float uTime; uniform float uHover; uniform float uPR;
-      varying vec3 vC; varying float vA;
-      void main(){
-        float g = clamp((uTime - aDelay) / .9, 0., 1.); g = 1. - pow(1. - g, 4.);
-        float hv = step(abs(aIndex - uHover), .5);
-        vec3 p = position; p.y *= max(g, .001);
-        vec4 mv = modelViewMatrix * vec4(p, 1.);
-        vC = aColor; vA = g;
-        gl_PointSize = aSize * (1. + hv * 1.6) * (1. + .12 * sin(uTime * 1.8 + aIndex)) * uPR * (220. / -mv.z);
-        gl_Position = projectionMatrix * mv;
-      }`,
-    fragmentShader: `uniform sampler2D uTex; varying vec3 vC; varying float vA;
-      void main(){ float t = texture2D(uTex, gl_PointCoord).a; gl_FragColor = vec4(vC + .25, t * vA * .9); }`
-  });
-  world.add(new THREE.Points(topGeo, topMat));
-
-  /* ---------- interaction ---------- */
-  const ptr = new THREE.Vector2(9, 9), mouse = new THREE.Vector2(), target = new THREE.Vector2();
-  const ray = new THREE.Raycaster();
-  const look = new THREE.Vector3();
-  let camDist = 100;
-  let hovered = -1, visible = true, scrollP = 0;
-  const zone = host.parentElement;
-
+  /* ---------- caméra ---------- */
+  const look = new THREE.Vector3(0, 5.5, 0);
+  const mouse = new THREE.Vector2(), target = new THREE.Vector2();
+  let camDist = 48, visible = true, scrollP = 0;
   function resize() {
     const w = host.clientWidth, h = host.clientHeight;
     renderer.setSize(w, h, false);
     const aspect = w / h;
     camera.aspect = aspect;
-    // la ligne de temps (2L) doit occuper ~55 % de la largeur ; la scène est poussée à droite du texte
-    const frac = aspect > 1.5 ? 0.5 : aspect > 1.1 ? 0.62 : 0.9;
+    // les 12 mois occupent ~45 % de la largeur, à droite du texte et sous le titre
+    const frac = aspect > 1.5 ? 0.45 : 0.38;
     const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    camDist = (2 * L) / (frac * 2 * tanV * aspect);
-    const shift = aspect > 1.5 ? 0.25 : aspect > 1.1 ? 0.16 : 0;
-    camera.setViewOffset(w, h, -shift * w, aspect > 1.1 ? -0.16 * h : 0, w, h); // à droite et un peu plus bas que le titre
+    camDist = (12 * SLOT) / (frac * 2 * tanV * aspect);
+    camera.setViewOffset(w, h, -(aspect > 1.5 ? 0.26 : 0.3) * w, -0.2 * h, w, h);
     camera.updateProjectionMatrix();
-    look.set(0, 3.5, 0);
   }
   resize();
   new ResizeObserver(resize).observe(host);
-
   zone.addEventListener("pointermove", (e) => {
     const b = host.getBoundingClientRect();
-    ptr.set(((e.clientX - b.left) / b.width) * 2 - 1, -((e.clientY - b.top) / b.height) * 2 + 1);
-    target.copy(ptr);
+    target.set(((e.clientX - b.left) / b.width) * 2 - 1, -((e.clientY - b.top) / b.height) * 2 + 1);
   }, { passive: true });
-  zone.addEventListener("pointerleave", () => { ptr.set(9, 9); target.set(0, 0); setHover(-1); });
-  zone.addEventListener("click", (e) => {
-    if (hovered < 0 || e.target.closest("a, button, input, kbd, .hero-search")) return;
-    A.openSheet(items[hovered].r.id);
-  });
+  zone.addEventListener("pointerleave", () => target.set(0, 0));
   addEventListener("scroll", () => { scrollP = Math.min(1, Math.max(0, scrollY / (host.clientHeight || 1))); }, { passive: true });
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(host);
-  document.addEventListener("visibilitychange", () => clock.getDelta());
 
-  function setHover(i) {
-    if (i === hovered) return;
-    hovered = i;
-    colMat.uniforms.uHover.value = i;
-    topMat.uniforms.uHover.value = i;
-    zone.style.cursor = i >= 0 ? "pointer" : "";
-    if (i < 0) { tip.classList.remove("show"); return; }
-    const r = items[i].r;
-    tip.innerHTML = `<span class="ht-date">${A.fmtShort(r._date)} 2027</span><b>${A.esc(r.name)}</b><span>${A.esc(r.city)}${r.arr ? " " + A.esc(r.arr) : ""} · ${A.esc(r._distLabel)}</span>`;
-    tip.classList.add("show");
-  }
-  const v3 = new THREE.Vector3();
-  function placeTip() {
-    if (hovered < 0) return;
-    v3.copy(items[hovered].top).applyMatrix4(world.matrixWorld).project(camera);
-    const x = (v3.x * 0.5 + 0.5) * host.clientWidth, y = (-v3.y * 0.5 + 0.5) * host.clientHeight;
-    const tw = tip.offsetWidth;
-    tip.style.setProperty("--tx", `${Math.min(host.clientWidth - tw - 12, Math.max(12, x - tw / 2))}px`);
-    tip.style.setProperty("--ty", `${Math.max(80, y - tip.offsetHeight - 18)}px`);
+  /* ---------- placement des boutons + info-bulle ancrée ---------- */
+  const v = new THREE.Vector3();
+  const toScreen = (x, y, z) => {
+    v.set(x, y, z).applyMatrix4(world.matrixWorld).project(camera);
+    return [(v.x * 0.5 + 0.5) * host.clientWidth, (-v.y * 0.5 + 0.5) * host.clientHeight];
+  };
+  function placeButtons(grow) {
+    btns.forEach((b, m) => {
+      const x = xOf(m), h = Math.max(hOf(m) * grow, 2.5);
+      const [lx, by] = toScreen(x - SLOT * 0.48, 0, BW / 2);
+      const [rx] = toScreen(x + SLOT * 0.48, 0, BW / 2);
+      const [, ty] = toScreen(x, h + 1.2, 0);
+      b.style.transform = `translate(${lx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
+      b.style.width = `${(rx - lx).toFixed(1)}px`;
+      b.style.height = `${(by - ty + 34).toFixed(1)}px`; // + la zone du libellé sous l'axe
+    });
+    if (hovered >= 0) {
+      const [tx, ty] = toScreen(xOf(hovered), hOf(hovered), 0);
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      tip.style.setProperty("--tx", `${Math.min(host.clientWidth - tw - 12, Math.max(12, tx - tw / 2)).toFixed(1)}px`);
+      tip.style.setProperty("--ty", `${Math.max(76, ty - th - 22).toFixed(1)}px`);
+    }
   }
 
   /* ---------- boucle ---------- */
-  const clock = new THREE.Clock();
-  let t = 0;
   const t0 = performance.now();
+  let drift = 0, last = t0;
   host.classList.add("ready");
-  function frame() {
+  function frame(now) {
     requestAnimationFrame(frame);
-    if (!visible || document.hidden) { clock.getDelta(); return; }
-    clock.getDelta();
-    t = (performance.now() - t0) / 1000; // temps réel : l'intro ne dépend pas du framerate
-    colMat.uniforms.uTime.value = topMat.uniforms.uTime.value = t;
-    axis.material.uniforms.uDraw.value = Math.min(1, t / 2.2);
-
-    mouse.lerp(target, 0.06);
-    const drift = Math.sin(t * 0.12) * 4;
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!visible || document.hidden) return;
+    const t = (now - t0) / 1000;
+    const grow = Math.min(1, Math.max(0, (t - 0.2) / 1.7));
+    bars.material.uniforms.uTime.value = t;
+    // au survol : caméra et dérive figées
+    if (hovered < 0) { drift += dt; mouse.lerp(target, 0.04); }
+    halo.material.uniforms.uA.value += ((hovered >= 0 ? 1 : 0) - halo.material.uniforms.uA.value) * 0.15;
     const p = scrollP;
-    camera.position.set(drift * 0.6 + mouse.x * 5, camDist * 0.3 + mouse.y * 3 - p * 8, camDist * 0.95 - p * camDist * 0.45);
-    camera.lookAt(look.x + mouse.x * 2, look.y - p * 2, look.z);
-    renderer.domElement.style.opacity = String(1 - Math.min(1, Math.max(0, (p - 0.35) / 0.55)));
-
-    if (ptr.x < 2 && t > 1.2) {
-      ray.setFromCamera(ptr, camera);
-      const h = ray.intersectObject(hit, false)[0];
-      setHover(h ? h.instanceId : -1);
-    }
-    placeTip();
+    camera.position.set(Math.sin(drift * 0.18) * 1.2 + mouse.x * 1.6, camDist * 0.3 + mouse.y * 0.8 - p * 4, camDist - p * camDist * 0.35);
+    camera.lookAt(look.x, look.y - p * 2, look.z);
+    renderer.domElement.style.opacity = String(1 - Math.min(1, Math.max(0, (p - 0.35) / 0.5)));
+    layer.style.opacity = renderer.domElement.style.opacity;
+    world.updateMatrixWorld();
+    placeButtons(grow);
     renderer.render(scene, camera);
   }
-  frame();
+  requestAnimationFrame(frame);
 }

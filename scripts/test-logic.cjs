@@ -42,6 +42,11 @@ click($("#nav-reg"));
 ok(A.state.list === "all" && A.state.month === 0 && count() === 22, "retour liste principale : janvier restauré (22)");
 click($('[data-month="0"]'));
 
+console.log("Hero : clic sur un mois");
+click($("#nav-favs")); A.filterMonth(2);
+ok(A.state.list === "all" && A.state.month === 2 && count() === 34, "filterMonth(mars) depuis Favoris → liste principale, 34 courses");
+click($('[data-month="2"]'));
+
 console.log("Vues");
 click($("#tab-calendar")); ok($$("#results .card").length === 0 && $$("#results .cal-month").length > 0, "calendrier seul");
 click($("#tab-map")); ok($$("#results .cal-month").length === 0 && $("#results .mapview"), "carte seule");

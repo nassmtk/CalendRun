@@ -11,7 +11,11 @@ const WIDTHS = [[1440, 900], [1024, 768], [390, 844]];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const SCENARIOS = {
-  home: async (p) => { await p.goto(BASE + "/", { waitUntil: "load" }); await wait(3500); },
+  home: async (p) => { await p.goto(BASE + "/", { waitUntil: "load" }); await wait(9000); },
+  heroHover: async (p) => {
+    await p.goto(BASE + "/", { waitUntil: "load" }); await wait(9000);
+    const b = await p.$(".hm-btn[data-hm=\"2\"]"); if (b) { await b.hover(); await wait(1500); }
+  },
   filters: async (p) => {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(800);
     await p.evaluate(() => document.querySelector("#toolbar").scrollIntoView()); await wait(1200);

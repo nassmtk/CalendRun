@@ -906,3 +906,37 @@ select option { background: var(--surface); }
 .card-foot .status { overflow: hidden; }
 .status-pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; display: block; }
 .status-pill::before { display: inline-block; margin-right: 7px; vertical-align: 1px; }
+
+.lede .subtag { display: block; color: var(--text); font-family: var(--f-display); font-weight: 800; font-size: 1.15em; letter-spacing: -.01em; margin-bottom: 6px; }
+
+/* ---------- hero : 12 mois ---------- */
+.hero-months { position: absolute; inset: 0; z-index: var(--z-card); pointer-events: none; }
+.hm-btn {
+  position: absolute; left: 0; top: 0; pointer-events: auto;
+  display: flex; align-items: flex-end; justify-content: center;
+  border-radius: var(--r-sm); background: transparent; color: var(--muted);
+  transition: background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+.hm-btn .hm-label { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding-bottom: 6px; }
+.hm-btn.is-hot { color: var(--accent); background: linear-gradient(180deg, transparent 0%, var(--accent-faint) 100%); }
+.hm-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hero-tip .ht-parts { list-style: none; margin: 6px 0 2px; padding: 0; display: grid; gap: 3px; }
+.hero-tip .ht-parts li { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.hero-tip .ht-parts i { width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.hero-tip .ht-parts b { color: var(--text); font-size: 14px; }
+.hero-tip b .num { font-size: 1.15em; }
+.hero-tip .ht-cta { margin-top: 4px; font-size: 11px; color: var(--accent); }
+.hero-legend .legend-static { display: none; }
+.hero-3d.is-static ~ .hero-legend .legend-live { display: none; }
+.hero-3d.is-static ~ .hero-legend .legend-static { display: block; }
+.hero-3d.is-static::after { background: linear-gradient(90deg, var(--bg-0) 0%, var(--bg-0-a60) 30%, transparent 55%), linear-gradient(0deg, var(--bg-0) 0%, transparent 30%); }
+.hero-fallback svg { width: 100%; height: 100%; }
+@media (min-width: 761px) { .hero-fallback { left: 38%; top: 30%; } }
+
+@media (min-width: 761px) and (max-width: 1279px) {
+  .hero .lede, .hero-search { max-width: min(620px, 52vw); }
+}
+@media (max-width: 760px) {
+  .hero-fallback { opacity: .22; }
+}
+@media (max-width: 1279px) { .hm-btn .hm-label { font-size: 10px; letter-spacing: 0; } }

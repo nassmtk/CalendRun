@@ -774,9 +774,9 @@
     const end = new Date(r._end.getTime() + DAY);
     const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
     const ics = [
-      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Allure//Courses IDF//FR", "CALSCALE:GREGORIAN",
+      "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//${(window.BRAND || {}).SITE_NAME || "Site"}//Courses IDF//FR`, "CALSCALE:GREGORIAN",
       "BEGIN:VEVENT",
-      `UID:${r.id}-${r.date}@allure`, `DTSTAMP:${stamp}`,
+      `UID:${r.id}-${r.date}@${location.hostname}`, `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${d(r._date)}`, `DTEND;VALUE=DATE:${d(end)}`,
       `SUMMARY:🏃 ${icsEsc(r.name)}`,
       `LOCATION:${icsEsc(r.city + (r.arr ? " " + r.arr : ""))}`,
@@ -943,12 +943,19 @@
 
   /* ---------- API pour la couche motion & la scène 3D ---------- */
   const hooks = { beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [] };
-  const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[Allure]", k, e); } });
+  const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[site]", k, e); } });
   window.ALLURE = {
     races: RACES, openSheet, fmtShort, esc, hooks, state,
     setTransition(f) { transition = f; },
     setViewSwap(f) { viewSwap = f; },
     nextRegistered, activeFilterCount,
+    // hero : clic sur un mois → filtre de ce mois dans la liste principale, puis défilement
+    filterMonth(m) {
+      setList("all");
+      state.month = m;
+      render();
+      window.ALLURE.scrollTo($("#results-count"));
+    },
     isRegistered: (id) => registered.has(id),
     scrollTo: (el) => el.scrollIntoView({ behavior: "smooth" }),
     favCount: () => favs.size,

@@ -1,15 +1,8 @@
 /*
- * Configuration du site
- * ---------------------
- * WAITLIST_ENDPOINT : URL qui reçoit les inscriptions aux alertes (POST JSON).
- *   Compatible tel quel avec Formspree (https://formspree.io/f/xxxx), un webhook Make/Zapier/n8n,
- *   une Edge Function Supabase, etc. Payload envoyé :
- *   { email, raceId, raceName, raceDate, alerts: ["opening","reminder"], createdAt }
- *
- *   Laisse vide → mode démo : les alertes sont stockées dans le navigateur (localStorage) uniquement.
+ * Configuration navigateur (héritée).
+ * Le nom, l'accroche, l'année et l'URL du site viennent de brand.config.js (window.BRAND).
+ * Les alertes mail sont pilotées par les variables d'environnement (voir README).
  */
 window.SITE_CONFIG = {
-  WAITLIST_ENDPOINT: "",
-  SITE_NAME: "Allure",
-  YEAR: 2027
+  YEAR: (window.BRAND && window.BRAND.YEAR) || 2027
 };
