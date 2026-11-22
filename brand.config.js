@@ -24,9 +24,8 @@ export const BRAND = {
   // les adresses sont assemblées en JS côté navigateur, jamais écrites en clair dans le HTML)
   CONTACT_EMAIL: "contact@calendrun.fr",
   COURSES_EMAIL: "courses@calendrun.fr",
-  PUBLISHER_NAME: "Nassim Matouk",
   // nom affiché sur les pages légales (mentions légales, confidentialité)
-  PUBLISHER_DISPLAY_NAME: "Nassim MTK",
+  PUBLISHER_NAME: "Nassim MTK",
   // à mettre à jour à chaque modification des pages légales
   LEGAL_UPDATED_AT: "22 novembre 2026"
 };

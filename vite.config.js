@@ -111,7 +111,6 @@ export default defineConfig(({ mode }) => {
     NAV_CONTACT,
     THEME_TOGGLE,
     PUBLISHER_NAME: BRAND.PUBLISHER_NAME,
-    PUBLISHER_DISPLAY_NAME: BRAND.PUBLISHER_DISPLAY_NAME,
     LEGAL_UPDATED_AT: BRAND.LEGAL_UPDATED_AT,
     MAIL_CONTACT: mailLink("contact"),
     MAIL_COURSES: mailLink("courses", { tpl: "error-general" }),
