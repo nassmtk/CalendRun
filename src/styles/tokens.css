@@ -1,0 +1,97 @@
+/* =========================================================
+   ALLURE — design tokens
+   Toute couleur, durée, easing, z-index du site vient d'ici.
+   ========================================================= */
+:root {
+  color-scheme: dark;
+
+  /* ---- fonds ---- */
+  --bg-0: #0A0A0B;
+  --bg-1: #111113;
+  --surface: #17171A;
+  --surface-2: #1E1E22;
+  --surface-3: #26262B;
+  --bg-0-a80: rgba(10, 10, 11, .8);
+  --bg-0-a60: rgba(10, 10, 11, .6);
+  --bg-1-a92: rgba(17, 17, 19, .92);
+  --scrim: rgba(5, 5, 6, .7);
+
+  /* ---- bordures ---- */
+  --border: rgba(255, 255, 255, .07);
+  --border-strong: rgba(255, 255, 255, .12);
+  --border-hover: rgba(252, 76, 2, .35);
+
+  /* ---- texte ---- */
+  --text: #F5F3EF;
+  --muted: #9A968F;
+  --subtle: #5F5C57;      /* décoratif uniquement (tirets, séparateurs) — pas de texte porteur de sens */
+
+  /* ---- accent ---- */
+  --accent: #FC4C02;
+  --accent-hover: #FF6A2B;
+  --accent-2: #FF9F1C;
+  --accent-soft: rgba(252, 76, 2, .12);
+  --accent-glow: rgba(252, 76, 2, .35);
+  --accent-faint: rgba(252, 76, 2, .06);
+  --on-accent: #0A0A0B;   /* texte sur fond orange : contraste 6.2:1 (AA) */
+  --grad-signature: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+  --grad-signature-diag: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+
+  /* ---- catégories (désaturées) ---- */
+  --cat-route: #FF8A3D;
+  --cat-trail: #5FB878;
+  --cat-urban: #5AA9E6;
+  --cat-ultra: #E5484D;
+  --cat-relais: #A78BFA;
+
+  /* ---- statuts ---- */
+  --st-open: var(--accent);
+  --st-lottery: var(--cat-relais);
+  --st-soon: var(--accent-2);
+  --st-closed: var(--cat-ultra);
+  --st-check: var(--cat-urban);
+  --st-muted: var(--muted);
+  --date-ok: var(--cat-trail);
+  --date-listed: var(--cat-urban);
+  --date-est: var(--accent-2);
+
+  /* ---- typo ---- */
+  --f-display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, sans-serif;
+  --f-num: "Barlow Condensed", "Bricolage Grotesque", system-ui, sans-serif; /* chiffres façon dossard */
+  --f-mono: "JetBrains Mono", ui-monospace, monospace;                       /* labels / eyebrows uniquement */
+
+  /* ---- rayons / espace ---- */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r: 18px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+  --maxw: 1320px;
+  --gutter: clamp(16px, 3vw, 24px);
+  --nav-h: 64px;
+
+  /* ---- ombres ---- */
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 10px 30px -12px rgba(0, 0, 0, .7);
+  --shadow-2: 0 30px 70px -30px rgba(0, 0, 0, .85);
+  --shadow-accent: 0 18px 50px -18px var(--accent-glow);
+
+  /* ---- motion ---- */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-1: 300ms;
+  --dur-2: 450ms;
+  --dur-3: 700ms;
+
+  /* ---- z-index ---- */
+  --z-below: -1;
+  --z-base: 0;
+  --z-card: 1;
+  --z-card-active: 2;
+  --z-sticky: 40;
+  --z-mini: 45;
+  --z-nav: 50;
+  --z-tip: 60;
+  --z-overlay: 80;
+  --z-toast: 90;
+  --z-grain: 100;
+}

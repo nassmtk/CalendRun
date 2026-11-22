@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Allure — Toutes les courses à pied d'Île-de-France 2027</title>
+  <meta name="description" content="Le calendrier 2027 des courses à pied à Paris et en Île-de-France : dates, distances, dénivelés, inscriptions et alertes d'ouverture." />
+  <meta name="theme-color" content="#0A0A0B" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23FC4C02'/><path d='M14 44 L28 20 L36 34 L42 26 L50 44' stroke='%230a0a0d' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <header class="nav">
+    <a href="#" class="brand" aria-label="Allure, accueil">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M10 46 L26 18 L36 34 L43 24 L54 46" /></svg>
+      </span>
+      <span class="brand-name">Allure</span>
+      <span class="brand-tag">IDF · 2027</span>
+    </a>
+    <!-- départements : segmented control (desktop) / menu déroulant (< 1100 px) / tiroir (mobile) -->
+    <div class="nav-depts" id="nav-depts">
+      <div class="dept-seg" id="dept-seg" role="group" aria-label="Départements"></div>
+      <button class="dept-toggle" id="dept-toggle" aria-expanded="false" aria-controls="dept-pop" aria-label="Départements">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="lbl">Départements</span> <span class="badge" id="dept-count" hidden>0</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dept-pop drawer" id="dept-pop" hidden>
+        <div class="drawer-handle" aria-hidden="true"></div>
+        <p class="drawer-title">Départements</p>
+        <div class="dept-list" id="dept-list" role="group" aria-label="Départements"></div>
+      </div>
+    </div>
+    <nav class="nav-links" aria-label="Mes listes">
+      <a href="?list=favs" id="nav-favs" data-list="favs" aria-label="Favoris"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.4C1.6 7.2 3.9 4 7.2 4c2 0 3.6 1.1 4.8 2.8C13.2 5.1 14.8 4 16.8 4c3.3 0 5.6 3.2 4.4 6.6C19.5 15.4 12 20 12 20z"/></svg><span class="lbl">Favoris</span> <span class="badge" id="fav-count">0</span></a>
+      <a href="?list=registered" id="nav-reg" data-list="registered" aria-label="Courses inscrites"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span class="lbl">Inscrites</span> <span class="badge" id="reg-count">0</span></a>
+      <button class="nav-timer" id="nav-timer" hidden></button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-glow hero-glow--2" aria-hidden="true"></div>
+    <div class="hero-3d" id="hero-3d" aria-hidden="true"></div>
+    <div class="hero-tip" id="hero-tip" aria-hidden="true"></div>
+    <div class="hero-legend" aria-hidden="true">
+      <span><i style="--c:var(--cat-route)"></i>Route</span><span><i style="--c:var(--cat-trail)"></i>Trail</span><span><i style="--c:var(--cat-urban)"></i>Urban</span><span><i style="--c:var(--cat-ultra)"></i>Ultra</span><span><i style="--c:var(--cat-relais)"></i>Relais</span>
+      <em>Janvier → décembre · survole une colonne, clique pour ouvrir</em>
+    </div>
+
+    <div class="hero-content">
+      <p class="eyebrow"><span class="pulse"></span> Saison 2027 · Paris &amp; Île-de-France</p>
+      <h1 aria-label="Trouve ta prochaine ligne d'arrivée."><span class="line" aria-hidden="true"><span>Trouve ta prochaine</span></span><span class="line" aria-hidden="true"><span><em>ligne d'arrivée.</em></span></span></h1>
+      <p class="lede">Près de 150 courses à Paris &amp; Île-de-France, de janvier à décembre 2027. Dates précises, formats — et pour chacune le lien direct pour t'inscrire ou te pré-inscrire.</p>
+
+      <div class="hero-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <input id="q" type="search" placeholder="Marathon, Versailles, trail, 10 km…" autocomplete="off" aria-label="Rechercher une course" />
+        <kbd>/</kbd>
+      </div>
+
+      <div class="hero-stats" id="hero-stats"></div>
+    </div>
+  </section>
+
+  <!-- NEXT UP -->
+  <section class="next" id="next-up" aria-label="Prochaine course"></section>
+  <div class="next-mini" id="next-mini" role="button" tabindex="-1" aria-hidden="true"></div>
+  <button class="filters-fab" id="filters-fab" aria-hidden="true" tabindex="-1">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+    <span id="filters-fab-label">Filtres</span>
+  </button>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- FILTERS -->
+  <section id="courses" class="catalog">
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar-row">
+        <div class="chips" role="group" aria-label="Distance" id="f-dist"></div>
+        <div class="view-switch" role="tablist" aria-label="Vue des résultats">
+          <button role="tab" id="tab-grid" data-view="grid" class="active" aria-selected="true" aria-controls="results">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            <span>Cartes</span>
+          </button>
+          <button role="tab" id="tab-calendar" data-view="calendar" aria-selected="false" aria-controls="results" tabindex="-1">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <span>Calendrier</span>
+          </button>
+          <button role="tab" id="tab-map" data-view="map" aria-selected="false" aria-controls="results" tabindex="-1">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            <span>Carte</span>
+          </button>
+        </div>
+      </div>
+      <div class="toolbar-row">
+        <div class="months" id="f-month" role="group" aria-label="Mois"></div>
+      </div>
+      <div class="toolbar-row toolbar-row--end">
+        <div class="toggles">
+          <label class="switch"><input type="checkbox" id="f-open" /><span class="switch-ui"></span>Inscriptions ouvertes</label>
+          <label class="switch"><input type="checkbox" id="f-confirmed" /><span class="switch-ui"></span>Dates officielles</label>
+          <select id="f-sort" aria-label="Trier">
+            <option value="date">Trier : date</option>
+            <option value="dist-asc">Distance ↑</option>
+            <option value="dist-desc">Distance ↓</option>
+            <option value="dplus">Dénivelé ↓</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-head">
+      <p id="results-count" aria-live="polite"></p>
+      <button class="link-btn" id="reset" hidden>Réinitialiser les filtres</button>
+    </div>
+
+    <!-- conteneur unique : seule la vue active y est rendue -->
+    <div id="results" class="results" role="tabpanel" aria-labelledby="tab-grid"></div>
+  </section>
+
+  <!-- CTA SUGGEST -->
+  <section class="suggest">
+    <div>
+      <h2>Une course manque&nbsp;?</h2>
+      <p>On construit le calendrier le plus complet d'Île-de-France. Organisateur ou coureur, signale-nous une course.</p>
+    </div>
+    <a class="btn btn--primary magnetic" href="mailto:?subject=Course%20%C3%A0%20ajouter%20sur%20Allure">Proposer une course</a>
+  </section>
+
+  <footer class="footer">
+    <p><strong>Allure</strong> — V1 Île-de-France · Saison 2027</p>
+    <p class="muted"><b>Date officielle</b> : publiée par l'organisateur ou la Ville de Paris. <b>Date annoncée</b> : publiée dans les calendriers de courses. <b>Date estimée</b> : déduite des éditions précédentes. Les dénivelés précédés de « ~ » sont approximatifs. Vérifie toujours sur le site de l'organisateur avant de t'engager. Relevé du 21/11/2026.</p>
+  </footer>
+
+  <!-- DETAIL MODAL -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" id="sheet" data-lenis-prevent></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
