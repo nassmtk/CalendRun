@@ -35,6 +35,22 @@ const SCENARIOS = {
     await p.evaluate(() => document.querySelector('[data-month="0"]').click()); await wait(400);
     await p.evaluate(() => document.querySelector("#nav-favs").click()); await wait(1800);
   },
+  viewSwitch: async (p) => {
+    await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(1500);
+    await p.evaluate(() => document.querySelector("#toolbar").scrollIntoView()); await wait(600);
+    await p.evaluate(() => document.querySelector("#tab-calendar").click()); await wait(900);
+    await p.evaluate(() => document.querySelector("#tab-map").click()); await wait(900);
+    await p.evaluate(() => document.querySelector("#tab-calendar").click()); await wait(1500);
+  },
+  gridScrolled: async (p) => {
+    await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(2500);
+    await p.evaluate(() => window.scrollTo(0, document.querySelector("#results").offsetTop + 2400)); await wait(1800);
+  },
+  alertForm: async (p) => {
+    await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(800);
+    await p.evaluate(() => window.ALLURE.openSheet("adidas-10k-paris")); await wait(1500);
+    await p.evaluate(() => document.querySelector("#alert-slot").scrollIntoView({ block: "center" })); await wait(2500);
+  },
   sheet: async (p) => {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(500);
     await p.evaluate(() => window.ALLURE.openSheet("paris-versailles")); await wait(1200);

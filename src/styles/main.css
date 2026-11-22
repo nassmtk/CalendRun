@@ -85,7 +85,7 @@ svg { display: block; }
   position: absolute; z-index: var(--z-below); pointer-events: none;
   width: 70vmax; height: 70vmax; right: -18vmax; top: -22vmax;
   background: radial-gradient(closest-side, var(--accent-glow), transparent 70%);
-  filter: blur(40px); opacity: .55;
+  opacity: .5;
 }
 .hero-glow--2 { right: auto; left: -30vmax; top: auto; bottom: -45vmax; opacity: .25; }
 .hero-3d { position: absolute; inset: 0; z-index: var(--z-below); opacity: 0; transition: opacity 1.2s var(--ease); }
@@ -321,8 +321,9 @@ select option { background: var(--surface); }
 .card[data-type="relais"] { --cat: var(--cat-relais); }
 
 /* reflet + bordure lumineuse qui suivent le curseur */
-.card-glare, .card-rim { position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: var(--glow, 0); }
-.card-glare { background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--accent-glow), transparent 60%); opacity: calc(var(--glow, 0) * .42); mix-blend-mode: screen; }
+.card-glare, .card-rim { position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: var(--glow, 0); display: none; }
+.card-wrap.is-hover .card-glare, .card-wrap.is-hover .card-rim { display: block; }
+.card-glare { background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--accent-glow), transparent 60%); opacity: calc(var(--glow, 0) * .42); }
 .card-rim {
   padding: 1px;
   background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), var(--accent), transparent 65%);
@@ -946,3 +947,31 @@ select option { background: var(--surface); }
 .wl { position: relative; }
 .wl-turnstile:empty { display: none; }
 .wl-turnstile { font-size: 12px; color: var(--muted); }
+
+/* ---------- performance ---------- */
+/* le navigateur ignore la mise en page / le rendu des cartes hors écran */
+.card-wrap, .cal-month { content-visibility: auto; contain-intrinsic-size: auto 400px; }
+.cal-month { contain-intrinsic-size: auto 520px; }
+.card-wrap.is-hover { content-visibility: visible; }
+/* état initial des apparitions : opacité seule (pas de couche 3D sur 149 cartes) */
+.pre-reveal { opacity: 0; }
+.grain { will-change: transform; }
+
+/* ---------- stabilité de mise en page (CLS) ---------- */
+.hero-stats { min-height: 96px; }
+.next:empty { min-height: 116px; }
+.hero-glow--2 { bottom: auto; top: 55%; }
+@media (max-width: 900px) { .next:empty { min-height: 250px; } }
+@media (max-width: 640px) { .hero-stats { min-height: 150px; } }
+
+/* ---------- contraste AA ---------- */
+.chip .n, .dchip .n { opacity: 1; color: var(--muted); }
+.chip[aria-pressed="true"] .n, .dchip[aria-pressed="true"] .n { color: var(--on-accent); }
+@media (max-width: 640px) {
+  /* mini-barre compacte : le compte à rebours seul, pour ne pas masquer le contenu */
+  .next-mini { gap: 8px; padding: 5px 6px 5px 12px; font-size: 12px; }
+  .next-mini b { display: none; }
+  .next-mini .label { display: inline; font-weight: 700; white-space: nowrap; }
+  .next-mini .roll { font-size: 15px; }
+  .next-mini .mini-cd { padding: 4px 8px; gap: 4px; }
+}

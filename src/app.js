@@ -100,7 +100,7 @@
     const opens = parse(reg.opens), closes = parse(reg.closes);
     const hasUrl = !!reg.url;
     if (r._end < t) return { key: "past", label: "Course terminée", sub: "Rendez-vous en 2028", can: false };
-    if (reg.status === "closed") return { key: "closed", label: "Inscriptions closes", sub: "Inscris-toi à l'alerte pour la prochaine édition", can: false };
+    if (reg.status === "closed") return { key: "closed", label: "Inscriptions closes", sub: CFG.ALERTS_ENABLED ? "Inscris-toi à l'alerte pour la prochaine édition" : "Plus de dossard pour cette édition", can: false };
     if (opens && t < opens) {
       const n = daysUntil(opens);
       return { key: "soon", label: `Ouverture ${inDays(n)}`, sub: `Le ${fmtShort(opens)} ${opens.getFullYear()}`, can: false, opens, closes };
@@ -121,7 +121,7 @@
       const sub = closes ? `Jusqu'au ${fmtShort(closes)}` : "Candidature sur le site officiel";
       return { key: "lottery", label: "Tirage au sort", sub, can: hasUrl, opens, closes };
     }
-    if (reg.status === "soon") return { key: "soon", label: "Ouverture bientôt", sub: reg.preUrl ? "Pré-inscription chez l'organisateur" : "Sois prévenu·e dès l'ouverture", can: false };
+    if (reg.status === "soon") return { key: "soon", label: "Ouverture bientôt", sub: reg.preUrl ? "Pré-inscription chez l'organisateur" : CFG.ALERTS_ENABLED ? "Sois prévenu·e dès l'ouverture" : "Surveille le site de l'organisateur", can: false };
     if (reg.status === "check") return { key: "check", label: reg.url ? "Inscriptions en ligne" : "Inscription chez l'orga", sub: "Tarifs & dossards sur la page de la course", can: !!reg.url };
     return { key: "unknown", label: "Infos à venir", sub: "L'orga n'a pas encore communiqué", can: false };
   }
@@ -363,7 +363,7 @@
     const present = [...new Set(RACES.map((r) => r.dept))].sort();
     const chips = present.map((d) => {
       const n = RACES.filter((r) => matches(r, "dept") && r.dept === d).length;
-      return `<button class="dchip" data-dept="${d}" aria-pressed="${state.depts.has(d)}" title="${DEPTS[d] || d}">${d === "75" ? "Paris" : d}<span class="n">${n}</span></button>`;
+      return `<button class="dchip" data-dept="${d}" aria-pressed="${state.depts.has(d)}" title="${DEPTS[d] || d}" aria-label="${DEPTS[d] || d} (${d}) : ${n} course${n > 1 ? "s" : ""}">${d === "75" ? "Paris" : d}<span class="n">${n}</span></button>`;
     }).join("");
     const clear = `<button class="dchip-clear" data-dept-clear aria-label="Effacer les départements" ${state.depts.size ? "" : "hidden"}>${I.close}</button>`;
     $("#dept-seg").innerHTML = chips + clear;
@@ -380,6 +380,7 @@
   const URL_VIEW = { cards: "grid", calendar: "calendar", map: "map" };
 
   function render() {
+    renderToken++; // annule un rendu progressif en cours
     run("beforeRender", state);
     renderFilters();
     const list = filtered();
@@ -395,11 +396,15 @@
     prevView = state.view;
     const draw = () => {
       const box = $("#results");
-      box.dataset.view = state.view;
+      box.dataset.mode = state.view;
       box.setAttribute("aria-labelledby", "tab-" + state.view);
       if (state.view !== "map" || !n) destroyMap();
       if (!n) { box.innerHTML = emptyHTML(); return; }
-      if (state.view === "grid") box.innerHTML = gridHTML(list);
+      if (state.view === "grid") {
+        const first = state.list === "all" && list.length > FIRST_BATCH && typeof requestIdleCallback === "function";
+        box.innerHTML = gridHTML(first ? list.slice(0, FIRST_BATCH) : list);
+        if (first) appendRest(box, list.slice(FIRST_BATCH));
+      }
       else if (state.view === "calendar") box.innerHTML = calendarHTML(list);
       else renderMap(list, box);
     };
@@ -409,6 +414,28 @@
     syncTabs();
     updateNav();
     syncURL();
+  }
+
+  const FIRST_BATCH = matchMedia("(max-width: 640px)").matches ? 9 : 18;
+  let renderToken = 0;
+  function appendRest(box, rest) {
+    const token = ++renderToken;
+    // petits lots tant qu'il reste du temps libre dans la frame (aucune tâche > 50 ms)
+    const step = (deadline) => {
+      if (token !== renderToken || !rest.length) return;
+      const grid = box.querySelector(".grid");
+      if (!grid) return;
+      const els = [];
+      do {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = rest.splice(0, 3).map(card).join("");
+        els.push(...tmp.children);
+        grid.append(...tmp.children);
+      } while (rest.length && deadline.timeRemaining() > 12);
+      run("afterAppend", els);
+      if (rest.length) requestIdleCallback(step, { timeout: 1000 });
+    };
+    requestIdleCallback(step, { timeout: 1000 });
   }
 
   function emptyHTML() {
@@ -442,7 +469,7 @@
 
   /* ---------- onglets de vue (vrais tabs) ---------- */
   function syncTabs() {
-    $$("[data-view]").forEach((b) => {
+    $$('[role="tab"][data-view]').forEach((b) => {
       const on = b.dataset.view === state.view;
       b.classList.toggle("active", on);
       b.setAttribute("aria-selected", on);
@@ -661,7 +688,7 @@
               ? `<input type="checkbox" name="opening" hidden />`
               : `<label class="check"><input type="checkbox" name="opening" ${info.can ? "" : "checked"} />Ouverture des inscriptions / remise en vente de dossards</label>`}
             <label class="check"><input type="checkbox" name="reminder" checked />Rappel J-7 avant la course</label>
-            <label class="check check--consent"><input type="checkbox" name="consent" />J'accepte de recevoir ces e-mails. Un e-mail de confirmation te sera envoyé ; désinscription en un clic. <a href="/confidentialite/" target="_blank" rel="noopener noreferrer">Confidentialité</a></label>
+            <label class="check check--consent"><input type="checkbox" name="consent" /><span>J'accepte de recevoir ces e-mails. Un e-mail de confirmation te sera envoyé ; désinscription en un clic. <a href="/confidentialite/" target="_blank" rel="noopener noreferrer">Confidentialité</a></span></label>
           </div>
           <div class="wl-turnstile" id="wl-turnstile"></div>
           <p class="wl-error" id="wl-error" role="alert" hidden></p>
@@ -731,12 +758,14 @@
     // URL stable et partageable de la fiche (page statique indexable générée au build)
     if (!wasOpen) listURL = location.pathname + location.search;
     history.replaceState(null, "", racePath(r.id));
-    setTimeout(() => {
-      if (focusAlert && $("#wl-form input[type=email]")) {
-        $("#alert-slot").scrollIntoView({ behavior: "smooth", block: "center" });
-        $("#wl-form input[type=email]").focus({ preventScroll: true });
-      } else $(".sheet-close").focus();
-    }, 80);
+    // le contenu peut arriver un peu plus tard (View Transition) : on attend qu'il soit là
+    const focusIn = (tries = 10) => {
+      const input = $("#wl-form input[type=email]"), close = $(".sheet-close");
+      if (focusAlert && input) { $("#alert-slot").scrollIntoView({ behavior: "smooth", block: "center" }); input.focus({ preventScroll: true }); }
+      else if (close) close.focus({ preventScroll: true });
+      else if (tries) setTimeout(() => focusIn(tries - 1), 60);
+    };
+    setTimeout(focusIn, 80);
   }
   function closeSheet() {
     if ($("#overlay").hidden) return;
@@ -918,7 +947,7 @@
     }
     const mo = t.closest("[data-month]");
     if (mo) { const m = +mo.dataset.month; state.month = state.month === m ? null : m; render(); return; }
-    const view = t.closest("[data-view]");
+    const view = t.closest('[role="tab"][data-view]');
     if (view) { selectView(view.dataset.view); return; }
   });
 
@@ -960,7 +989,7 @@
 
 
   /* ---------- API pour la couche motion & la scène 3D ---------- */
-  const hooks = { beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [], alertForm: [] };
+  const hooks = { afterAppend: [], beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [], alertForm: [] };
   const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[site]", k, e); } });
   window.ALLURE = {
     races: RACES, openSheet, fmtShort, esc, hooks, state,
@@ -968,6 +997,7 @@
     setViewSwap(f) { viewSwap = f; },
     nextRegistered, activeFilterCount,
     // hero : clic sur un mois → filtre de ce mois dans la liste principale, puis défilement
+    renderCatalog() { render(); this.catalogReady = true; this.hooks.catalogReady && this.hooks.catalogReady.forEach((f) => f()); },
     filterMonth(m) {
       setList("all");
       state.month = m;
@@ -981,7 +1011,12 @@
       readURL();
       syncControls();
       renderHero();
-      render();
+      // le catalogue est sous la ligne de flottaison : rendu juste après le premier affichage du hero
+      const deep = location.search.includes("course=") || /^#c\//.test(location.hash);
+      if (typeof requestIdleCallback === "function" && !deep) {
+        renderFilters(); syncTabs(); updateNav();
+        requestIdleCallback(() => this.renderCatalog(), { timeout: 600 });
+      } else render();
       const p = new URLSearchParams(location.search);
       const m = location.hash.match(/^#c\/(.+)$/) || location.pathname.match(/^\/courses\/(.+)-2027\/?$/);
       const id = p.get("course") || (m && decodeURIComponent(m[1]));

@@ -1,7 +1,7 @@
 // QA : bissection perf — injecte du CSS / JS avant chargement et mesure les tâches longues (mobile, CPU ×4)
 import puppeteer from "puppeteer-core";
 
-const url = "http://127.0.0.1:5173/";
+const url = process.argv[2] || "http://127.0.0.1:5173/";
 const variants = {
   base: "",
   noGlow: ".hero-glow{display:none!important}",
@@ -9,7 +9,11 @@ const variants = {
   noBlurNav: ".nav,.filters-fab,.hero-tip{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}",
   noAnim: "*{animation:none!important}",
   noHero3d: ".hero-3d{display:none!important}",
-  noCards: "#results{display:none!important}"
+  noCards: "#results{display:none!important}",
+  noNext: "#next-up,.next-mini{display:none!important}",
+  noFallbackSvg: ".hero-fallback{display:none!important}",
+  noShadows: "*{box-shadow:none!important}",
+  noStats: "#hero-stats{display:none!important}"
 };
 const browser = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: "new" });
 for (const [name, css] of Object.entries(variants)) {

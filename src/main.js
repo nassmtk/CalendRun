@@ -39,13 +39,17 @@ initSheetTransition(A);
 
 A.boot();
 
-// après le premier rendu
-initCardTilt(document.getElementById("results"));
-initDeptMenu();
-initKudos();
-initMagnetic();
+// tout de suite : l'intro du hero (sinon flash du titre)
 initHeroIntro();
-initStats();
+// juste après le premier affichage : interactions secondaires (hors chemin critique)
+const later = (fn) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: 800 }) : setTimeout(fn, 1));
+later(() => {
+  initStats();
+  initDeptMenu();
+  initKudos();
+  initMagnetic();
+  initCardTilt(document.getElementById("results"));
+});
 
 /* scène 3D : chargée à la demande (code-split), seulement si le hero est visible */
 const host = document.getElementById("hero-3d");

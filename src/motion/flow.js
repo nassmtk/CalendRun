@@ -1,17 +1,18 @@
 /* =========================================================
-   Flow global : Lenis + ScrollTrigger, intro du hero, compteurs,
+   Flow global : Lenis, intro du hero, compteurs,
    compte à rebours roulant, mini-barre, apparitions par lots,
    FLIP des cartes, pastilles glissantes, CTA magnétiques,
    transition carte → fiche (View Transitions).
    ========================================================= */
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Flip } from "gsap/Flip";
 import Lenis from "lenis";
 import { reduced, canHover, EASE } from "./env.js";
 import { mountCountdown } from "./countdown.js";
 
-gsap.registerPlugin(ScrollTrigger, Flip);
+gsap.registerPlugin(Flip);
+// Les apparitions au scroll passent par IntersectionObserver (asynchrone, robuste au rendu
+// progressif et à content-visibility) : pas de ScrollTrigger, pas de recalcul de positions.
 gsap.defaults({ ease: EASE, duration: 0.6 });
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -24,7 +25,6 @@ let lenis = null;
 export function initSmoothScroll(A) {
   if (reduced()) return;
   lenis = new Lenis({ duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 4), smoothWheel: true });
-  lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
   A.scrollTo = (el) => lenis.scrollTo(el, { offset: -90, duration: 1.2 });
@@ -47,14 +47,13 @@ export function initHeroIntro() {
 export function initStats() {
   const els = $$("#hero-stats [data-count]");
   if (reduced()) return;
-  els.forEach((el) => {
-    const to = +el.dataset.count, o = { v: 0 };
-    el.textContent = "0";
-    ScrollTrigger.create({
-      trigger: el, start: "top 92%", once: true,
-      onEnter: () => gsap.to(o, { v: to, duration: 1.4, ease: "power3.out", onUpdate: () => (el.textContent = fr(o.v)) })
-    });
-  });
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target);
+    const el = e.target, to = +el.dataset.count, o = { v: 0 };
+    gsap.to(o, { v: to, duration: 1.4, ease: "power3.out", onUpdate: () => (el.textContent = fr(o.v)) });
+  }), { rootMargin: "0px 0px -8% 0px" });
+  els.forEach((el) => { el.textContent = "0"; io.observe(el); });
 }
 
 /* ---------- prochain départ : compte à rebours + mini-barre sticky ---------- */
@@ -80,11 +79,10 @@ export function initNextUp(A) {
     stop1 = mountCountdown(box, next._startAt);
     stop2 = mountCountdown(mini, next._startAt);
 
-    ScrollTrigger.create({
-      trigger: "#next-up", start: "bottom top+=90",
-      onEnter: () => { pastBanner = true; sync(); },
-      onLeaveBack: () => { pastBanner = false; sync(); }
-    });
+    new IntersectionObserver(([e]) => {
+      pastBanner = !e.isIntersecting && e.boundingClientRect.top < 0; // sorti par le haut
+      sync();
+    }, { rootMargin: "-90px 0px 0px 0px" }).observe($("#next-up"));
     m.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); A.openSheet(m.dataset.id); } });
   });
 }
@@ -143,7 +141,7 @@ export function initViewSwap(A) {
         draw(); done();
         gsap.fromTo(box, { opacity: 0, y: 12 }, {
           opacity: 1, y: 0, duration: 0.28, ease: EASE, clearProps: "transform,opacity",
-          onComplete: () => { box.style.minHeight = ""; ScrollTrigger.refresh(); }
+          onComplete: () => { box.style.minHeight = ""; }
         });
       }
     });
@@ -195,23 +193,35 @@ export function initGridFlow(A) {
       }
     }
     prevView = view;
-    ScrollTrigger.refresh();
   });
 
-  let batches = [];
-  function reveal(els) {
+  // cartes ajoutées par le rendu progressif
+  A.hooks.afterAppend.push((els) => reveal(els, true));
+
+  // apparition par lots : les éléments qui entrent à l'écran dans la même frame forment un lot animé en cascade
+  let queue = [], raf = 0;
+  const flush = () => {
+    raf = 0;
+    const batch = queue.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top || a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+    queue = [];
+    batch.forEach((b) => { b.classList.add("seen"); b.classList.remove("pre-reveal"); });
+    // la légère rotation 3D n'existe que pendant l'animation, sur le lot visible
+    gsap.fromTo(batch, { opacity: 0, y: 40, rotationX: -8, transformPerspective: 900, transformOrigin: "50% 0%" },
+      { opacity: 1, y: 0, rotationX: 0, duration: 0.7, stagger: 0.06, ease: EASE, clearProps: "transform,opacity,transformPerspective,transformOrigin" });
+  };
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target);
+    if (!e.target.isConnected) return;
+    queue.push(e.target);
+    raf = raf || requestAnimationFrame(flush);
+  }), { rootMargin: "0px 0px -5% 0px" });
+
+  function reveal(els, append = false) {
     if (reduced()) return;
-    batches.forEach((t) => t.kill()); batches = [];
+    if (!append) io.takeRecords(); // la grille a été recréée : les anciennes cibles sont détachées
     els = els.filter((e) => !e.classList.contains("seen"));
-    if (!els.length) return;
-    gsap.set(els, { opacity: 0, y: 40, rotationX: -8, transformPerspective: 900, transformOrigin: "50% 0%" });
-    batches = ScrollTrigger.batch(els, {
-      start: "top 95%", once: true,
-      onEnter: (batch) => {
-        batch.forEach((b) => b.classList.add("seen"));
-        gsap.to(batch, { opacity: 1, y: 0, rotationX: 0, duration: 0.7, stagger: 0.06, ease: EASE, clearProps: "transform,opacity" });
-      }
-    });
+    els.forEach((e) => { e.classList.add("pre-reveal"); io.observe(e); }); // classe CSS : pas de style inline ni de 3D sur toute la grille
   }
 }
 
@@ -231,10 +241,9 @@ export function initFiltersFab(A) {
     document.documentElement.classList.toggle("has-fab", on);
   };
   // visible quand le panneau est sorti par le haut, tant qu'on est dans les résultats
-  ScrollTrigger.create({
-    trigger: "#toolbar", start: "bottom top+=80", endTrigger: "#courses", end: "bottom 40%",
-    onToggle: (st) => show(st.isActive)
-  });
+  let toolbarAbove = false, catalogIn = false;
+  new IntersectionObserver(([e]) => { toolbarAbove = !e.isIntersecting && e.boundingClientRect.top < 0; show(toolbarAbove && catalogIn); }, { rootMargin: "-80px 0px 0px 0px" }).observe($("#toolbar"));
+  new IntersectionObserver(([e]) => { catalogIn = e.isIntersecting; show(toolbarAbove && catalogIn); }, { rootMargin: "0px 0px -40% 0px" }).observe($("#courses"));
   fab.addEventListener("click", () => A.scrollTo($("#toolbar")));
 }
 

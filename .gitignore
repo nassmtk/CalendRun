@@ -10,3 +10,4 @@ qa/
 *.log
 public/races.json
 public/_headers
+dist-qa
