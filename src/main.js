@@ -1,6 +1,7 @@
 /* =========================================================
    ALLURE — point d'entrée Vite
    ========================================================= */
+import "./styles/fonts.css";
 import "./styles/tokens.css";
 import "./styles/main.css";
 import "./styles/pages.css";

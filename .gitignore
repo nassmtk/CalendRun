@@ -9,3 +9,4 @@ legacy/
 qa/
 *.log
 public/races.json
+public/_headers

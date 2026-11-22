@@ -28,6 +28,22 @@ function footerHtml(v) {
     </nav>`;
 }
 
+/** précharge les polices critiques (titre + texte) une fois leurs noms hachés connus */
+function preloadFonts(patterns = [/bricolage-grotesque-latin-800-normal.*\.woff2$/, /inter-latin-400-normal.*\.woff2$/, /barlow-condensed-latin-800-normal.*\.woff2$/]) {
+  return {
+    name: "allure-preload-fonts",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler: (html, ctx) => {
+        const files = Object.keys(ctx.bundle || {}).filter((f) => patterns.some((p) => p.test(f)));
+        const links = files.map((f) => `<link rel="preload" href="/${f}" as="font" type="font/woff2" crossorigin>`).join("\n    ");
+        return html.replace("</title>", `</title>\n    ${links}`);
+      }
+    }
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const SITE_URL = siteUrl(env);
@@ -55,7 +71,7 @@ export default defineConfig(({ mode }) => {
   };
   vars.FOOTER = footerHtml(vars);
   return {
-    plugins: [brandHtml(vars)],
+    plugins: [brandHtml(vars), preloadFonts()],
     build: {
       rollupOptions: {
         input: {

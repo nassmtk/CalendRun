@@ -260,7 +260,7 @@
     const bell = isReg(r) || !ALERTS ? "" : `<button class="btn btn--icon btn--bell ${on ? "subscribed" : ""}" data-alert="${r.id}" aria-label="${on ? "Alerte active" : "Me prévenir par email"}" title="${on ? "Alerte active" : "Me prévenir par email"}">${on ? I.check : I.bell}</button>`;
     const strong = l.kind === "register" || l.kind === "prereg";
     const SHORT = { register: l.label, prereg: "Pré-inscription", info: "Infos", site: "Site", search: "Chercher" };
-    return `<div class="cta-row">${regToggle(r, "compact")}${bell}<a class="btn ${strong ? "btn--primary" : "btn--ghost"} magnetic ${cls}" href="${esc(l.href)}" target="_blank" rel="noopener" data-stop aria-label="${esc(l.label)} — ${esc(r.name)}">${esc(SHORT[l.kind] || l.label)} ${ARROW}</a></div>`;
+    return `<div class="cta-row">${regToggle(r, "compact")}${bell}<a class="btn ${strong ? "btn--primary" : "btn--ghost"} magnetic ${cls}" href="${esc(l.href)}" target="_blank" rel="noopener noreferrer" data-stop aria-label="${esc(l.label)} — ${esc(r.name)}">${esc(SHORT[l.kind] || l.label)} ${ARROW}</a></div>`;
   }
 
   const CAT_VAR = { route: "--cat-route", trail: "--cat-trail", cross: "--cat-trail", urban: "--cat-urban", backyard: "--cat-ultra", relais: "--cat-relais" };
@@ -694,7 +694,7 @@
           ${timeline}
           <div class="reg-buttons">
             ${regToggle(r, "block")}
-            ${linksFor(r).map((l, i) => `<a class="btn ${i === 0 ? "btn--primary btn--block" : "btn--ghost btn--block"}" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.kind === "register" && info.key !== "lottery" ? "Prendre mon dossard" : l.label)} <span class="host">${esc(hostOf(l.href))}</span> ${ARROW}</a>`).join("")}
+            ${linksFor(r).map((l, i) => `<a class="btn ${i === 0 ? "btn--primary btn--block" : "btn--ghost btn--block"}" href="${esc(l.href)}" target="_blank" rel="noopener noreferrer">${esc(l.kind === "register" && info.key !== "lottery" ? "Prendre mon dossard" : l.label)} <span class="host">${esc(hostOf(l.href))}</span> ${ARROW}</a>`).join("")}
             <div id="alert-slot">${alertBlock}</div>
           </div>
         </div>

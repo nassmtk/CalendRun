@@ -4,7 +4,16 @@
 export const json = (data, status = 200, headers = {}) =>
   new Response(JSON.stringify(data), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers }
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      // _headers ne s'applique pas aux réponses des Functions : en-têtes de sécurité posés ici
+      "x-content-type-options": "nosniff",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+      "x-robots-tag": "noindex",
+      ...headers
+    }
   });
 
 export const GENERIC_OK = { ok: true, message: "Si l'adresse est valide, tu vas recevoir un e-mail pour confirmer ton alerte." };
