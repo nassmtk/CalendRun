@@ -13,7 +13,7 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 - [x] Autres vues pouvant finir vides vérifiées (recherche, départements de l'URL, mois + dates officielles) : même état vide intelligent
 
 ### Phase 2 — Marque & hero
-- [x] `brand.config.js` : SITE_NAME, TAGLINE (« Cours l'Île-de-France. »), SUBTAGLINE (« {count} courses. Un seul calendrier. »), couleurs du logo ; `SITE_URL` via variable d'env
+- [x] `brand.config.js` : SITE_NAME, TAGLINE (« Cours où tu veux en Île-de-France. »), SUBTAGLINE (« {count} courses. Un seul calendrier. »), couleurs du logo ; `SITE_URL` via variable d'env
 - [x] Plus aucun nom de marque en dur (titre, header, footer, meta, OG, manifest, e-mails, .ics)
 - [x] Hero : 12 barres (1 par mois) empilées par catégorie, caméra quasi fixe figée au survol, zones de survol élargies, info-bulle ancrée « Mars · 34 courses » + répartition, clic = filtre du mois + défilement, 12 boutons focusables (Entrée = clic)
 - [x] Mobile / hover:none / reduced-motion : version décorative SVG sans interaction ; Three.js n'est même pas téléchargé
@@ -67,7 +67,6 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 - [ ] Créer le projet **Cloudflare Pages** depuis le dépôt GitHub (README §3) et définir `SITE_URL`
 - [ ] **Brancher le domaine** (README §4) et choisir www ↔ apex
 - [ ] Vérifier les **liens d'inscription** (section ci-dessous)
-- [ ] Confirmer le nom du site (« Allure » par défaut, dans `brand.config.js`)
 
 ### Pour activer les alertes e-mail (optionnel au lancement)
 - [ ] Compte **Brevo** : liste « Alertes », attributs `ALERT_RACES` + `CONSENT_AT`, template double opt-in, clé API

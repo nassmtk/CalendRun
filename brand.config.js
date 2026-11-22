@@ -7,8 +7,10 @@
    Changer de domaine = modifier la variable d'environnement SITE_URL.
    ========================================================= */
 export const BRAND = {
-  SITE_NAME: "Allure",
-  TAGLINE: "Cours l'Île-de-France.",
+  SITE_NAME: "CalendRun",
+  TAGLINE: "Cours où tu veux en Île-de-France.",
+  // découpage de l'accroche sur deux lignes (titre du hero, image Open Graph)
+  TAGLINE_LINES: ["Cours où tu veux", "en Île-de-France."],
   // {count} est remplacé dynamiquement par le nombre de courses
   SUBTAGLINE: "{count} courses. Un seul calendrier.",
   DESCRIPTION: "Le calendrier 2027 des courses à pied à Paris et en Île-de-France : dates, distances, liens d'inscription et alertes d'ouverture.",

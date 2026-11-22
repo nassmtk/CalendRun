@@ -1,7 +1,7 @@
 # Cloudflare Pages — projet du site (build : npm run build → dist/)
 # Les variables et secrets se règlent dans le tableau de bord Pages
 # (Settings > Environment variables), voir README et .env.example.
-name = "allure-idf"
+name = "calendrun-idf"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-11-01"
 

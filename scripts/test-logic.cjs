@@ -13,7 +13,7 @@ w.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
 w.HTMLElement.prototype.scrollIntoView = function () {};
 w.CSS = { escape: (s) => s };
 for (const f of ["config.js", "data/races.js", "src/app.js"]) w.eval(fs.readFileSync(root + f, "utf8"));
-const A = w.ALLURE; A.boot();
+const A = w.CALENDRUN; A.boot();
 const $ = (s) => d.querySelector(s), $$ = (s) => [...d.querySelectorAll(s)];
 const click = (el) => el.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
 let fails = 0;

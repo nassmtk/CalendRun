@@ -1,5 +1,5 @@
 /* Données du hero : 12 mois × catégories (partagé par la scène WebGL et le repli SVG) */
-export const A = window.ALLURE;
+export const A = window.CALENDRUN;
 const css = getComputedStyle(document.documentElement);
 export const tokHex = (n) => css.getPropertyValue(n).trim();
 

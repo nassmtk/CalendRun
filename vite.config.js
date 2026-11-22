@@ -5,7 +5,7 @@ import { loadRaces } from "./scripts/lib/races.mjs";
 /** remplace les {{CLÉS}} de marque dans tous les HTML (index, pages générées, légal, 404) */
 function brandHtml(vars) {
   return {
-    name: "allure-brand-html",
+    name: "calendrun-brand-html",
     transformIndexHtml: {
       order: "pre",
       handler: (html) => html.replace(/\{\{(\w+)\}\}/g, (m, k) => (k in vars ? vars[k] : m))
@@ -31,7 +31,7 @@ function footerHtml(v) {
 /** précharge les polices critiques (titre + texte) une fois leurs noms hachés connus */
 function preloadFonts(patterns = [/bricolage-grotesque-latin-800-normal.*\.woff2$/, /inter-latin-400-normal.*\.woff2$/, /barlow-condensed-latin-800-normal.*\.woff2$/]) {
   return {
-    name: "allure-preload-fonts",
+    name: "calendrun-preload-fonts",
     apply: "build",
     transformIndexHtml: {
       order: "post",
@@ -51,9 +51,9 @@ export default defineConfig(({ mode }) => {
   const vars = {
     SITE_NAME: BRAND.SITE_NAME,
     TAGLINE: BRAND.TAGLINE,
-    // l'accroche est affichée sur deux lignes animées : 1er mot / reste
-    TAGLINE_1: BRAND.TAGLINE.split(" ")[0],
-    TAGLINE_2: BRAND.TAGLINE.split(" ").slice(1).join(" "),
+    // l'accroche est affichée sur deux lignes animées (TAGLINE_LINES dans brand.config.js)
+    TAGLINE_1: (BRAND.TAGLINE_LINES || [BRAND.TAGLINE])[0],
+    TAGLINE_2: (BRAND.TAGLINE_LINES || [])[1] || "",
     SUBTAGLINE: fill(BRAND.SUBTAGLINE, { count }),
     DESCRIPTION: BRAND.DESCRIPTION,
     YEAR: String(BRAND.YEAR),

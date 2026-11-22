@@ -1,4 +1,4 @@
-# Allure — courses à pied en Île-de-France 2027
+# CalendRun — courses à pied en Île-de-France 2027
 
 Calendrier des ~150 courses à pied de Paris et d'Île-de-France en 2027 : dates, formats, liens d'inscription, favoris, courses inscrites, alertes e-mail.
 

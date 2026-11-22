@@ -1,5 +1,5 @@
 /* =========================================================
-   ALLURE — app
+   CALENDRUN — app
    ========================================================= */
 (() => {
   "use strict";
@@ -28,8 +28,8 @@
   const norm = (s = "") => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const fmtKm = (km) => (Number.isInteger(km) ? String(km) : Math.abs(km - 42.195) < 0.01 ? "42,195" : km.toFixed(1).replace(".", ",")) + " km";
   const store = {
-    get(k, def) { try { return JSON.parse(localStorage.getItem("allure:" + k)) ?? def; } catch { return def; } },
-    set(k, v) { try { localStorage.setItem("allure:" + k, JSON.stringify(v)); } catch {} }
+    get(k, def) { try { return JSON.parse(localStorage.getItem("calendrun:" + k)) ?? def; } catch { return def; } },
+    set(k, v) { try { localStorage.setItem("calendrun:" + k, JSON.stringify(v)); } catch {} }
   };
 
   /* ---------- calendrier compact → fiches ---------- */
@@ -164,7 +164,7 @@
     open: false, confirmed: false, sort: "date", view: "grid", list: "all" // list : all | favs | registered
   };
   let favs = new Set(store.get("favs", []));
-  let registered = new Set(store.get("v1:registered", [])); // clé versionnée : allure:v1:registered
+  let registered = new Set(store.get("v1:registered", [])); // clé versionnée : calendrun:v1:registered
   let alerts = store.get("alerts", {});
 
   function matches(r, ignore) {
@@ -339,7 +339,7 @@
     $("#next-mini").innerHTML = `<span class="label">Prochain départ</span><b>${esc(next.name)}</b><span class="mini-cd" id="mini-cd"></span>`;
     // le compte à rebours (affichage animé) est géré par la couche motion via le hook afterHero
     next._startAt = next._date.getTime() + 9 * 3600000; // départ ~9h
-    window.ALLURE.heroNext = next;
+    window.CALENDRUN.heroNext = next;
     run("afterHero", next);
   }
 
@@ -575,7 +575,7 @@
     $("#map-rows").innerHTML = list.map(mapRow).join("");
 
     if (!window.L || !L.markerClusterGroup) {
-      const load = window.ALLURE && window.ALLURE.loadLeaflet;
+      const load = window.CALENDRUN && window.CALENDRUN.loadLeaflet;
       if (load && !renderMap._loading) {
         renderMap._loading = true;
         $("#map").innerHTML = '<p class="map-msg">Chargement de la carte…</p>';
@@ -810,7 +810,7 @@
       err.textContent = e.message && !/^HTTP/.test(e.message) ? e.message : "Oups, l'envoi a échoué. Réessaie dans un instant.";
       err.hidden = false;
       btn.disabled = false; btn.textContent = "M'alerter";
-      window.ALLURE.hooks && run("alertForm", form); // nouveau jeton Turnstile
+      window.CALENDRUN.hooks && run("alertForm", form); // nouveau jeton Turnstile
     }
   }
 
@@ -877,8 +877,8 @@
 
   /* synchronisation entre onglets */
   addEventListener("storage", (e) => {
-    if (e.key === "allure:v1:registered") { registered = new Set(store.get("v1:registered", [])); render(); }
-    if (e.key === "allure:favs") { favs = new Set(store.get("favs", [])); render(); }
+    if (e.key === "calendrun:v1:registered") { registered = new Set(store.get("v1:registered", [])); render(); }
+    if (e.key === "calendrun:favs") { favs = new Set(store.get("favs", [])); render(); }
   });
 
   function toggleFav(id, btn) {
@@ -909,7 +909,7 @@
       e.preventDefault();
       setList(state.list === lst.dataset.list ? "all" : lst.dataset.list);
       render();
-      window.ALLURE.scrollTo($("#results-count"));
+      window.CALENDRUN.scrollTo($("#results-count"));
       return;
     }
     if (t.closest("[data-reset]")) { resetFilters(); return; }
@@ -943,7 +943,7 @@
       render();
       // depuis la barre du haut : on descend jusqu'aux résultats
       const rc = $("#results-count").getBoundingClientRect();
-      if (dept.closest(".nav") && (rc.top > innerHeight * 0.8 || rc.bottom < 0)) window.ALLURE.scrollTo($("#results-count"));
+      if (dept.closest(".nav") && (rc.top > innerHeight * 0.8 || rc.bottom < 0)) window.CALENDRUN.scrollTo($("#results-count"));
       return;
     }
     const mo = t.closest("[data-month]");
@@ -983,7 +983,7 @@
 
   let qT;
   $("#q").addEventListener("input", (e) => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value.trim(); render(); }, 120); });
-  $("#q").addEventListener("keydown", (e) => { if (e.key === "Enter") window.ALLURE.scrollTo($("#courses")); });
+  $("#q").addEventListener("keydown", (e) => { if (e.key === "Enter") window.CALENDRUN.scrollTo($("#courses")); });
   $("#f-open").addEventListener("change", (e) => { state.open = e.target.checked; render(); });
   $("#f-confirmed").addEventListener("change", (e) => { state.confirmed = e.target.checked; render(); });
   $("#f-sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
@@ -992,7 +992,7 @@
   /* ---------- API pour la couche motion & la scène 3D ---------- */
   const hooks = { afterAppend: [], beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [], alertForm: [] };
   const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[site]", k, e); } });
-  window.ALLURE = {
+  window.CALENDRUN = {
     races: RACES, openSheet, fmtShort, esc, hooks, state,
     setTransition(f) { transition = f; },
     setViewSwap(f) { viewSwap = f; },
@@ -1003,7 +1003,7 @@
       setList("all");
       state.month = m;
       render();
-      window.ALLURE.scrollTo($("#results-count"));
+      window.CALENDRUN.scrollTo($("#results-count"));
     },
     isRegistered: (id) => registered.has(id),
     scrollTo: (el) => el.scrollIntoView({ behavior: "smooth" }),

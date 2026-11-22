@@ -1,7 +1,7 @@
 # Worker planifié : envoi quotidien des alertes (rappel J-7, ouverture des inscriptions)
 # Déploiement : npx wrangler deploy --config workers/reminders/wrangler.toml
 # Secrets      : npx wrangler secret put BREVO_API_KEY --config workers/reminders/wrangler.toml   (idem UNSUB_SECRET)
-name = "allure-reminders"
+name = "calendrun-reminders"
 main = "index.js"
 compatibility_date = "2026-11-01"
 

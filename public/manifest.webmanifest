@@ -1,6 +1,6 @@
 {
-  "name": "Allure — Cours l'Île-de-France.",
-  "short_name": "Allure",
+  "name": "CalendRun — Cours où tu veux en Île-de-France.",
+  "short_name": "CalendRun",
   "description": "Le calendrier 2027 des courses à pied à Paris et en Île-de-France : dates, distances, liens d'inscription et alertes d'ouverture.",
   "lang": "fr",
   "start_url": "/",

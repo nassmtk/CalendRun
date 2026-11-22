@@ -1,5 +1,5 @@
 /* =========================================================
-   ALLURE — point d'entrée Vite
+   CALENDRUN — point d'entrée Vite
    Chemin critique minimal : styles, données, logique, hero.
    La couche motion (GSAP, Lenis…) est chargée juste après le premier affichage.
    ========================================================= */
@@ -15,7 +15,7 @@ import "../data/races.js";
 import "./app.js";
 import { canHover, reduced } from "./motion/env.js";
 
-const A = window.ALLURE;
+const A = window.CALENDRUN;
 // Leaflet : chargé seulement à l'ouverture de la vue Carte
 A.loadLeaflet = () => import("./vendor-leaflet.js").then((m) => m.ready);
 

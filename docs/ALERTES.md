@@ -11,7 +11,7 @@ Formulaire (fiche course)  ──POST /api/subscribe──▶  Pages Function
                               → le contact rejoint la liste « Alertes » une fois confirmé
                                 attribut ALERT_RACES = "paris-versailles:opening+reminder,…"
 
-Worker « allure-reminders » (cron quotidien 7h UTC)
+Worker « calendrun-reminders » (cron quotidien 7h UTC)
   lit {SITE_URL}/races.json + les contacts confirmés de la liste
   → J-7 : rappel avant la course
   → jour J d'ouverture des inscriptions (si `registration.opens` est connu dans les données)

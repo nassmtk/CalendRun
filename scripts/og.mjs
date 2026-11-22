@@ -67,9 +67,9 @@ export async function homeOg(races, count, subtagline, siteHost) {
       h("div", { fontFamily: "Mono", fontSize: 22, color: C.muted, letterSpacing: 2 }, `SAISON ${BRAND.YEAR}`)),
     h("div", { width: W, justifyContent: "space-between", alignItems: "flex-end" },
       h("div", { flexDirection: "column", gap: 10, maxWidth: 640 },
-        h("div", { fontFamily: "Bricolage", fontSize: 92, lineHeight: 0.98, letterSpacing: -3, flexDirection: "column" },
-          h("div", {}, clean(BRAND.TAGLINE.split(" ")[0])),
-          h("div", { color: C.accent }, clean(BRAND.TAGLINE.split(" ").slice(1).join(" ")))),
+        h("div", { fontFamily: "Bricolage", fontSize: 76, lineHeight: 0.98, letterSpacing: -3, flexDirection: "column" },
+          h("div", {}, clean((BRAND.TAGLINE_LINES || [BRAND.TAGLINE])[0])),
+          h("div", { color: C.accent }, clean((BRAND.TAGLINE_LINES || [])[1] || ""))),
         h("div", { fontSize: 34, color: C.text, marginTop: 14 }, clean(subtagline))
       ),
       h("div", { alignItems: "flex-end", gap: 8, height: 300 },

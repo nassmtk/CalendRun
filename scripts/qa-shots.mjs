@@ -30,7 +30,7 @@ const SCENARIOS = {
   },
   favsMonth: async (p) => {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" });
-    await p.evaluate(() => { localStorage.setItem("allure:favs", JSON.stringify(["paris-versailles", "semi-paris"])); localStorage.setItem("allure:v1:registered", JSON.stringify(["marathon-paris"])); });
+    await p.evaluate(() => { localStorage.setItem("calendrun:favs", JSON.stringify(["paris-versailles", "semi-paris"])); localStorage.setItem("calendrun:v1:registered", JSON.stringify(["marathon-paris"])); });
     await p.reload({ waitUntil: "load" }); await wait(500);
     await p.evaluate(() => document.querySelector('[data-month="0"]').click()); await wait(400);
     await p.evaluate(() => document.querySelector("#nav-favs").click()); await wait(1800);
@@ -48,12 +48,12 @@ const SCENARIOS = {
   },
   alertForm: async (p) => {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(800);
-    await p.evaluate(() => window.ALLURE.openSheet("adidas-10k-paris")); await wait(1500);
+    await p.evaluate(() => window.CALENDRUN.openSheet("adidas-10k-paris")); await wait(1500);
     await p.evaluate(() => document.querySelector("#alert-slot").scrollIntoView({ block: "center" })); await wait(2500);
   },
   sheet: async (p) => {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(500);
-    await p.evaluate(() => window.ALLURE.openSheet("paris-versailles")); await wait(1200);
+    await p.evaluate(() => window.CALENDRUN.openSheet("paris-versailles")); await wait(1200);
   },
   notfound: async (p) => { await p.goto(BASE + "/404.html", { waitUntil: "load" }); await wait(800); },
   legal: async (p) => { await p.goto(BASE + "/mentions-legales/", { waitUntil: "load" }); await wait(500); },
