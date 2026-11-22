@@ -455,6 +455,7 @@
     state.view = URL_VIEW[p.get("view")] || URL_VIEW[store.get("v1:view", "cards")] || "grid";
     const dep = (p.get("dep") || "").split(",").map((d) => (d.toLowerCase() === "paris" ? "75" : d.trim())).filter((d) => DEPTS[d]);
     state.depts = new Set(dep);
+    if (p.get("q")) state.q = p.get("q").slice(0, 80);
     const l = p.get("list");
     if (l === "favs" || l === "registered") { savedMain = snapshot(); Object.assign(state, blankFilters()); state.list = l; }
     else state.list = "all";
@@ -653,6 +654,7 @@
               ? `<input type="checkbox" name="opening" hidden />`
               : `<label class="check"><input type="checkbox" name="opening" ${info.can ? "" : "checked"} />Ouverture des inscriptions / remise en vente de dossards</label>`}
             <label class="check"><input type="checkbox" name="reminder" checked />Rappel J-7 avant la course</label>
+            <label class="check check--consent"><input type="checkbox" name="consent" />J'accepte de recevoir ces e-mails. Un e-mail de confirmation te sera envoyé ; désinscription en un clic. <a href="/confidentialite/" target="_blank" rel="noopener noreferrer">Confidentialité</a></label>
           </div>
           <p class="wl-error" id="wl-error" hidden></p>
         </form>`;
@@ -746,6 +748,7 @@
     const sel = ["opening", "reminder"].filter((k) => form[k].checked);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = "Cet email n'a pas l'air valide."; err.hidden = false; return; }
     if (!sel.length) { err.textContent = "Choisis au moins un type d'alerte."; err.hidden = false; return; }
+    if (!form.consent.checked) { err.textContent = "Coche la case de consentement pour recevoir les alertes."; err.hidden = false; return; }
     const btn = form.querySelector("button[type=submit]");
     btn.disabled = true; btn.textContent = "…";
     const payload = { email, raceId: r.id, raceName: r.name, raceDate: r.date, alerts: sel, createdAt: new Date().toISOString() };

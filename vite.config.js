@@ -13,6 +13,21 @@ function brandHtml(vars) {
   };
 }
 
+/** pied de page commun à toutes les pages (HTML statique, lisible sans JS) */
+function footerHtml(v) {
+  return `<div class="footer-main">
+      <p><strong>${v.SITE_NAME}</strong> — ${v.TAGLINE} Saison ${v.YEAR}.</p>
+      <p class="footer-warn">Dates et infos indicatives — vérifie toujours sur le site officiel de l'organisateur.</p>
+      <p class="muted"><b>Date officielle</b> : publiée par l'organisateur ou la Ville de Paris · <b>Date annoncée</b> : publiée dans les calendriers de courses · <b>Date estimée</b> : déduite des éditions précédentes. Les dénivelés précédés de « ~ » sont approximatifs.</p>
+    </div>
+    <nav class="footer-links" aria-label="Liens légaux">
+      <a href="/mentions-legales/">Mentions légales</a>
+      <a href="/confidentialite/">Confidentialité</a>
+      <a href="mailto:?subject=Course%20%C3%A0%20ajouter%20sur%20${encodeURIComponent(v.SITE_NAME)}">Signaler une course</a>
+      <span>Carte © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a></span>
+    </nav>`;
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const SITE_URL = siteUrl(env);
@@ -38,8 +53,19 @@ export default defineConfig(({ mode }) => {
     UMAMI_SRC: env.UMAMI_SRC || "",
     UMAMI_WEBSITE_ID: env.UMAMI_WEBSITE_ID || ""
   };
+  vars.FOOTER = footerHtml(vars);
   return {
     plugins: [brandHtml(vars)],
+    build: {
+      rollupOptions: {
+        input: {
+          main: "index.html",
+          mentions: "mentions-legales/index.html",
+          confidentialite: "confidentialite/index.html",
+          notfound: "404.html"
+        }
+      }
+    },
     define: {
       __SITE_URL__: JSON.stringify(SITE_URL),
       __ALERTS_ENABLED__: JSON.stringify(env.ALERTS_ENABLED === "true"),

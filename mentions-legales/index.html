@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mentions légales — {{SITE_NAME}}</title>
+  <meta name="description" content="Mentions légales du site {{SITE_NAME}} : éditeur, hébergeur, sources des données." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="{{SITE_URL}}/mentions-legales/" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="page-doc">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="{{LOGO_PATH}}" /></svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+  </header>
+
+  <main class="doc" id="contenu">
+    <p class="eyebrow">Informations légales</p>
+    <h1>Mentions légales</h1>
+    <p class="doc-note" role="note">⚠️ Les champs marqués <mark>[À COMPLÉTER]</mark> doivent être renseignés par l'éditeur avant la mise en ligne. Aucune information n'a été inventée.</p>
+
+    <h2>Éditeur du site</h2>
+    <dl class="doc-dl">
+      <dt>Nom / raison sociale</dt><dd><mark>[À COMPLÉTER — nom et prénom, ou raison sociale]</mark></dd>
+      <dt>Statut</dt><dd><mark>[À COMPLÉTER — particulier, micro-entreprise, association…]</mark></dd>
+      <dt>Adresse</dt><dd><mark>[À COMPLÉTER — adresse postale, ou mention de domiciliation si particulier (voir art. 6-III-2 LCEN)]</mark></dd>
+      <dt>SIREN / RNA</dt><dd><mark>[À COMPLÉTER — si applicable]</mark></dd>
+      <dt>Contact</dt><dd><mark>[À COMPLÉTER — adresse e-mail de contact]</mark></dd>
+      <dt>Directeur de la publication</dt><dd><mark>[À COMPLÉTER]</mark></dd>
+    </dl>
+
+    <h2>Hébergeur</h2>
+    <p class="doc-note">Pré-rempli pour un déploiement sur Cloudflare Pages — <mark>[À VÉRIFIER]</mark> au moment de la mise en ligne (coordonnées sur <a href="https://www.cloudflare.com/fr-fr/" rel="noopener noreferrer" target="_blank">cloudflare.com</a>).</p>
+    <dl class="doc-dl">
+      <dt>Société</dt><dd>Cloudflare, Inc.</dd>
+      <dt>Adresse</dt><dd><mark>[À VÉRIFIER — adresse du siège publiée par Cloudflare]</mark></dd>
+      <dt>Site</dt><dd><a href="https://www.cloudflare.com" rel="noopener noreferrer" target="_blank">www.cloudflare.com</a></dd>
+    </dl>
+
+    <h2>Contenu et sources</h2>
+    <p>{{SITE_NAME}} recense les courses à pied d'{{REGION}} pour la saison {{YEAR}}. Les informations (dates, distances, liens d'inscription) proviennent des sites des organisateurs, de l'agenda des courses de la Ville de Paris et de calendriers de courses publics. Elles sont <strong>indicatives</strong> : vérifie toujours sur le site officiel de l'organisateur avant de t'inscrire. Chaque fiche indique la fiabilité de sa date (officielle, annoncée ou estimée).</p>
+    <p>{{SITE_NAME}} n'est affilié à aucun organisateur de course. Les noms de courses et marques citées appartiennent à leurs propriétaires respectifs.</p>
+
+    <h2>Cartographie</h2>
+    <p>Fonds de carte © contributeurs <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a> (licence ODbL).</p>
+
+    <h2>Signaler une erreur</h2>
+    <p>Une date, un lien ou une course manque ? Écris-nous : <mark>[À COMPLÉTER — e-mail de contact]</mark>.</p>
+
+    <p class="doc-links"><a href="/confidentialite/">Politique de confidentialité</a> · <a href="/">Retour à l'accueil</a></p>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/page.js"></script>
+</body>
+</html>

@@ -3,8 +3,10 @@
    ========================================================= */
 import "./styles/tokens.css";
 import "./styles/main.css";
+import "./styles/pages.css";
 
 import "./brand-global.js";
+import "./analytics.js";
 import "../config.js";
 import "../data/races.js";
 import "./app.js";

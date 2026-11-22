@@ -39,7 +39,7 @@ const SCENARIOS = {
     await p.goto(BASE + "/?view=cards", { waitUntil: "load" }); await wait(500);
     await p.evaluate(() => window.ALLURE.openSheet("paris-versailles")); await wait(1200);
   },
-  notfound: async (p) => { await p.goto(BASE + "/page-qui-n-existe-pas", { waitUntil: "load" }); await wait(800); },
+  notfound: async (p) => { await p.goto(BASE + "/404.html", { waitUntil: "load" }); await wait(800); },
   legal: async (p) => { await p.goto(BASE + "/mentions-legales/", { waitUntil: "load" }); await wait(500); },
   privacy: async (p) => { await p.goto(BASE + "/confidentialite/", { waitUntil: "load" }); await wait(500); },
   race: async (p) => { await p.goto(BASE + "/courses/paris-versailles-2027/", { waitUntil: "load" }); await wait(1500); }

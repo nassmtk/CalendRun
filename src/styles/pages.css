@@ -1,0 +1,41 @@
+/* Pages secondaires : mentions légales, confidentialité, 404, pages course (sans JS lourd) */
+.page-doc { min-height: 100svh; display: flex; flex-direction: column; }
+.nav--doc { position: sticky; top: 14px; left: auto; transform: none; margin: 14px auto 0; justify-content: space-between; }
+.nav--doc .btn { padding: 9px 16px; font-size: 13px; }
+.doc { width: min(calc(100% - 2 * var(--gutter)), 780px); margin: 64px auto 40px; flex: 1; }
+.doc h1 { font-size: clamp(36px, 6vw, 64px); margin: 0 0 18px; }
+.doc h2 { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -.02em; margin: 40px 0 12px; }
+.doc p, .doc li { color: var(--muted); line-height: 1.65; }
+.doc strong { color: var(--text); }
+.doc a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.doc a.btn { text-decoration: none; color: inherit; }
+.doc .lead { font-size: 18px; color: var(--text); }
+.doc mark { background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 6px; font-weight: 600; }
+.doc-note { padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface); border: 1px dashed var(--border-strong); font-size: 14px; }
+.doc-dl { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; gap: 10px 20px; margin: 0; padding: 18px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--border); }
+.doc-dl dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.doc-dl dd { margin: 0; color: var(--text); }
+.doc-links { margin-top: 40px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.doc-meta { font-size: 13px; }
+@media (max-width: 640px) { .doc-dl { grid-template-columns: 1fr; gap: 4px; } .doc-dl dd { margin-bottom: 10px; } }
+
+/* 404 */
+.doc--404 { text-align: left; }
+.big-404 { font-family: var(--f-num); font-weight: 800; font-size: clamp(120px, 26vw, 260px); line-height: .8; margin: 0; background: var(--grad-signature); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.doc--404 .hero-search { margin: 28px 0 8px; }
+.doc--404 .hero-search .btn { padding: 10px 16px; }
+
+/* footer commun */
+.footer { align-items: flex-start; }
+.footer-main { display: grid; gap: 8px; max-width: 720px; }
+.footer-warn { color: var(--text); font-weight: 600; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; }
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--accent); }
+.footer-links span { color: var(--muted); }
+.check--consent { align-items: flex-start; line-height: 1.4; }
+.check--consent input { margin-top: 1px; flex: none; }
+.check--consent a { color: var(--accent); text-decoration: underline; }
+.doc .big-404 { color: transparent; }
+.doc a.btn--ghost { color: var(--text); }
+.doc a.btn--primary { color: var(--on-accent); }
