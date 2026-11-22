@@ -1,3 +1,4 @@
+import "./lib/env.mjs";
 // Publie public/races.json : données minimales des courses, lues par le worker d'alertes
 import fs from "node:fs";
 import { loadRaces, primaryLink } from "./lib/races.mjs";

@@ -1,3 +1,4 @@
+import "./lib/env.mjs";
 // Génère public/_headers (en-têtes HTTP Cloudflare Pages) avec une CSP stricte
 // construite uniquement à partir des services réellement utilisés.
 import fs from "node:fs";

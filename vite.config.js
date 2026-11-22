@@ -80,7 +80,8 @@ export default defineConfig(({ mode }) => {
           confidentialite: "confidentialite/index.html",
           notfound: "404.html",
           alertOk: "alertes/confirmee/index.html",
-          alertOff: "alertes/desinscription/index.html"
+          alertOff: "alertes/desinscription/index.html",
+          course: "course-template.html" // gabarit des pages course (rempli par scripts/postbuild.mjs)
         }
       }
     },

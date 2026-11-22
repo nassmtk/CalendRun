@@ -457,6 +457,8 @@
     const dep = (p.get("dep") || "").split(",").map((d) => (d.toLowerCase() === "paris" ? "75" : d.trim())).filter((d) => DEPTS[d]);
     state.depts = new Set(dep);
     if (p.get("q")) state.q = p.get("q").slice(0, 80);
+    const mo = Number(p.get("month"));
+    if (p.has("month") && Number.isInteger(mo) && mo >= 0 && mo < 12) state.month = mo;
     const l = p.get("list");
     if (l === "favs" || l === "registered") { savedMain = snapshot(); Object.assign(state, blankFilters()); state.list = l; }
     else state.list = "all";
@@ -466,8 +468,10 @@
     p.set("view", VIEW_URL[state.view]);
     state.depts.size ? p.set("dep", [...state.depts].sort().join(",")) : p.delete("dep");
     state.list !== "all" ? p.set("list", state.list) : p.delete("list");
+    p.delete("month"); p.delete("course");
     const qs = p.toString();
-    history.replaceState(null, "", `${location.pathname}${qs ? "?" + qs : ""}${location.hash}`);
+    if (currentSheet) { listURL = `/${qs ? "?" + qs : ""}`; }
+    else history.replaceState(null, "", `/${qs ? "?" + qs : ""}`);
     store.set("v1:view", VIEW_URL[state.view]);
   }
 
@@ -621,7 +625,8 @@
   }
 
   /* ---------- detail sheet ---------- */
-  let lastFocus = null, currentSheet = null;
+  let lastFocus = null, currentSheet = null, listURL = null;
+  const racePath = (id) => `/courses/${id}-2027/`;
   let transition = (fn) => fn(); // remplacé par la couche motion (View Transitions)
   function openSheet(id, focusAlert = false) {
     const r = RACES.find((x) => x.id === id);
@@ -723,7 +728,9 @@
     };
     if (wasOpen) apply(); else { transition(apply, r.id, "open"); run("openSheet", r); }
     if (ALERTS) requestAnimationFrame(() => { const f = $("#wl-form"); f && run("alertForm", f); });
-    history.replaceState(null, "", "#c/" + r.id);
+    // URL stable et partageable de la fiche (page statique indexable générée au build)
+    if (!wasOpen) listURL = location.pathname + location.search;
+    history.replaceState(null, "", racePath(r.id));
     setTimeout(() => {
       if (focusAlert && $("#wl-form input[type=email]")) {
         $("#alert-slot").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -733,14 +740,15 @@
   }
   function closeSheet() {
     if ($("#overlay").hidden) return;
-    const id = (location.hash.match(/^#c\/(.+)$/) || [])[1];
+    const id = currentSheet;
     transition(() => {
       $("#overlay").hidden = true;
       document.body.classList.remove("locked");
     }, id, "close");
     run("closeSheet");
     currentSheet = null;
-    history.replaceState(null, "", location.pathname + location.search);
+    history.replaceState(null, "", listURL || "/");
+    syncURL();
     lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true });
   }
 
@@ -887,7 +895,7 @@
     const share = t.closest("[data-share]");
     if (share) {
       const r = RACES.find((x) => x.id === share.dataset.share);
-      const url = location.href.split("#")[0] + "#c/" + r.id;
+      const url = location.origin + racePath(r.id);
       if (navigator.share) navigator.share({ title: r.name, text: `${r.name} — ${fmtShort(r._date)} 2027`, url }).catch(() => {});
       else navigator.clipboard.writeText(url).then(() => toast("Lien copié 🔗"));
       return;
@@ -974,8 +982,13 @@
       syncControls();
       renderHero();
       render();
-      const m = location.hash.match(/^#c\/(.+)$/);
-      if (m) openSheet(decodeURIComponent(m[1]));
+      const p = new URLSearchParams(location.search);
+      const m = location.hash.match(/^#c\/(.+)$/) || location.pathname.match(/^\/courses\/(.+)-2027\/?$/);
+      const id = p.get("course") || (m && decodeURIComponent(m[1]));
+      if (id && RACES.some((r) => r.id === id)) {
+        if (p.has("course")) { p.delete("course"); history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "")); }
+        openSheet(id);
+      }
     }
   };
 })();

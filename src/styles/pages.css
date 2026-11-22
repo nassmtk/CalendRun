@@ -39,3 +39,30 @@
 .doc .big-404 { color: transparent; }
 .doc a.btn--ghost { color: var(--text); }
 .doc a.btn--primary { color: var(--on-accent); }
+
+/* page course (statique, indexable) */
+.race-page { margin-top: 48px; }
+.crumbs { font-size: 13px; color: var(--muted); margin-bottom: 22px; display: flex; gap: 8px; flex-wrap: wrap; }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--accent); }
+.crumbs [aria-current] { color: var(--text); }
+.race-head { --cat: var(--cat-route); display: flex; gap: 22px; align-items: center; }
+.race-head[data-type="trail"], .race-head[data-type="cross"] { --cat: var(--cat-trail); }
+.race-head[data-type="urban"] { --cat: var(--cat-urban); }
+.race-head[data-type="backyard"] { --cat: var(--cat-ultra); }
+.race-head[data-type="relais"] { --cat: var(--cat-relais); }
+.race-head .race-date { width: 84px; }
+.race-head .race-date .d { font-size: 44px; }
+.race-head h1 { margin: 2px 0 8px; font-size: clamp(34px, 5.4vw, 60px); line-height: 1; }
+.race-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 14px; }
+.race-meta .date-badge { margin: 0; }
+.race-page .lead { margin: 26px 0; }
+.race-reg { margin: 8px 0 34px; }
+.race-reg h2 { margin: 0 0 10px; }
+.race-reg p { margin: 0; }
+.race-page section > h2 { margin-top: 0; }
+@media (max-width: 640px) {
+  .race-head { align-items: flex-start; gap: 16px; }
+  .race-head .race-date { width: 66px; }
+  .race-head .race-date .d { font-size: 34px; }
+}

@@ -12,7 +12,8 @@
     "audit:links": "node scripts/audit-links.mjs",
     "qa:shots": "node scripts/qa-shots.mjs",
     "pages:dev": "npm run build && wrangler pages dev dist",
-    "deploy": "npm run build && wrangler pages deploy dist"
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "postbuild": "node scripts/postbuild.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

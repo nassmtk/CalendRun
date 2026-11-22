@@ -52,6 +52,14 @@ click($("#tab-calendar")); ok($$("#results .card").length === 0 && $$("#results 
 click($("#tab-map")); ok($$("#results .cal-month").length === 0 && $("#results .mapview"), "carte seule");
 click($("#tab-grid")); ok($$("#results .card").length === 149, "cartes seules");
 
+console.log("Phase 6 — URL partageable de la fiche");
+click($('[data-month="3"]'));
+A.openSheet("paris-versailles");
+ok(w.location.pathname === "/courses/paris-versailles-2027/", "fiche ouverte → /courses/paris-versailles-2027/", w.location.pathname);
+click($("[data-close]"));
+ok(w.location.pathname === "/" && A.state.month === 3, "fermeture → retour à la liste (filtres intacts)", w.location.href);
+click($('[data-month="3"]'));
+
 console.log("Alertes désactivées (ALERTS_ENABLED=false)");
 ok(!$("#results [data-alert]"), "aucune cloche d'alerte sur les cartes");
 A.openSheet("paris-versailles");
