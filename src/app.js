@@ -174,19 +174,47 @@
     if (ignore !== "month" && state.month !== null && r._date.getMonth() !== state.month) return false;
     if (state.open && !["open", "lottery"].includes(regInfo(r).key)) return false;
     if (state.confirmed && r.dateStatus !== "confirmed") return false;
-    if (state.list === "favs" && !favs.has(r.id)) return false;
-    if (state.list === "registered" && !registered.has(r.id)) return false;
+    return inScope(r);
+  }
+  /* périmètre : Favoris / Inscrites ont leur propre ensemble, indépendant des filtres */
+  function inScope(r) {
+    if (state.list === "favs") return favs.has(r.id);
+    if (state.list === "registered") return registered.has(r.id);
     return true;
   }
   function filtered() {
     const list = RACES.filter((r) => matches(r));
-    const s = state.sort;
+    const s = state.list === "all" ? state.sort : "date"; // Favoris / Inscrites : toujours par date
     if (s === "dist-asc") list.sort((a, b) => a._minKm - b._minKm);
     else if (s === "dist-desc") list.sort((a, b) => b._maxKm - a._maxKm);
     else if (s === "dplus") list.sort((a, b) => b._maxDplus - a._maxDplus);
     return list;
   }
-  const isFiltered = () => state.q || state.cats.size || state.depts.size || state.month !== null || state.open || state.confirmed || state.list !== "all";
+  const isFiltered = () => !!(state.q || state.cats.size || state.depts.size || state.month !== null || state.open || state.confirmed);
+
+  /* ---------- filtres : un jeu pour la liste principale, un jeu local pour Favoris / Inscrites ---------- */
+  const blankFilters = () => ({ q: "", cats: new Set(), depts: new Set(), month: null, open: false, confirmed: false, sort: "date" });
+  const snapshot = () => ({ q: state.q, cats: new Set(state.cats), depts: new Set(state.depts), month: state.month, open: state.open, confirmed: state.confirmed, sort: state.sort });
+  let savedMain = null; // filtres de la liste principale, mis de côté pendant Favoris / Inscrites
+  function syncControls() {
+    $("#q").value = state.q;
+    $("#f-open").checked = state.open;
+    $("#f-confirmed").checked = state.confirmed;
+    $("#f-sort").value = state.sort;
+    $("#f-sort").disabled = state.list !== "all";
+  }
+  function setList(l) {
+    if (l === state.list) return;
+    if (l === "all") {
+      Object.assign(state, savedMain || blankFilters()); // restaure la liste principale telle quelle
+      savedMain = null;
+    } else {
+      if (state.list === "all") savedMain = snapshot();
+      Object.assign(state, blankFilters()); // filtres locaux : repartent de zéro à chaque entrée
+    }
+    state.list = l;
+    syncControls();
+  }
   const activeFilterCount = () => state.cats.size + state.depts.size + (state.month !== null) + state.open + state.confirmed + (state.q ? 1 : 0);
 
   /* ---------- icons ---------- */
@@ -201,6 +229,7 @@
     cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
     globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
     clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    filter: '<svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
     checkCircle: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>',
     euro: '<svg viewBox="0 0 24 24"><path d="M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9"/></svg>'
   };
@@ -359,6 +388,7 @@
       : state.list === "registered" ? `<b>${n}</b> course${pl} où tu es inscrit·e`
       : `<b>${n}</b> course${pl} ${isFiltered() ? "correspondent" : "au calendrier 2027"}`;
     $("#reset").hidden = !isFiltered();
+    $("#list-exit").hidden = state.list === "all";
 
     const viewChanged = prevView !== null && prevView !== state.view;
     prevView = state.view;
@@ -381,6 +411,14 @@
   }
 
   function emptyHTML() {
+    // des courses existent dans le périmètre mais les filtres les masquent toutes
+    const hidden = RACES.filter(inScope).length;
+    if (hidden && isFiltered()) {
+      return `<div class="empty"><div class="empty-icon" aria-hidden="true">${I.filter}</div>
+        <h3>${hidden} course${hidden > 1 ? "s" : ""} masquée${hidden > 1 ? "s" : ""} par tes filtres</h3>
+        <p>${state.list === "all" ? "Aucune course ne correspond à cette combinaison." : "Tes filtres locaux cachent toutes tes courses."}</p>
+        <button class="btn btn--primary" data-reset>Tout afficher</button></div>`;
+    }
     const t = state.list === "registered"
       ? ["Aucune course inscrite", "Marque une course comme inscrite depuis sa fiche ou avec le bouton ✓ d'une carte."]
       : state.list === "favs"
@@ -388,11 +426,12 @@
       : ["Aucune course ne colle à tes filtres", "Élargis la distance, le mois ou les départements."];
     const icon = state.list === "registered" ? I.checkCircle : state.list === "favs" ? I.heart : "🏃‍♂️💨";
     return `<div class="empty"><div class="empty-icon" aria-hidden="true">${icon}</div><h3>${t[0]}</h3><p>${t[1]}</p>
-      ${isFiltered() ? `<button class="btn btn--ghost" data-reset>${state.list === "all" ? "Tout afficher" : "Voir toutes les courses"}</button>` : ""}</div>`;
+      ${state.list !== "all" ? `<button class="btn btn--ghost" data-list-exit>Voir toutes les courses</button>` : ""}</div>`;
   }
 
   function gridHTML(list) {
-    if (state.list !== "registered") return `<div class="grid">${list.map(card).join("")}</div>`;
+    if (state.list === "all") return `<div class="grid">${list.map(card).join("")}</div>`;
+    // Favoris / Inscrites : à venir d'abord, puis « Terminées » repliées
     const t = today();
     const up = list.filter((r) => r._end >= t).sort((a, b) => a._date - b._date);
     const past = list.filter((r) => r._end < t).sort((a, b) => b._date - a._date);
@@ -417,7 +456,8 @@
     const dep = (p.get("dep") || "").split(",").map((d) => (d.toLowerCase() === "paris" ? "75" : d.trim())).filter((d) => DEPTS[d]);
     state.depts = new Set(dep);
     const l = p.get("list");
-    state.list = l === "favs" || l === "registered" ? l : "all";
+    if (l === "favs" || l === "registered") { savedMain = snapshot(); Object.assign(state, blankFilters()); state.list = l; }
+    else state.list = "all";
   }
   function syncURL() {
     const p = new URLSearchParams(location.search);
@@ -804,9 +844,9 @@
 
   /* ---------- events ---------- */
   function resetFilters() {
-    Object.assign(state, { q: "", month: null, open: false, confirmed: false, list: "all" });
-    state.cats.clear(); state.depts.clear();
-    $("#q").value = ""; $("#f-open").checked = false; $("#f-confirmed").checked = false;
+    const keepSort = state.sort;
+    Object.assign(state, blankFilters(), { sort: keepSort });
+    syncControls();
     render();
   }
 
@@ -819,12 +859,13 @@
     const lst = t.closest("[data-list]");
     if (lst) {
       e.preventDefault();
-      state.list = state.list === lst.dataset.list ? "all" : lst.dataset.list;
+      setList(state.list === lst.dataset.list ? "all" : lst.dataset.list);
       render();
       window.ALLURE.scrollTo($("#results-count"));
       return;
     }
     if (t.closest("[data-reset]")) { resetFilters(); return; }
+    if (t.closest("[data-list-exit]")) { setList("all"); render(); return; }
     if (t.closest("[data-dept-clear]")) { state.depts.clear(); render(); return; }
     if (t.closest("[data-stop]")) return; // external register link
     const al = t.closest("[data-alert]");
@@ -898,7 +939,6 @@
   $("#f-open").addEventListener("change", (e) => { state.open = e.target.checked; render(); });
   $("#f-confirmed").addEventListener("change", (e) => { state.confirmed = e.target.checked; render(); });
   $("#f-sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
-  $("#reset").addEventListener("click", resetFilters);
 
 
   /* ---------- API pour la couche motion & la scène 3D ---------- */
@@ -914,6 +954,7 @@
     favCount: () => favs.size,
     boot() {
       readURL();
+      syncControls();
       renderHero();
       render();
       const m = location.hash.match(/^#c\/(.+)$/);

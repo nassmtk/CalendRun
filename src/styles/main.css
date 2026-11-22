@@ -4,6 +4,7 @@
 
 /* ---------- BASE ---------- */
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* l'attribut hidden gagne toujours sur les display des composants */
 html { -webkit-text-size-adjust: 100%; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
@@ -897,3 +898,11 @@ select option { background: var(--surface); }
   .map-list .drawer-title { padding-top: 4px; }
   .filters-fab { bottom: 16px; }
 }
+
+.results-actions { display: flex; gap: 18px; align-items: center; }
+#f-sort:disabled { opacity: .45; cursor: default; }
+
+/* pied de carte : le statut se tronque proprement, sans passer sous les boutons */
+.card-foot .status { overflow: hidden; }
+.status-pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; display: block; }
+.status-pill::before { display: inline-block; margin-right: 7px; vertical-align: 1px; }

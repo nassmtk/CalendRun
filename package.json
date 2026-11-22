@@ -9,9 +9,19 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^6.4.6"
+    "@resvg/resvg-js": "^2.6.2",
+    "jsdom": "^31.0.1",
+    "lighthouse": "^13.6.0",
+    "puppeteer-core": "^25.18.1",
+    "satori": "^0.63.2",
+    "vite": "^6.4.6",
+    "wrangler": "^4.166.0"
   },
   "dependencies": {
+    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/bricolage-grotesque": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "gsap": "^3.15.1",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",

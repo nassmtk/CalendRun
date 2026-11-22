@@ -118,7 +118,10 @@
 
     <div class="results-head">
       <p id="results-count" aria-live="polite"></p>
-      <button class="link-btn" id="reset" hidden>Réinitialiser les filtres</button>
+      <div class="results-actions">
+        <button class="link-btn" id="list-exit" data-list-exit hidden>← Toutes les courses</button>
+        <button class="link-btn" id="reset" data-reset hidden>Réinitialiser les filtres</button>
+      </div>
     </div>
 
     <!-- conteneur unique : seule la vue active y est rendue -->
