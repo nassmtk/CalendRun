@@ -1,6 +1,6 @@
 /* =========================================================
    /api/unsubscribe?e=<email>&t=<hmac> — désinscription en un clic
-   - GET  : depuis le lien de l'e-mail → retire le contact de la liste puis redirige
+   - GET  : depuis le lien de l'e-mail → supprime le contact de Brevo puis redirige
    - POST : « List-Unsubscribe-Post: List-Unsubscribe=One-Click » (RFC 8058, clients mail)
    Le jeton HMAC empêche de désinscrire quelqu'un d'autre.
    ========================================================= */
@@ -12,8 +12,13 @@ async function unsubscribe(url, env) {
   if (!email || !token || !env.UNSUB_SECRET) return false;
   if (!safeEqual(token, await hmac(env.UNSUB_SECRET, email))) return false;
   try {
-    await brevo(env, `/contacts/lists/${Number(env.BREVO_LIST_ID)}/contacts/remove`, { method: "POST", body: { emails: [email] } });
-    await brevo(env, `/contacts/${encodeURIComponent(email)}`, { method: "PUT", body: { attributes: { ALERT_RACES: "" } } });
+    // désinscription = suppression du contact (politique de confidentialité : conservation
+    // « jusqu'à ta désinscription »). Repli : retrait de la liste si la suppression échoue.
+    const del = await brevo(env, `/contacts/${encodeURIComponent(email)}`, { method: "DELETE" });
+    if (!del.ok && del.status !== 404) {
+      await brevo(env, `/contacts/lists/${Number(env.BREVO_LIST_ID)}/contacts/remove`, { method: "POST", body: { emails: [email] } });
+      await brevo(env, `/contacts/${encodeURIComponent(email)}`, { method: "PUT", body: { attributes: { ALERT_RACES: "" } } });
+    }
   } catch (e) {
     console.error("unsubscribe", e && e.message);
   }

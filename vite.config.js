@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
-import { BRAND, siteUrl, fill } from "./brand.config.js";
+import { BRAND, siteUrl, fill, logoSvg, mailParts } from "./brand.config.js";
 import { loadRaces } from "./scripts/lib/races.mjs";
 
 /** remplace les {{CLÉS}} de marque dans tous les HTML (index, pages générées, légal, 404) */
@@ -13,6 +13,34 @@ function brandHtml(vars) {
   };
 }
 
+/** clés des adresses e-mail : jamais écrites en clair, ni dans le HTML ni dans le JS */
+const MAILS = { contact: BRAND.CONTACT_EMAIL, courses: BRAND.COURSES_EMAIL };
+const PRIVATE_KEYS = ["CONTACT_EMAIL", "COURSES_EMAIL"];
+
+/** lien e-mail anti-spam : l'adresse est assemblée par src/mail.js au chargement.
+ *  Sans JS, le lien mène à la section contact des mentions légales et affiche une forme lisible non cliquable. */
+function mailLink(key, { label, cls = "", tpl = "" } = {}) {
+  const [u, d] = mailParts(MAILS[key]);
+  const shown = label || `${u} (arobase) ${d.replace(/\./g, " (point) ")}`;
+  return `<a${cls ? ` class="${cls}"` : ""} href="/mentions-legales/#contact" data-mail="${key}"${tpl ? ` data-mail-tpl="${tpl}"` : ""}${label ? "" : " data-mail-show"}>${shown}</a>`;
+}
+
+/** module « virtual:brand » : la config de marque côté navigateur, sans les adresses e-mail.
+ *  Les adresses sont transmises découpées et inversées (rien qui ressemble à une adresse dans le bundle). */
+function brandVirtual() {
+  const pub = Object.fromEntries(Object.entries(BRAND).filter(([k]) => !PRIVATE_KEYS.includes(k)));
+  const enc = Object.fromEntries(Object.entries(MAILS).map(([k, v]) => [k, mailParts(v).map((x) => [...x].reverse().join(""))]));
+  return {
+    name: "calendrun-brand-virtual",
+    resolveId: (id) => (id === "virtual:brand" ? "\0virtual:brand" : null),
+    load: (id) => (id === "\0virtual:brand"
+      ? `export const BRAND = ${JSON.stringify(pub)};
+export const MAIL = ${JSON.stringify(enc)};
+export const fill = ${fill.toString()};`
+      : null)
+  };
+}
+
 /** pied de page commun à toutes les pages (HTML statique, lisible sans JS) */
 function footerHtml(v) {
   return `<div class="footer-main">
@@ -23,7 +51,8 @@ function footerHtml(v) {
     <nav class="footer-links" aria-label="Liens légaux">
       <a href="/mentions-legales/">Mentions légales</a>
       <a href="/confidentialite/">Confidentialité</a>
-      <a href="mailto:?subject=Course%20%C3%A0%20ajouter%20sur%20${encodeURIComponent(v.SITE_NAME)}">Signaler une course</a>
+      ${mailLink("courses", { label: "Proposer une course", tpl: "propose" })}
+      ${mailLink("contact", { label: "Contact" })}
       <span>Carte © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a></span>
     </nav>`;
 }
@@ -65,13 +94,18 @@ export default defineConfig(({ mode }) => {
     LOGO_FROM: BRAND.LOGO.from,
     LOGO_TO: BRAND.LOGO.to,
     LOGO_INK: BRAND.LOGO.ink,
-    LOGO_PATH: BRAND.LOGO_PATH,
+    LOGO_SVG: logoSvg("currentColor"),
+    PUBLISHER_NAME: BRAND.PUBLISHER_NAME,
+    LEGAL_UPDATED_AT: BRAND.LEGAL_UPDATED_AT,
+    MAIL_CONTACT: mailLink("contact"),
+    MAIL_COURSES: mailLink("courses", { tpl: "error-general" }),
+    MAIL_PROPOSE_BTN: mailLink("courses", { label: "Proposer une course", cls: "btn btn--primary magnetic", tpl: "propose" }),
     UMAMI_SRC: env.UMAMI_SRC || "",
     UMAMI_WEBSITE_ID: env.UMAMI_WEBSITE_ID || ""
   };
   vars.FOOTER = footerHtml(vars);
   return {
-    plugins: [brandHtml(vars), preloadFonts()],
+    plugins: [brandVirtual(), brandHtml(vars), preloadFonts()],
     build: {
       rollupOptions: {
         input: {

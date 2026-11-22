@@ -17,7 +17,10 @@ Worker « calendrun-reminders » (cron quotidien 7h UTC)
   → jour J d'ouverture des inscriptions (si `registration.opens` est connu dans les données)
   chaque e-mail : lien de désinscription en un clic + en-têtes List-Unsubscribe (RFC 8058)
 
-Lien de désinscription  ──GET/POST /api/unsubscribe?e=…&t=HMAC──▶ retrait de la liste
+  → purge RGPD : supprime de Brevo les contacts 12 mois après la date de leur dernière course
+    (ou 12 mois après CONSENT_AT si la course n'existe plus) — tourne même si ALERTS_ENABLED=false
+
+Lien de désinscription  ──GET/POST /api/unsubscribe?e=…&t=HMAC──▶ suppression du contact dans Brevo
 ```
 Les alertes « ouverture des inscriptions » pour les courses dont la date d'ouverture n'est pas
 dans les données restent à envoyer **à la main** (campagne Brevo ciblée sur l'attribut `ALERT_RACES`).

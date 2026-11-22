@@ -10,6 +10,7 @@ import "./styles/pages.css";
 
 import "./brand-global.js";
 import "./analytics.js";
+import "./mail.js";
 import "../config.js";
 import "../data/races.js";
 import "./app.js";

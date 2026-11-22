@@ -83,7 +83,7 @@ Champs utiles :
 Après modification : `npm test` puis `npm run audit:links`, commit, push → Cloudflare redéploie. L'`id` d'une course définit son URL publique (`/courses/{id}-2027/`) : **ne le change pas** une fois en ligne (ou ajoute une redirection dans `public/_redirects`).
 
 ## 7. Marque
-Nom, accroche, sous-titre (`{count}` calculé), couleurs et tracé du logo : **[`brand.config.js`](brand.config.js)**. Les couleurs et typos du site : `src/styles/tokens.css`.
+Nom, accroche, sous-titre (`{count}` calculé), couleurs et pictogramme du logo (`logoSvg`), éditeur (`PUBLISHER_NAME`), adresses `CONTACT_EMAIL` / `COURSES_EMAIL`, date de mise à jour des pages légales (`LEGAL_UPDATED_AT`) : **[`brand.config.js`](brand.config.js)**. Les adresses e-mail ne sont jamais écrites en clair dans le HTML ni le JS : elles sont assemblées au chargement par `src/mail.js`. Les couleurs et typos du site : `src/styles/tokens.css`.
 
 ## Organisation
 ```

@@ -66,3 +66,9 @@
   .race-head .race-date { width: 66px; }
   .race-head .race-date .d { font-size: 34px; }
 }
+
+/* ---- lien « Signaler une erreur » (fiche et page course) ---- */
+.report-row { margin-top: 18px; font-size: 13px; color: var(--muted); }
+.report-link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.report-link:hover { color: var(--accent-hover); }
+.report-link:focus-visible, .doc a[data-mail]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }

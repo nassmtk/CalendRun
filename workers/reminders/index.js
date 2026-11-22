@@ -7,6 +7,9 @@
    Contacts : liste Brevo BREVO_LIST_ID (uniquement des contacts confirmés en double opt-in),
    attribut ALERT_RACES = "raceId:opening+reminder,raceId2:reminder".
    Chaque e-mail contient un lien de désinscription en un clic + en-têtes List-Unsubscribe.
+   Purge RGPD (même cron) : un contact est supprimé de Brevo 12 mois après la date de la
+   dernière course qu'il suit (ou 12 mois après son consentement s'il ne suit plus aucune
+   course connue). Voir la politique de confidentialité.
    ========================================================= */
 import { BRAND } from "../../brand.config.js";
 import { brevo, unsubscribeUrl, siteUrl } from "../../functions/_lib/util.js";
@@ -51,14 +54,45 @@ function mail(env, { race, kind, unsub }) {
   };
 }
 
+export const RETENTION_MONTHS = 12;
+
+/** date limite de conservation d'un contact (Date), ou null si on ne peut pas la calculer */
+export function retentionLimit(contact, byId) {
+  const ids = String(contact.attributes?.ALERT_RACES || "").split(",").filter(Boolean).map((e) => e.split(":")[0]);
+  const dates = ids.map((id) => byId.get(id)).filter(Boolean).map((r) => r.endDate || r.date).filter(Boolean).sort();
+  const ref = dates.length ? dates[dates.length - 1] : contact.attributes?.CONSENT_AT || contact.createdAt;
+  if (!ref) return null;
+  const d = new Date(String(ref).slice(0, 10) + "T00:00:00Z");
+  if (Number.isNaN(d.getTime())) return null;
+  d.setUTCMonth(d.getUTCMonth() + RETENTION_MONTHS);
+  return d;
+}
+
+/** supprime de Brevo les contacts dont la durée de conservation est dépassée */
+export async function purgeExpired(env, contacts, byId, now = new Date()) {
+  let purged = 0;
+  for (const c of contacts) {
+    const limit = retentionLimit(c, byId);
+    if (!limit || limit > now) continue;
+    const r = await brevo(env, `/contacts/${encodeURIComponent(c.email)}`, { method: "DELETE" });
+    if (r.ok || r.status === 404) purged++;
+  }
+  return purged;
+}
+
 export async function runReminders(env, now = new Date()) {
-  if (env.ALERTS_ENABLED !== "true") return { skipped: "ALERTS_ENABLED != true" };
+  if (!env.BREVO_API_KEY || !Number(env.BREVO_LIST_ID)) return { skipped: "Brevo non configuré" };
   const races = await (await fetch(`${siteUrl(env)}/races.json`, { cf: { cacheTtl: 300 } })).json();
   const byId = new Map(races.map((r) => [r.id, r]));
+  const contacts = await listContacts(env);
+  // la purge tourne même si les alertes ont été désactivées entre-temps
+  const purged = await purgeExpired(env, contacts, byId, now);
+  if (env.ALERTS_ENABLED !== "true") return { skipped: "ALERTS_ENABLED != true", purged };
   const today = iso(now), in7 = iso(new Date(now.getTime() + 7 * DAY));
   let sent = 0;
-  for (const c of await listContacts(env)) {
+  for (const c of contacts) {
     if (c.emailBlacklisted) continue;
+    if ((retentionLimit(c, byId) || now) <= now) continue; // déjà purgé
     const entries = String(c.attributes?.ALERT_RACES || "").split(",").filter(Boolean);
     for (const e of entries) {
       const [id, kinds = ""] = e.split(":");
@@ -72,7 +106,7 @@ export async function runReminders(env, now = new Date()) {
       if (r.ok) sent++;
     }
   }
-  return { sent, today };
+  return { sent, purged, today };
 }
 
 export default {

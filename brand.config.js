@@ -20,9 +20,26 @@ export const BRAND = {
   LOCALE: "fr_FR",
   // couleurs du logo (identiques aux tokens --accent / --accent-2 / --on-accent)
   LOGO: { from: "#FC4C02", to: "#FF9F1C", ink: "#0A0A0B", bg: "#0A0A0B" },
-  // tracé du logo (viewBox 0 0 64 64)
-  LOGO_PATH: "M10 46 L26 18 L36 34 L43 24 L54 46"
+  // coordonnées légales et contact (utilisées par les pages légales, le pied de page et les fiches ;
+  // les adresses sont assemblées en JS côté navigateur, jamais écrites en clair dans le HTML)
+  CONTACT_EMAIL: "contact@calendrun.fr",
+  COURSES_EMAIL: "courses@calendrun.fr",
+  PUBLISHER_NAME: "Nassim Matouk",
+  // à mettre à jour à chaque modification des pages légales
+  LEGAL_UPDATED_AT: "22 novembre 2026"
 };
+
+/** pictogramme du logo (viewBox 0 0 64 64) : calendrier dont s'échappe un coureur.
+ *  `ink` = couleur du tracé ("currentColor" dans les pages, couleur fixe pour favicons / OG). */
+export function logoSvg(ink = "currentColor") {
+  return `<g fill="none" stroke="${ink}" stroke-linecap="round" stroke-linejoin="round">`
+    + `<path stroke-width="5" d="M28 13 H15 a8 8 0 0 0 -8 8 V49 a8 8 0 0 0 8 8 H49 a8 8 0 0 0 8 -8 V30 M7 25 H24 M20 7 V17"/>`
+    + `<path stroke-width="4.5" d="M40 21 L34 33 M39 23 L47 27 L51 22 M39 23 L31 22 L27 27 M34 33 L43 37 L43 45 M34 33 L27 40 L19 39"/>`
+    + `</g><circle cx="44" cy="13" r="4.6" fill="${ink}"/>`;
+}
+
+/** sépare une adresse en [utilisateur, domaine] (pour l'assemblage anti-spam côté navigateur) */
+export const mailParts = (email) => String(email).split("@");
 
 /** URL publique du site, sans « / » final. Vient de la variable d'environnement SITE_URL. */
 export function siteUrl(env = (typeof process !== "undefined" ? process.env : {})) {

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
-import { BRAND } from "../brand.config.js";
+import { BRAND, logoSvg } from "../brand.config.js";
 
 const F = (pkg, file) => fs.readFileSync(path.join("node_modules/@fontsource", pkg, "files", file));
 const fonts = [
@@ -23,7 +23,7 @@ const clean = (s) => String(s).replace(/→/g, "–").replace(/[’]/g, "'").rep
 
 const logo = () => h("div", { alignItems: "center", gap: 16 },
   h("div", { width: 56, height: 56, borderRadius: 16, backgroundImage: `linear-gradient(135deg, ${C.accent}, ${C.accent2})`, alignItems: "center", justifyContent: "center" },
-    { type: "svg", props: { width: 38, height: 38, viewBox: "0 0 64 64", children: [{ type: "path", props: { d: BRAND.LOGO_PATH, stroke: C.bg, "stroke-width": 7, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" } }] } }),
+    { type: "img", props: { width: 40, height: 40, src: `data:image/svg+xml;base64,${Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">${logoSvg(C.bg)}</svg>`).toString("base64")}` } }),
   h("div", { fontFamily: "Bricolage", fontSize: 36, color: C.text }, BRAND.SITE_NAME)
 );
 // le padding s'ajoute à la largeur dans satori : chaque rangée reçoit une largeur explicite (1200 − 2×64)

@@ -15,7 +15,7 @@
 <body class="page-doc">
   <header class="nav nav--doc">
     <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="{{LOGO_PATH}}" /></svg></span>
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
       <span class="brand-name">{{SITE_NAME}}</span>
     </a>
     <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
@@ -24,23 +24,21 @@
   <main class="doc" id="contenu">
     <p class="eyebrow">Informations légales</p>
     <h1>Mentions légales</h1>
-    <p class="doc-note" role="note">⚠️ Les champs marqués <mark>[À COMPLÉTER]</mark> doivent être renseignés par l'éditeur avant la mise en ligne. Aucune information n'a été inventée.</p>
-
     <h2>Éditeur du site</h2>
-    <dl class="doc-dl">
-      <dt>Nom / raison sociale</dt><dd><mark>[À COMPLÉTER — nom et prénom, ou raison sociale]</mark></dd>
-      <dt>Statut</dt><dd><mark>[À COMPLÉTER — particulier, micro-entreprise, association…]</mark></dd>
-      <dt>Adresse</dt><dd><mark>[À COMPLÉTER — adresse postale, ou mention de domiciliation si particulier (voir art. 6-III-2 LCEN)]</mark></dd>
-      <dt>SIREN / RNA</dt><dd><mark>[À COMPLÉTER — si applicable]</mark></dd>
-      <dt>Contact</dt><dd><mark>[À COMPLÉTER — adresse e-mail de contact]</mark></dd>
-      <dt>Directeur de la publication</dt><dd><mark>[À COMPLÉTER]</mark></dd>
+    <dl class="doc-dl" id="contact">
+      <dt>Nom</dt><dd>{{PUBLISHER_NAME}}</dd>
+      <dt>Statut</dt><dd>Particulier — site édité à titre non professionnel, sans but lucratif</dd>
+      <dt>Adresse</dt><dd>Non publiée — éditeur non professionnel ayant communiqué ses éléments d'identification à l'hébergeur, conformément à l'article 1-1 de la loi n° 2004-575 du 21 juin 2004 (LCEN)</dd>
+      <dt>SIREN / RNA</dt><dd>Non applicable</dd>
+      <dt>Contact</dt><dd>{{MAIL_CONTACT}}</dd>
+      <dt>Directeur de la publication</dt><dd>{{PUBLISHER_NAME}}</dd>
     </dl>
 
     <h2>Hébergeur</h2>
-    <p class="doc-note">Pré-rempli pour un déploiement sur Cloudflare Pages — <mark>[À VÉRIFIER]</mark> au moment de la mise en ligne (coordonnées sur <a href="https://www.cloudflare.com/fr-fr/" rel="noopener noreferrer" target="_blank">cloudflare.com</a>).</p>
     <dl class="doc-dl">
       <dt>Société</dt><dd>Cloudflare, Inc.</dd>
-      <dt>Adresse</dt><dd><mark>[À VÉRIFIER — adresse du siège publiée par Cloudflare]</mark></dd>
+      <dt>Adresse</dt><dd>101 Townsend St, San Francisco, CA 94107, États-Unis</dd>
+      <dt>Téléphone</dt><dd><a href="tel:+16503198930">+1 (650) 319-8930</a></dd>
       <dt>Site</dt><dd><a href="https://www.cloudflare.com" rel="noopener noreferrer" target="_blank">www.cloudflare.com</a></dd>
     </dl>
 
@@ -52,7 +50,9 @@
     <p>Fonds de carte © contributeurs <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a> (licence ODbL).</p>
 
     <h2>Signaler une erreur</h2>
-    <p>Une date, un lien ou une course manque ? Écris-nous : <mark>[À COMPLÉTER — e-mail de contact]</mark>.</p>
+    <p>Une date, un lien ou une course manque&nbsp;? Écris-nous : {{MAIL_COURSES}}. Sur chaque fiche course, le lien « Signaler une erreur » pré-remplit le message.</p>
+
+    <p class="doc-meta">Dernière mise à jour : {{LEGAL_UPDATED_AT}}</p>
 
     <p class="doc-links"><a href="/confidentialite/">Politique de confidentialité</a> · <a href="/">Retour à l'accueil</a></p>
   </main>

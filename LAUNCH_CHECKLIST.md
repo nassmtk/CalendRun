@@ -20,7 +20,10 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 - [x] Pause hors écran, DPR ≤ 1,5, chargement différé ; nouvelle légende
 
 ### Phase 3 — Légal & RGPD
-- [x] `/mentions-legales` et `/confidentialite` (placeholders `[À COMPLÉTER]`, rien d'inventé)
+- [x] `/mentions-legales` et `/confidentialite` complétées (éditeur particulier, art. 1-1 LCEN, hébergeur Cloudflare, conservation 12 mois, Umami UE) — valeurs dans `brand.config.js`
+- [x] Purge RGPD automatique : le worker de rappels supprime les contacts 12 mois après leur dernière course ; la désinscription supprime le contact
+- [x] « Proposer une course » + « Signaler une erreur » (fiche et page course) : mailto pré-remplis, adresses assemblées en JS (jamais en clair dans le HTML)
+- [x] Nouveau logo calendrier + coureur (favicons, manifest, OG régénérés)
 - [x] Case de consentement non pré-cochée, double opt-in, désinscription en un clic dans chaque e-mail
 - [x] Favoris / inscrits en localStorage uniquement, sans compte, sans pistage
 - [x] Umami (sans cookie) branché, activé seulement si `UMAMI_*` est défini → **pas de bandeau cookies**
@@ -61,8 +64,10 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 ## 🧑‍💻 Ce que TU dois faire à la main
 
 ### Avant la mise en ligne
-- [ ] **Compléter les mentions légales** (`mentions-legales/index.html`) : éditeur, statut, adresse (ou domiciliation), contact, directeur de publication ; vérifier l'adresse de Cloudflare
-- [ ] **Compléter la confidentialité** (`confidentialite/index.html`) : responsable, contact, durée de conservation, région Umami, date de mise à jour
+- [ ] **Créer les boîtes `contact@`, `courses@` (et l'expéditeur `alertes@`) sur calendrun.fr** — ex. Cloudflare *Email Routing* vers ta boîte perso (gratuit)
+- [ ] **Communiquer tes éléments d'identification à Cloudflare** (nom, adresse, téléphone dans le profil du compte) : c'est la condition de l'adresse « non publiée » (art. 1-1 LCEN)
+- [ ] **Umami Cloud** : choisir la région **UE** à la création du site (la politique de confidentialité l'annonce)
+- [ ] À chaque modification des pages légales : mettre à jour `LEGAL_UPDATED_AT` dans `brand.config.js`
 - [ ] Choisir et **acheter le nom de domaine**
 - [ ] Créer le projet **Cloudflare Pages** depuis le dépôt GitHub (README §3) et définir `SITE_URL`
 - [ ] **Brancher le domaine** (README §4) et choisir www ↔ apex

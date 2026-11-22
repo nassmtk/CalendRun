@@ -748,6 +748,7 @@
           <button class="btn btn--ghost" data-ics="${r.id}">${I.cal} Ajouter à l'agenda</button>
         </div>
         ${(r.tags || []).length ? `<div class="tags" style="margin-top:18px">${r.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+        <p class="report-row">Une date, un lien ou un format est faux&nbsp;? <a class="report-link" href="/mentions-legales/#contact" data-mail="courses" data-mail-tpl="error" data-name="${esc(r.name)}" data-url="${esc(((window.BRAND || {}).SITE_URL || location.origin) + racePath(r.id))}">Signaler une erreur</a></p>
       </div>`;
 
     $("#overlay").hidden = false;
