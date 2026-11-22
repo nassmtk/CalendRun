@@ -52,6 +52,11 @@ click($("#tab-calendar")); ok($$("#results .card").length === 0 && $$("#results 
 click($("#tab-map")); ok($$("#results .cal-month").length === 0 && $("#results .mapview"), "carte seule");
 click($("#tab-grid")); ok($$("#results .card").length === 149, "cartes seules");
 
+console.log("Alertes désactivées (ALERTS_ENABLED=false)");
+ok(!$("#results [data-alert]"), "aucune cloche d'alerte sur les cartes");
+A.openSheet("paris-versailles");
+ok(!$("#wl-form"), "aucun formulaire d'alerte dans la fiche");
+
 console.log("Erreurs JS :", errs.length ? errs : "aucune");
 w.localStorage.clear();
 process.exitCode = fails || errs.length ? 1 : 0;

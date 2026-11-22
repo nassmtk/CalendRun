@@ -34,3 +34,6 @@ Mode démo par défaut (stockage dans le navigateur). Renseigne `WAITLIST_ENDPOI
 
 ## Déployer
 `npm run build` puis publie `dist/` (Netlify : build command `npm run build`, publish dir `dist`).
+
+## Alertes e-mail
+Voir [docs/ALERTES.md](docs/ALERTES.md) : fonctionnement (Brevo double opt-in, worker de rappels), mise en place et **DNS (SPF, DKIM, DMARC)**. Désactivées tant que `ALERTS_ENABLED` ≠ `true`.

@@ -940,3 +940,9 @@ select option { background: var(--surface); }
   .hero-fallback { opacity: .22; }
 }
 @media (max-width: 1279px) { .hm-btn .hm-label { font-size: 10px; letter-spacing: 0; } }
+
+/* formulaire d'alerte : champ piège invisible + Turnstile */
+.hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
+.wl { position: relative; }
+.wl-turnstile:empty { display: none; }
+.wl-turnstile { font-size: 12px; color: var(--muted); }

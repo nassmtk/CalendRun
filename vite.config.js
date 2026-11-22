@@ -62,7 +62,9 @@ export default defineConfig(({ mode }) => {
           main: "index.html",
           mentions: "mentions-legales/index.html",
           confidentialite: "confidentialite/index.html",
-          notfound: "404.html"
+          notfound: "404.html",
+          alertOk: "alertes/confirmee/index.html",
+          alertOff: "alertes/desinscription/index.html"
         }
       }
     },

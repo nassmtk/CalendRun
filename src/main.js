@@ -14,6 +14,7 @@ import "./app.js";
 import { initCardTilt, initKudos } from "./motion/cards.js";
 import { initSmoothScroll, initHeroIntro, initStats, initNextUp, initNavTimer, initRegisteredFx, initViewSwap, initGridFlow, initFiltersFab, initPills, initMagnetic, initSheetTransition } from "./motion/flow.js";
 import { initDeptMenu, initMapDrawer } from "./ui/drawer.js";
+import { initTurnstile } from "./turnstile.js";
 import { canHover, reduced } from "./motion/env.js";
 
 const A = window.ALLURE;
@@ -31,6 +32,7 @@ initViewSwap(A);
 initGridFlow(A);
 initFiltersFab(A);
 initMapDrawer(A);
+if (window.SITE_CONFIG.ALERTS_ENABLED) initTurnstile(A);
 initPills(A);
 initSheetTransition(A);
 

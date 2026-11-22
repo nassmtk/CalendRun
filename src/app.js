@@ -247,6 +247,7 @@
   const placeLine = (r) => `<div class="place">${I.pin}<span>${esc(r.city)}${r.arr ? " " + esc(r.arr) : ""}</span><span class="dept">${esc(r.dept)}</span></div>`;
   const elevVal = (v, approx) => (v == null ? "—" : `${approx ? "~" : ""}${v} m`);
 
+  const ALERTS = !!CFG.ALERTS_ENABLED; // false → cloche et formulaire masqués (aucun faux formulaire)
   const isReg = (r) => registered.has(r.id);
   function regToggle(r, variant = "") {
     const on = isReg(r);
@@ -256,7 +257,7 @@
   function ctaFor(r, info, cls = "") {
     const l = linksFor(r)[0];
     const on = !!alerts[r.id];
-    const bell = isReg(r) ? "" : `<button class="btn btn--icon btn--bell ${on ? "subscribed" : ""}" data-alert="${r.id}" aria-label="${on ? "Alerte active" : "Me prévenir par email"}" title="${on ? "Alerte active" : "Me prévenir par email"}">${on ? I.check : I.bell}</button>`;
+    const bell = isReg(r) || !ALERTS ? "" : `<button class="btn btn--icon btn--bell ${on ? "subscribed" : ""}" data-alert="${r.id}" aria-label="${on ? "Alerte active" : "Me prévenir par email"}" title="${on ? "Alerte active" : "Me prévenir par email"}">${on ? I.check : I.bell}</button>`;
     const strong = l.kind === "register" || l.kind === "prereg";
     const SHORT = { register: l.label, prereg: "Pré-inscription", info: "Infos", site: "Site", search: "Chercher" };
     return `<div class="cta-row">${regToggle(r, "compact")}${bell}<a class="btn ${strong ? "btn--primary" : "btn--ghost"} magnetic ${cls}" href="${esc(l.href)}" target="_blank" rel="noopener" data-stop aria-label="${esc(l.label)} — ${esc(r.name)}">${esc(SHORT[l.kind] || l.label)} ${ARROW}</a></div>`;
@@ -643,10 +644,11 @@
 
     const sub = alerts[r.id];
     const lastEmail = store.get("email", "");
-    const alertBlock = sub
-      ? `<div class="wl-done">${I.check}<div>Alerte active pour ${esc(sub.email)}<span>On te prévient ${sub.alerts.includes("opening") ? "à l'ouverture des inscriptions" : ""}${sub.alerts.length > 1 ? " et " : ""}${sub.alerts.includes("reminder") ? "7 jours avant la course" : ""}.</span></div></div>
-         <button class="link-btn" data-unsub="${r.id}" style="justify-self:start">Désactiver l'alerte</button>`
+    const alertBlock = !ALERTS ? "" : sub
+      ? `<div class="wl-done">${I.check}<div>Demande envoyée pour ${esc(sub.email)}<span>Confirme via le lien reçu par e-mail. Ensuite, on te prévient ${sub.alerts.includes("opening") ? "à l'ouverture des inscriptions" : ""}${sub.alerts.length > 1 ? " et " : ""}${sub.alerts.includes("reminder") ? "7 jours avant la course" : ""}. Chaque e-mail contient un lien de désinscription.</span></div></div>
+         <button class="link-btn" data-unsub="${r.id}" style="justify-self:start">Oublier sur cet appareil</button>`
       : `<form class="wl" id="wl-form" data-id="${r.id}" novalidate>
+          <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="wl-head"><div class="wl-bell">${I.bell}</div><div><h6>${isReg(r) ? "Rappel avant la course" : info.can ? "Rappels pour cette course" : "Préviens-moi à l'ouverture"}</h6><p>Un mail, pas de spam. Désinscription en un clic.</p></div></div>
           <div class="field"><input type="email" name="email" placeholder="ton@email.fr" required value="${esc(lastEmail)}" aria-label="Adresse email" /><button class="btn btn--primary" type="submit">M'alerter</button></div>
           <div class="checks">
@@ -656,7 +658,8 @@
             <label class="check"><input type="checkbox" name="reminder" checked />Rappel J-7 avant la course</label>
             <label class="check check--consent"><input type="checkbox" name="consent" />J'accepte de recevoir ces e-mails. Un e-mail de confirmation te sera envoyé ; désinscription en un clic. <a href="/confidentialite/" target="_blank" rel="noopener noreferrer">Confidentialité</a></label>
           </div>
-          <p class="wl-error" id="wl-error" hidden></p>
+          <div class="wl-turnstile" id="wl-turnstile"></div>
+          <p class="wl-error" id="wl-error" role="alert" hidden></p>
         </form>`;
 
     const wasOpen = !$("#overlay").hidden;
@@ -719,6 +722,7 @@
     if (!wasOpen) $("#sheet").scrollTop = 0;
     };
     if (wasOpen) apply(); else { transition(apply, r.id, "open"); run("openSheet", r); }
+    if (ALERTS) requestAnimationFrame(() => { const f = $("#wl-form"); f && run("alertForm", f); });
     history.replaceState(null, "", "#c/" + r.id);
     setTimeout(() => {
       if (focusAlert && $("#wl-form input[type=email]")) {
@@ -749,23 +753,26 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = "Cet email n'a pas l'air valide."; err.hidden = false; return; }
     if (!sel.length) { err.textContent = "Choisis au moins un type d'alerte."; err.hidden = false; return; }
     if (!form.consent.checked) { err.textContent = "Coche la case de consentement pour recevoir les alertes."; err.hidden = false; return; }
+    const turnstileToken = form.dataset.turnstile || "";
+    if (!turnstileToken) { err.textContent = "Patiente une seconde : vérification anti-robot en cours."; err.hidden = false; return; }
     const btn = form.querySelector("button[type=submit]");
     btn.disabled = true; btn.textContent = "…";
-    const payload = { email, raceId: r.id, raceName: r.name, raceDate: r.date, alerts: sel, createdAt: new Date().toISOString() };
+    const payload = { email, raceId: r.id, alerts: sel, consent: true, website: form.website.value, turnstileToken };
     try {
-      if (CFG.WAITLIST_ENDPOINT) {
-        const res = await fetch(CFG.WAITLIST_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-      }
-      alerts[r.id] = { email, alerts: sel, createdAt: payload.createdAt };
+      const res = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(out.message || "HTTP " + res.status);
+      alerts[r.id] = { email, alerts: sel, createdAt: new Date().toISOString(), pending: true };
       store.set("alerts", alerts); store.set("email", email);
       favs.add(r.id); store.set("favs", [...favs]);
-      toast(CFG.WAITLIST_ENDPOINT ? "C'est noté, on te prévient 🔔" : "Alerte enregistrée (mode démo) 🔔");
+      toast("Vérifie ta boîte mail pour confirmer 📬");
       openSheet(r.id);
       render();
     } catch (e) {
-      err.textContent = "Oups, l'envoi a échoué. Réessaie dans un instant."; err.hidden = false;
+      err.textContent = e.message && !/^HTTP/.test(e.message) ? e.message : "Oups, l'envoi a échoué. Réessaie dans un instant.";
+      err.hidden = false;
       btn.disabled = false; btn.textContent = "M'alerter";
+      window.ALLURE.hooks && run("alertForm", form); // nouveau jeton Turnstile
     }
   }
 
@@ -945,7 +952,7 @@
 
 
   /* ---------- API pour la couche motion & la scène 3D ---------- */
-  const hooks = { beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [] };
+  const hooks = { beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [], alertForm: [] };
   const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[site]", k, e); } });
   window.ALLURE = {
     races: RACES, openSheet, fmtShort, esc, hooks, state,

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alerte confirmée — {{SITE_NAME}}</title>
+    <meta name="robots" content="noindex, nofollow" />
+  
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body class="page-doc">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="{{LOGO_PATH}}" /></svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+  </header>
+
+  <main class="doc" id="contenu">
+    <p class="eyebrow">Alertes e-mail</p>
+    <h1>C'est confirmé ✓</h1>
+    <p class="lead">Ton adresse est validée : tu recevras uniquement les alertes demandées pour cette course. Chaque e-mail contient un lien de désinscription en un clic.</p>
+    <p class="doc-links"><a class="btn btn--primary" href="/">Retour au calendrier</a></p>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/page.js"></script>
+</body>
+</html>

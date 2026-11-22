@@ -8,3 +8,4 @@ dist
 legacy/
 qa/
 *.log
+public/races.json
