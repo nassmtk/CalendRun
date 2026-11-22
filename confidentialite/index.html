@@ -18,7 +18,11 @@
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
       <span class="brand-name">{{SITE_NAME}}</span>
     </a>
-    <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+    <div class="nav-right">
+      {{NAV_CONTACT}}
+      <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{THEME_TOGGLE}}
+    </div>
   </header>
 
   <main class="doc" id="contenu">
@@ -39,22 +43,31 @@
       <dt>Désinscription</dt><dd>Un lien de désinscription en un clic figure dans chaque e-mail.</dd>
     </dl>
 
-    <h2>2. Favoris, courses inscrites, préférences</h2>
-    <p>Tes favoris, les courses que tu marques « inscrit » et ta vue préférée sont stockés <strong>uniquement dans ton navigateur</strong> (localStorage). Ils ne nous sont jamais transmis et disparaissent si tu effaces les données du site.</p>
+    <h2>2. Formulaire de contact</h2>
+    <dl class="doc-dl">
+      <dt>Données</dt><dd>Ton adresse e-mail, ton prénom si tu le donnes, le sujet et le contenu de ton message.</dd>
+      <dt>Finalité</dt><dd>Te répondre, et rien d'autre : pas de newsletter, pas de prospection.</dd>
+      <dt>Base légale</dt><dd>Ta demande (mesures prises à la demande de la personne concernée, et intérêt légitime à répondre aux messages reçus).</dd>
+      <dt>Destinataire</dt><dd>Le message est transmis par Brevo (sous-traitant, France) à notre boîte de réception. Il n'est pas stocké sur le site.</dd>
+      <dt>Durée</dt><dd>Le temps de traiter ta demande, et au plus tard 12 mois après notre dernier échange.</dd>
+    </dl>
 
-    <h2>3. Mesure d'audience</h2>
+    <h2>3. Favoris, courses inscrites, préférences</h2>
+    <p>Tes favoris, les courses que tu marques « inscrit », ta vue préférée et le thème choisi (jour / nuit) sont stockés <strong>uniquement dans ton navigateur</strong> (localStorage). Ils ne nous sont jamais transmis et disparaissent si tu effaces les données du site.</p>
+
+    <h2>4. Mesure d'audience</h2>
     <p>Nous utilisons Umami, un outil de mesure d'audience <strong>sans cookie</strong> qui ne collecte aucune donnée personnelle identifiante et produit uniquement des statistiques agrégées (pages vues, provenance). Aucun bandeau cookies n'est donc nécessaire. Région d'hébergement des statistiques : Union européenne.</p>
 
-    <h2>4. Services tiers techniques</h2>
+    <h2>5. Services tiers techniques</h2>
     <ul>
-      <li><strong>Cloudflare</strong> (hébergement, protection anti-robots Turnstile sur le formulaire d'alerte) : traite des données techniques de connexion (adresse IP, navigateur) pour délivrer le site et bloquer les abus.</li>
+      <li><strong>Cloudflare</strong> (hébergement, protection anti-robots Turnstile sur les formulaires) : traite des données techniques de connexion (adresse IP, navigateur) pour délivrer le site et bloquer les abus.</li>
       <li><strong>OpenStreetMap</strong> : les tuiles de la vue Carte sont chargées depuis les serveurs de la fondation OpenStreetMap, qui reçoivent ton adresse IP. Elles ne sont chargées que si tu ouvres la vue Carte.</li>
     </ul>
 
-    <h2>5. Tes droits</h2>
+    <h2>6. Tes droits</h2>
     <p>Tu disposes d'un droit d'accès, de rectification, d'effacement, d'opposition, de limitation et de portabilité, ainsi que du droit de retirer ton consentement à tout moment. Pour les exercer : {{MAIL_CONTACT}}. Tu peux aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr/fr/plaintes" rel="noopener noreferrer" target="_blank">CNIL</a>.</p>
 
-    <h2>6. Cookies</h2>
+    <h2>7. Cookies</h2>
     <p>Le site ne dépose <strong>aucun cookie</strong> de mesure ou de publicité.</p>
 
     <p class="doc-meta">Dernière mise à jour : {{LEGAL_UPDATED_AT}}</p>

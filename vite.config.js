@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import { BRAND, siteUrl, fill, logoSvg, mailParts } from "./brand.config.js";
 import { loadRaces } from "./scripts/lib/races.mjs";
+import { THEME_INIT } from "./scripts/lib/theme-init.mjs";
 
 /** remplace les {{CLÉS}} de marque dans tous les HTML (index, pages générées, légal, 404) */
 function brandHtml(vars) {
@@ -8,7 +9,10 @@ function brandHtml(vars) {
     name: "calendrun-brand-html",
     transformIndexHtml: {
       order: "pre",
-      handler: (html) => html.replace(/\{\{(\w+)\}\}/g, (m, k) => (k in vars ? vars[k] : m))
+      handler: (html) => html
+        .replace(/\{\{(\w+)\}\}/g, (m, k) => (k in vars ? vars[k] : m))
+        // thème clair appliqué avant le premier rendu (empreinte autorisée dans la CSP)
+        .replace(/<head>/, `<head>\n  <script>${THEME_INIT}</script>`)
     }
   };
 }
@@ -41,6 +45,15 @@ export const fill = ${fill.toString()};`
   };
 }
 
+/** lien Contact de la barre du haut (même style que Favoris / Inscrites) */
+const NAV_CONTACT = `<a href="/contact/" class="nav-contact" aria-label="Contact"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><span class="lbl">Contact</span></a>`;
+
+/** bouton jour / nuit (src/theme.js) : l'icône affichée est celle du thème vers lequel on bascule */
+const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle aria-label="Activer le mode jour" title="Mode jour / nuit">
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg>
+    </button>`;
+
 /** pied de page commun à toutes les pages (HTML statique, lisible sans JS) */
 function footerHtml(v) {
   return `<div class="footer-main">
@@ -52,7 +65,7 @@ function footerHtml(v) {
       <a href="/mentions-legales/">Mentions légales</a>
       <a href="/confidentialite/">Confidentialité</a>
       ${mailLink("courses", { label: "Proposer une course", tpl: "propose" })}
-      ${mailLink("contact", { label: "Contact" })}
+      <a href="/contact/">Contact</a>
       <span>Carte © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a></span>
     </nav>`;
 }
@@ -95,6 +108,8 @@ export default defineConfig(({ mode }) => {
     LOGO_TO: BRAND.LOGO.to,
     LOGO_INK: BRAND.LOGO.ink,
     LOGO_SVG: logoSvg("currentColor"),
+    NAV_CONTACT,
+    THEME_TOGGLE,
     PUBLISHER_NAME: BRAND.PUBLISHER_NAME,
     PUBLISHER_DISPLAY_NAME: BRAND.PUBLISHER_DISPLAY_NAME,
     LEGAL_UPDATED_AT: BRAND.LEGAL_UPDATED_AT,
@@ -113,6 +128,7 @@ export default defineConfig(({ mode }) => {
           main: "index.html",
           mentions: "mentions-legales/index.html",
           confidentialite: "confidentialite/index.html",
+          contact: "contact/index.html",
           notfound: "404.html",
           alertOk: "alertes/confirmee/index.html",
           alertOff: "alertes/desinscription/index.html",

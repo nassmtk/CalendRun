@@ -34,6 +34,9 @@
   --accent-glow: rgba(252, 76, 2, .35);
   --accent-faint: rgba(252, 76, 2, .06);
   --on-accent: #0A0A0B;   /* texte sur fond orange : contraste 6.2:1 (AA) */
+  --on-ink: #F5F3EF;      /* texte clair sur les pastilles sombres posées sur l'orange */
+  --accent-ink: var(--accent); /* orange utilisé comme couleur de TEXTE (plus foncé en thème clair) */
+  --ink-darken: 0%;       /* assombrissement des couleurs de catégorie utilisées en texte */
   --grad-signature: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
   --grad-signature-diag: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
 
@@ -94,4 +97,50 @@
   --z-overlay: 80;
   --z-toast: 90;
   --z-grain: 100;
+}
+
+/* =========================================================
+   THÈME CLAIR (bouton jour / nuit) — mêmes noms de tokens.
+   L'orange de fond reste #FC4C02 (texte sombre dessus : 5.8:1) ;
+   l'orange en texte passe à --accent-ink (4.8:1 sur le fond clair).
+   ========================================================= */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-0: #F6F4F0;
+  --bg-1: #EFECE6;
+  --surface: #FFFFFF;
+  --surface-2: #F1EEE9;
+  --surface-3: #E6E2DB;
+  --bg-0-a80: rgba(246, 244, 240, .82);
+  --bg-0-a60: rgba(246, 244, 240, .62);
+  --bg-1-a92: rgba(255, 255, 255, .92);
+  --scrim: rgba(28, 24, 20, .38);
+
+  --border: rgba(10, 10, 11, .08);
+  --border-strong: rgba(10, 10, 11, .14);
+  --border-hover: rgba(196, 61, 0, .4);
+
+  --text: #141414;
+  --muted: #5B5751;       /* 6.5:1 sur le fond */
+  --subtle: #A8A39B;
+
+  --accent-ink: #C43D00;
+  --accent-soft: rgba(252, 76, 2, .1);
+  --accent-glow: rgba(252, 76, 2, .28);
+  --accent-faint: rgba(252, 76, 2, .05);
+  --ink-darken: 40%;
+
+  --st-open: #C43D00;
+  --st-lottery: #6E4FCB;
+  --st-soon: #9A5B00;
+  --st-closed: #B8323A;
+  --st-check: #1F6FB0;
+  --date-ok: #2E7D46;
+  --date-listed: #1F6FB0;
+  --date-est: #9A5B00;
+
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, .6) inset, 0 10px 30px -14px rgba(40, 30, 20, .22);
+  --shadow-2: 0 30px 70px -30px rgba(40, 30, 20, .3);
+  --shadow-accent: 0 18px 50px -18px var(--accent-glow);
 }

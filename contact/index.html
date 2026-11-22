@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — {{SITE_NAME}}</title>
+  <meta name="description" content="Une question, une course à ajouter, une erreur à signaler ? Écris à l'équipe {{SITE_NAME}}." />
+  <link rel="canonical" href="{{SITE_URL}}/contact/" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+</head>
+<body class="page-doc page-contact">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <div class="nav-right">
+      {{NAV_CONTACT}}
+      <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{THEME_TOGGLE}}
+    </div>
+  </header>
+
+  <main class="doc" id="contenu">
+    <p class="eyebrow">Contact</p>
+    <h1>Écris-nous</h1>
+    <p class="lead">Une question, une course qui manque, une date à corriger ? Un petit message et on te répond par e-mail.</p>
+
+    <div class="contact-wrap">
+      <div class="contact-card" id="contact-card">
+        <form class="cf" id="contact-form" novalidate>
+          <fieldset class="cf-topics">
+            <legend>C'est à propos de…</legend>
+            <label class="cf-topic"><input type="radio" name="topic" value="question" checked /><span>Une question</span></label>
+            <label class="cf-topic"><input type="radio" name="topic" value="course" /><span>Proposer une course</span></label>
+            <label class="cf-topic"><input type="radio" name="topic" value="erreur" /><span>Signaler une erreur</span></label>
+            <label class="cf-topic"><input type="radio" name="topic" value="partenariat" /><span>Partenariat / presse</span></label>
+            <label class="cf-topic"><input type="radio" name="topic" value="autre" /><span>Autre</span></label>
+          </fieldset>
+
+          <div class="cf-row">
+            <div class="cf-field">
+              <label for="cf-name">Prénom <small>(facultatif)</small></label>
+              <input id="cf-name" name="name" type="text" maxlength="80" autocomplete="given-name" />
+            </div>
+            <div class="cf-field">
+              <label for="cf-email">Ton e-mail</label>
+              <input id="cf-email" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" aria-describedby="cf-email-help" />
+              <span class="sr-only" id="cf-email-help">Pour pouvoir te répondre.</span>
+            </div>
+          </div>
+
+          <div class="cf-field">
+            <label for="cf-message">Ton message</label>
+            <textarea id="cf-message" name="message" required minlength="10" maxlength="3000" aria-describedby="cf-count"></textarea>
+            <span class="cf-count" id="cf-count" aria-live="polite">0 / 3000</span>
+          </div>
+
+          <!-- champ piège anti-robot : invisible pour les humains -->
+          <div class="cf-hp" aria-hidden="true"><label for="cf-website">Site web</label><input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" /></div>
+
+          <div class="cf-turnstile" id="cf-turnstile"></div>
+          <p class="cf-error" id="cf-error" role="alert" hidden></p>
+
+          <div class="cf-foot">
+            <p class="cf-legal">Ton adresse sert uniquement à te répondre. Détails dans la <a href="/confidentialite/">politique de confidentialité</a>.</p>
+            <button class="btn btn--primary" type="submit" id="cf-submit">Envoyer le message</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/contact.js"></script>
+</body>
+</html>

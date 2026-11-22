@@ -30,6 +30,8 @@ export function mountScene(host) {
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(tok("--bg-0"), 60, 130);
+  // bouton jour / nuit : le brouillard prend la couleur du nouveau fond
+  document.addEventListener("calendrun:theme", () => scene.fog.color.set(tok("--bg-0")));
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 300);
   const world = new THREE.Group();
   world.rotation.y = -0.32; // légère perspective : décembre un peu plus proche

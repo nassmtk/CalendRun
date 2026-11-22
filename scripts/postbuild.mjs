@@ -99,6 +99,7 @@ const lastmod = today.toISOString().slice(0, 10);
 const urls = [
   { loc: `${SITE}/`, pr: "1.0", cf: "daily" },
   ...races.map((r) => ({ loc: `${SITE}/courses/${r._slug}/`, pr: "0.8", cf: "weekly" })),
+  { loc: `${SITE}/contact/`, pr: "0.3", cf: "yearly" },
   { loc: `${SITE}/mentions-legales/`, pr: "0.1", cf: "yearly" },
   { loc: `${SITE}/confidentialite/`, pr: "0.1", cf: "yearly" }
 ];

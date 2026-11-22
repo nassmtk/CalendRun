@@ -24,6 +24,8 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 - [x] Purge RGPD automatique : le worker de rappels supprime les contacts 12 mois après leur dernière course ; la désinscription supprime le contact
 - [x] « Proposer une course » + « Signaler une erreur » (fiche et page course) : mailto pré-remplis, adresses assemblées en JS (jamais en clair dans le HTML)
 - [x] Nouveau logo calendrier + coureur (favicons, manifest, OG régénérés)
+- [x] Bouton jour / nuit (thème clair complet, contrastes AA, choix mémorisé, sans flash au chargement)
+- [x] Page `/contact/` : formulaire → `/api/contact` (Brevo), champ piège, Turnstile, limitation IP ; repli e-mail pré-rédigé tant que Brevo n'est pas branché
 - [x] Case de consentement non pré-cochée, double opt-in, désinscription en un clic dans chaque e-mail
 - [x] Favoris / inscrits en localStorage uniquement, sans compte, sans pistage
 - [x] Umami (sans cookie) branché, activé seulement si `UMAMI_*` est défini → **pas de bandeau cookies**
@@ -66,6 +68,7 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 ### Avant la mise en ligne
 - [ ] **Créer les boîtes `contact@`, `courses@` (et l'expéditeur `alertes@`) sur calendrun.fr** — ex. Cloudflare *Email Routing* vers ta boîte perso (gratuit)
 - [ ] **Communiquer tes éléments d'identification à Cloudflare** (nom, adresse, téléphone dans le profil du compte) : c'est la condition de l'adresse « non publiée » (art. 1-1 LCEN)
+- [ ] **Formulaire de contact** : il fonctionne dès que `BREVO_API_KEY` et `SENDER_EMAIL` sont définis dans Cloudflare Pages (compte Brevo + domaine expéditeur vérifié, voir docs/ALERTES.md étapes 1, 4, 5). Avant ça, il propose l'envoi par e-mail
 - [ ] **Umami Cloud** : choisir la région **UE** à la création du site (la politique de confidentialité l'annonce)
 - [ ] À chaque modification des pages légales : mettre à jour `LEGAL_UPDATED_AT` dans `brand.config.js`
 - [ ] Choisir et **acheter le nom de domaine**

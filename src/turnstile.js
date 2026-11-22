@@ -1,4 +1,4 @@
-/* Cloudflare Turnstile (anti-robot) pour le formulaire d'alerte.
+/* Cloudflare Turnstile (anti-robot) pour le formulaire d'alerte et la page Contact.
    Le script n'est chargé que lorsqu'un formulaire d'alerte s'affiche. */
 const SITE_KEY = __TURNSTILE_SITE_KEY__;
 let loading = null;
@@ -17,6 +17,19 @@ function load() {
   return loading;
 }
 
+const theme = () => (document.documentElement.dataset.theme === "light" ? "light" : "dark");
+
+/** widget générique (page Contact) : renvoie false si Turnstile n'est pas configuré */
+export async function mountTurnstile(slot, { onToken, onReset }) {
+  if (!SITE_KEY || !slot) return false;
+  const ts = await load();
+  return ts.render(slot, {
+    sitekey: SITE_KEY, theme: theme(), language: "fr", size: "flexible", appearance: "interaction-only",
+    callback: onToken, "expired-callback": onReset, "error-callback": onReset
+  });
+}
+export const resetTurnstile = (id) => { if (id && window.turnstile) window.turnstile.reset(id); };
+
 export function initTurnstile(A) {
   A.hooks.alertForm.push(async (form) => {
     const slot = form.querySelector(".wl-turnstile");
@@ -26,7 +39,7 @@ export function initTurnstile(A) {
       const ts = await load();
       if (slot.dataset.widget) { ts.reset(slot.dataset.widget); return; }
       slot.dataset.widget = ts.render(slot, {
-        sitekey: SITE_KEY, theme: "dark", language: "fr", size: "flexible", appearance: "interaction-only",
+        sitekey: SITE_KEY, theme: theme(), language: "fr", size: "flexible", appearance: "interaction-only",
         callback: (token) => { form.dataset.turnstile = token; },
         "expired-callback": () => { delete form.dataset.turnstile; },
         "error-callback": () => { delete form.dataset.turnstile; }

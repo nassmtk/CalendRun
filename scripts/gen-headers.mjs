@@ -2,6 +2,7 @@ import "./lib/env.mjs";
 // Génère public/_headers (en-têtes HTTP Cloudflare Pages) avec une CSP stricte
 // construite uniquement à partir des services réellement utilisés.
 import fs from "node:fs";
+import { THEME_INIT_HASH } from "./lib/theme-init.mjs";
 
 const env = process.env;
 const origin = (u) => { try { return new URL(u).origin; } catch { return ""; } };
@@ -11,7 +12,7 @@ const TILES = "https://tile.openstreetmap.org";
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' ${TURNSTILE}${umami ? " " + umami : ""}`,
+  `script-src 'self' ${THEME_INIT_HASH} ${TURNSTILE}${umami ? " " + umami : ""}`,
   // feuilles de style : uniquement nos fichiers ; attributs style="" (variables CSS posées par le JS) autorisés
   "style-src 'self'",
   "style-src-attr 'unsafe-inline'",

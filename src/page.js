@@ -5,3 +5,4 @@ import "./styles/main.css";
 import "./styles/pages.css";
 import "./analytics.js";
 import "./mail.js";
+import "./theme.js";

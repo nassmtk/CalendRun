@@ -16,7 +16,11 @@ function webglOk() {
 }
 
 /* ---------- repli décoratif : barres isométriques en SVG ---------- */
+let fallbackHost = null;
+document.addEventListener("calendrun:theme", () => { if (fallbackHost) mountFallback(fallbackHost); });
+
 export function mountFallback(host) {
+  fallbackHost = host;
   const stats = monthStats(A.races);
   const max = Math.max(...stats.map((s) => s.total));
   const W = 1200, H = 640, baseY = 520, slot = 74, x0 = 600 - (slot * 12) / 2 + 12, bw = 44, dx = 16, dy = 10, scale = 330 / max;

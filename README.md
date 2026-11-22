@@ -44,6 +44,7 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 | `TURNSTILE_SECRET_KEY` 🔒 | fonctions | vérification Turnstile côté serveur |
 | `UNSUB_SECRET` 🔒 | fonctions + worker | signature des liens de désinscription (même valeur des deux côtés) |
 | `SENDER_EMAIL` | worker | expéditeur vérifié dans Brevo |
+| `CONTACT_TO` | fonctions | destinataire du formulaire `/contact/` (défaut : `CONTACT_EMAIL`). Le formulaire a besoin de `BREVO_API_KEY` + `SENDER_EMAIL` ; sinon il propose d'envoyer le message par e-mail |
 | `ALLOWED_ORIGINS` | fonctions | origines en plus de `SITE_URL` (ex. l'URL `*.pages.dev` de préproduction) |
 
 🔒 = secret : à définir comme **secret chiffré**, jamais dans le code ni dans une variable lue au build.
@@ -83,7 +84,7 @@ Champs utiles :
 Après modification : `npm test` puis `npm run audit:links`, commit, push → Cloudflare redéploie. L'`id` d'une course définit son URL publique (`/courses/{id}-2027/`) : **ne le change pas** une fois en ligne (ou ajoute une redirection dans `public/_redirects`).
 
 ## 7. Marque
-Nom, accroche, sous-titre (`{count}` calculé), couleurs et pictogramme du logo (`logoSvg`), éditeur (`PUBLISHER_NAME`), adresses `CONTACT_EMAIL` / `COURSES_EMAIL`, date de mise à jour des pages légales (`LEGAL_UPDATED_AT`) : **[`brand.config.js`](brand.config.js)**. Les adresses e-mail ne sont jamais écrites en clair dans le HTML ni le JS : elles sont assemblées au chargement par `src/mail.js`. Les couleurs et typos du site : `src/styles/tokens.css`.
+Nom, accroche, sous-titre (`{count}` calculé), couleurs et pictogramme du logo (`logoSvg`), éditeur (`PUBLISHER_NAME`), adresses `CONTACT_EMAIL` / `COURSES_EMAIL`, date de mise à jour des pages légales (`LEGAL_UPDATED_AT`) : **[`brand.config.js`](brand.config.js)**. Les adresses e-mail ne sont jamais écrites en clair dans le HTML ni le JS : elles sont assemblées au chargement par `src/mail.js`. Les couleurs et typos du site : `src/styles/tokens.css` (thème sombre dans `:root`, thème clair dans `:root[data-theme="light"]`, bouton jour / nuit : `src/theme.js`).
 
 ## Organisation
 ```
@@ -95,7 +96,7 @@ src/motion/            animations (GSAP, Lenis), cartes 3D, compte à rebours pa
 src/hero/              hero : barres 3D (Three.js) ou repli SVG
 src/ui/drawer.js       tiroirs mobiles, menu des départements
 src/styles/            tokens, styles, pages secondaires, polices
-functions/             Cloudflare Pages Functions (/api/subscribe, /api/unsubscribe)
+functions/             Cloudflare Pages Functions (/api/subscribe, /api/unsubscribe, /api/contact)
 workers/reminders/     worker planifié d'envoi des alertes
 scripts/               build (prebuild/postbuild, OG, headers) + QA (tests, captures, Lighthouse)
 docs/ALERTES.md        alertes e-mail + DNS

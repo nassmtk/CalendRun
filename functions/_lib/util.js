@@ -46,9 +46,9 @@ export const unsubscribeUrl = async (env, email) =>
  * sinon en mémoire de l'isolat (protection partielle, mieux que rien).
  */
 const memory = new Map();
-export async function rateLimited(env, ip, { limit = 5, windowSec = 600 } = {}) {
+export async function rateLimited(env, ip, { limit = 5, windowSec = 600, scope = "rl" } = {}) {
   const bucket = Math.floor(Date.now() / 1000 / windowSec);
-  const key = `rl:${ip}:${bucket}`;
+  const key = `${scope}:${ip}:${bucket}`;
   if (env.RATE_LIMIT) {
     const n = Number((await env.RATE_LIMIT.get(key)) || 0) + 1;
     await env.RATE_LIMIT.put(key, String(n), { expirationTtl: windowSec + 60 });

@@ -9,7 +9,7 @@
 import { BRAND, MAIL } from "virtual:brand";
 
 const rev = (s) => [...s].reverse().join("");
-const address = (key) => (MAIL[key] ? MAIL[key].map(rev).join("@") : "");
+export const address = (key) => (MAIL[key] ? MAIL[key].map(rev).join("@") : "");
 
 const TEMPLATES = {
   propose: () => ({
