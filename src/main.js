@@ -15,6 +15,7 @@ import "./theme.js";
 import "../config.js";
 import "../data/races.js";
 import "./app.js";
+import { initNav } from "./ui/nav.js";
 import { canHover, reduced } from "./motion/env.js";
 
 const A = window.CALENDRUN;
@@ -25,6 +26,7 @@ if (canHover() && !reduced()) document.documentElement.classList.add("tilt-on");
 document.documentElement.classList.add("intro"); // entrée du hero en CSS (aucun JS requis)
 
 A.boot({ deferCatalog: true });
+initNav();
 
 // motion puis catalogue (sous la ligne de flottaison), en tâches séparées
 const idle = (fn, t = 600) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: t }) : setTimeout(fn, 1));

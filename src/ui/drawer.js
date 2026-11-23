@@ -1,7 +1,6 @@
 /* =========================================================
-   Tiroirs (bottom sheets) glissables + menu déroulant des départements
-   - même composant pour le choix des départements (mobile) et la liste
-     de la vue Carte (mobile)
+   Tiroir glissable de la liste de la vue Carte (mobile)
+   (départements et menu mobile : voir src/ui/sheet.js + src/ui/nav.js)
    ========================================================= */
 import { gsap } from "gsap";
 import { reduced } from "../motion/env.js";
@@ -43,35 +42,6 @@ export function makeDraggable(drawer, { snaps = [0, 1], onSnap } = {}) {
   handle.addEventListener("pointerup", end);
   handle.addEventListener("pointercancel", end);
   return { snap: (v) => { apply(v, true); onSnap && onSnap(v); }, reset: () => gsap.set(drawer, { clearProps: "transform" }) };
-}
-
-/* ---------- départements : menu déroulant (< 1100 px) / tiroir (mobile) ---------- */
-export function initDeptMenu() {
-  const btn = document.getElementById("dept-toggle");
-  const pop = document.getElementById("dept-pop");
-  const scrim = document.getElementById("scrim");
-  let drag = null;
-  const open = (on) => {
-    pop.hidden = !on;
-    btn.setAttribute("aria-expanded", String(on));
-    const phone = isPhone();
-    scrim.hidden = !(on && phone);
-    pop.classList.toggle("is-drawer", phone);
-    if (on && phone) {
-      drag = drag || makeDraggable(pop, { snaps: [0, 1], onSnap: (v) => v === 1 && open(false) });
-      gsap.set(pop, { y: "100%" });
-      drag.snap(0);
-    } else if (drag) drag.reset();
-    if (on) (pop.querySelector("[aria-pressed=true]") || pop.querySelector("button"))?.focus({ preventScroll: true });
-  };
-  btn.addEventListener("click", (e) => { e.stopPropagation(); open(pop.hidden); });
-  scrim.addEventListener("click", () => open(false));
-  document.addEventListener("click", (e) => {
-    if (pop.hidden || pop.contains(e.target) || btn.contains(e.target)) return;
-    if (!isPhone()) open(false);
-  });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !pop.hidden) { open(false); btn.focus(); } });
-  addEventListener("resize", () => { if (!pop.hidden && !isPhone() && pop.classList.contains("is-drawer")) open(false); });
 }
 
 /* ---------- vue Carte (mobile) : la liste est un tiroir glissable ---------- */

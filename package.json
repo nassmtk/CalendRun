@@ -11,11 +11,13 @@
     "test": "node scripts/test-logic.cjs && node scripts/test-reminders.mjs && node scripts/test-domain.mjs",
     "audit:links": "node scripts/audit-links.mjs",
     "qa:shots": "node scripts/qa-shots.mjs",
+    "qa:mobile": "node scripts/qa-mobile.mjs",
     "pages:dev": "npm run build && wrangler pages dev dist",
     "deploy": "npm run build && wrangler pages deploy dist",
     "postbuild": "node scripts/postbuild.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@resvg/resvg-js": "^2.6.2",
     "jsdom": "^31.0.1",
     "lighthouse": "^13.6.0",

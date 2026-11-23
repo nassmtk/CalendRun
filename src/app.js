@@ -369,6 +369,15 @@
     const clear = `<button class="dchip-clear" data-dept-clear aria-label="Effacer les départements" ${state.depts.size ? "" : "hidden"}>${I.close}</button>`;
     $("#dept-seg").innerHTML = chips + clear;
     $("#dept-list").innerHTML = chips + (state.depts.size ? `<button class="link-btn" data-dept-clear>Effacer la sélection</button>` : "");
+    // tiroir mobile : les 8 départements, 2 colonnes, cibles ≥ 44 px
+    const grid = $("#dept-grid");
+    if (grid) grid.innerHTML = Object.keys(DEPTS).map((d) => {
+      const n = RACES.filter((r) => matches(r, "dept") && r.dept === d).length;
+      const on = state.depts.has(d);
+      return `<button type="button" class="dcell" data-dept="${d}" aria-pressed="${on}" ${n || on ? "" : "disabled"} aria-label="${DEPTS[d]} (${d}) : ${n} course${n > 1 ? "s" : ""}"><span class="dcell-name">${DEPTS[d]}</span><span class="dcell-meta"><span class="dcell-code">${d}</span><span class="n">${n}</span></span></button>`;
+    }).join("");
+    const clr = $("#dept-clear-btn");
+    if (clr) clr.disabled = !state.depts.size;
     $("#dept-count").textContent = state.depts.size;
     $("#dept-count").hidden = !state.depts.size;
     $("#dept-toggle").classList.toggle("on", state.depts.size > 0);
@@ -391,6 +400,8 @@
       : state.list === "registered" ? `<b>${n}</b> course${pl} où tu es inscrit·e`
       : `<b>${n}</b> course${pl} ${isFiltered() ? "correspondent" : "au calendrier 2027"}`;
     $("#reset").hidden = !isFiltered();
+    const see = $("#dept-see");
+    if (see) see.textContent = n ? `Voir ${n > 1 ? `les ${n} courses` : "la course"}` : "Aucune course";
     $("#list-exit").hidden = state.list === "all";
 
     const viewChanged = prevView !== null && prevView !== state.view;
@@ -514,6 +525,10 @@
     const set = (sel, n) => { const b = $(sel); b.textContent = n; b.classList.toggle("on", n > 0); };
     set("#fav-count", favs.size);
     set("#reg-count", registered.size);
+    // menu compact (mobile) : mêmes compteurs
+    $$("[data-count=favs]").forEach((b) => { b.textContent = favs.size; b.classList.toggle("on", favs.size > 0); });
+    $$("[data-count=registered]").forEach((b) => { b.textContent = registered.size; b.classList.toggle("on", registered.size > 0); });
+    $$(".menu-row[data-list]").forEach((a) => a.setAttribute("aria-current", state.list === a.dataset.list ? "page" : "false"));
     $("#nav-favs").classList.toggle("active", state.list === "favs");
     $("#nav-reg").classList.toggle("active", state.list === "registered");
     $("#nav-favs").setAttribute("aria-current", state.list === "favs" ? "page" : "false");

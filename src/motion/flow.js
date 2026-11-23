@@ -27,6 +27,7 @@ export function initSmoothScroll(A) {
   lenis = new Lenis({ duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 4), smoothWheel: true });
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
+  A.lenis = lenis; // tiroirs du bas : pause du défilement doux
   A.scrollTo = (el) => lenis.scrollTo(el, { offset: -90, duration: 1.2 });
   A.hooks.openSheet.push(() => lenis.stop());
   A.hooks.closeSheet.push(() => lenis.start());

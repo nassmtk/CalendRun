@@ -1016,3 +1016,104 @@ select option { background: var(--surface); }
 /* bascule de thème : le nouveau thème s'ouvre en cercle depuis le bouton */
 .theme-vt::view-transition-old(root), .theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 .theme-vt::view-transition-group(*) { animation-duration: 0s; }
+
+/* =========================================================
+   v3 — BARRE DU HAUT MOBILE + TIROIRS DU BAS (< 768 px)
+   Les tiroirs sont sous <body> (jamais dans .nav : son transform et son
+   backdrop-filter piégeaient le position:fixed et le z-index).
+   ========================================================= */
+html.scroll-locked { overflow: hidden; }
+html.scroll-locked body { position: fixed; left: 0; right: 0; width: 100%; overflow: hidden; }
+
+.sheet-scrim {
+  position: fixed; inset: 0; z-index: calc(var(--z-overlay) - 1);
+  background: var(--scrim); opacity: 0; transition: opacity var(--dur-2) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+}
+.sheet-scrim.is-open { opacity: 1; }
+.sheet-scrim[hidden] { display: none; }
+
+.bsheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-overlay);
+  max-height: min(86svh, 640px); overflow-y: auto; overscroll-behavior: contain;
+  padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+  background: var(--bg-1); border: 1px solid var(--border-strong); border-bottom: 0;
+  border-radius: var(--r-lg) var(--r-lg) 0 0; box-shadow: var(--shadow-2);
+  transform: translateY(100%); transition: transform .32s cubic-bezier(.16, 1, .3, 1);
+}
+.bsheet.is-open { transform: none; }
+.bsheet.is-dragging { transition: none; }
+.bsheet[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .bsheet, .sheet-scrim { transition: none; } }
+
+.bsheet-head {
+  position: sticky; top: 0; z-index: 1; background: var(--bg-1);
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  padding: 22px 0 12px; touch-action: none; cursor: grab;
+}
+.bsheet-grip { position: absolute; top: 8px; left: 50%; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: var(--surface-3); }
+.bsheet-title { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 20px; letter-spacing: -.01em; }
+.bsheet-x { width: 44px; height: 44px; margin-right: -8px; display: grid; place-items: center; border-radius: 50%; color: var(--muted); }
+.bsheet-x:hover { color: var(--text); background: var(--surface-2); }
+.bsheet-x svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+
+/* départements : grille 2 colonnes, cibles ≥ 44 px */
+.dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dcell {
+  min-height: 56px; padding: 10px 12px; border-radius: var(--r-sm, 12px);
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  transition: background-color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.dcell-name { font-weight: 700; font-size: 15px; line-height: 1.15; }
+.dcell-meta { display: flex; gap: 8px; align-items: baseline; font-family: var(--f-num); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dcell-meta .n::after { content: " courses"; font-family: var(--f-body); }
+.dcell[aria-pressed="true"] { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.dcell[aria-pressed="true"] .dcell-meta { color: var(--on-accent); opacity: .85; }
+.dcell:disabled { opacity: .4; }
+
+.bsheet-actions {
+  position: sticky; bottom: calc(-16px - env(safe-area-inset-bottom)); z-index: 1;
+  display: flex; gap: 10px; margin: 0 -16px; padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--bg-1) 30%);
+}
+.bsheet-actions .btn { min-height: 48px; }
+.bsheet-actions .btn--ghost { flex: 0 0 auto; }
+.bsheet-actions .btn--primary { flex: 1; }
+.bsheet-actions .btn:disabled { opacity: .45; }
+
+/* menu compact */
+.menu-rows { display: grid; gap: 4px; padding-bottom: 4px; }
+.menu-row {
+  min-height: 52px; padding: 0 12px; border-radius: var(--r-sm, 12px);
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+  font-size: 16px; font-weight: 600; color: var(--text);
+}
+.menu-row:hover, .menu-row[aria-current="page"] { background: var(--surface-2); }
+.menu-row svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; color: var(--muted); }
+.menu-row > span:first-of-type { flex: 1; }
+.menu-sep { height: 1px; margin: 6px 0; background: var(--border); }
+
+.menu-toggle { display: none; position: relative; width: 40px; height: 40px; flex: none; place-items: center; border-radius: 50%; color: var(--text); border: 1px solid var(--border); background: var(--surface); }
+.menu-toggle svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.menu-toggle .badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; font-size: 11px; background: var(--accent); color: var(--on-accent); }
+.menu-toggle .badge[hidden] { display: none; }
+
+@media (max-width: 767.98px) {
+  :root { --nav-h: 56px; }
+  .nav { top: 10px; padding: 0 8px 0 10px; gap: 6px; }
+  .brand-name, .brand-tag { display: none; }
+  .nav-depts { justify-content: flex-start; }
+  .dept-seg, .dept-pop { display: none !important; }
+  .dept-toggle { display: inline-flex; min-height: 40px; padding: 0 12px; }
+  .dept-toggle .lbl { display: inline; }
+  .nav-links > a, .nav > .theme-toggle { display: none; }
+  .nav-timer { padding: 0 10px; min-height: 36px; font-size: 15px; margin-left: 0; }
+  .nav-timer .t-clock, .nav-tip { display: none; }
+  .menu-toggle { display: grid; }
+}
+@media (max-width: 380px) {
+  .dept-toggle .ico, .dept-toggle > svg:last-child { display: none; }
+  .dept-toggle { padding: 0 10px; }
+}
