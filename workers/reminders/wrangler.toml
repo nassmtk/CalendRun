@@ -10,6 +10,6 @@ crons = ["0 7 * * *"] # tous les jours à 7h UTC
 
 [vars]
 ALERTS_ENABLED = "false"          # passer à "true" une fois Brevo configuré
-SITE_URL = "https://exemple.fr"   # même valeur que le site
+SITE_URL = "https://calend.run"   # même valeur que le site
 BREVO_LIST_ID = "0"
-SENDER_EMAIL = "alertes@calendrun.fr"
+SENDER_EMAIL = "alertes@calend.run"

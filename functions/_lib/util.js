@@ -1,4 +1,5 @@
 // Utilitaires partagés par les fonctions serverless (Cloudflare Pages Functions)
+import { BRAND } from "../../brand.config.js";
 
 /** réponse JSON générique — jamais d'information permettant d'énumérer les e-mails */
 export const json = (data, status = 200, headers = {}) =>
@@ -37,7 +38,13 @@ export function safeEqual(a, b) {
   return r === 0;
 }
 
-export const siteUrl = (env) => String(env.SITE_URL || "").replace(/\/+$/, "");
+export const siteUrl = (env) => String(env.SITE_URL || BRAND.SITE_URL).replace(/\/+$/, "");
+export const senderEmail = (env) => env.SENDER_EMAIL || BRAND.SENDER_EMAIL;
+
+/** origines autorisées pour les requêtes qui modifient des données : SITE_URL + ALLOWED_ORIGINS */
+export const allowedOrigins = (env) => [siteUrl(env), ...String(env.ALLOWED_ORIGINS || "").split(",").map((o) => o.trim().replace(/\/+$/, "")).filter(Boolean)].filter(Boolean);
+/** Origin obligatoire (les navigateurs l'envoient toujours sur un POST) et dans la liste blanche */
+export const originOk = (request, env) => { const o = request.headers.get("origin"); return !!o && allowedOrigins(env).includes(o); };
 export const unsubscribeUrl = async (env, email) =>
   `${siteUrl(env)}/api/unsubscribe?e=${encodeURIComponent(email)}&t=${await hmac(env.UNSUB_SECRET, email.toLowerCase())}`;
 

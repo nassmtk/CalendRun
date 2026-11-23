@@ -19,7 +19,7 @@ function brandHtml(vars) {
 
 /** clés des adresses e-mail : jamais écrites en clair, ni dans le HTML ni dans le JS */
 const MAILS = { contact: BRAND.CONTACT_EMAIL, courses: BRAND.COURSES_EMAIL };
-const PRIVATE_KEYS = ["CONTACT_EMAIL", "COURSES_EMAIL"];
+const PRIVATE_KEYS = ["CONTACT_EMAIL", "COURSES_EMAIL", "SENDER_EMAIL"];
 
 /** lien e-mail anti-spam : l'adresse est assemblée par src/mail.js au chargement.
  *  Sans JS, le lien mène à la section contact des mentions légales et affiche une forme lisible non cliquable. */

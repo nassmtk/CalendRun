@@ -6,21 +6,19 @@
    Variables : ALERTS_ENABLED, BREVO_API_KEY, BREVO_LIST_ID, BREVO_DOI_TEMPLATE_ID,
                TURNSTILE_SECRET_KEY, UNSUB_SECRET, SITE_URL ; KV optionnel : RATE_LIMIT
    ========================================================= */
-import { json, GENERIC_OK, isEmail, RACE_ID_RE, rateLimited, turnstileOk, brevo, siteUrl } from "../_lib/util.js";
+import { json, GENERIC_OK, isEmail, RACE_ID_RE, rateLimited, turnstileOk, brevo, siteUrl, originOk } from "../_lib/util.js";
 
 const ALLOWED_ALERTS = new Set(["opening", "reminder"]);
 const MAX_BODY = 4096;
 
 export async function onRequestPost({ request, env }) {
   if (env.ALERTS_ENABLED !== "true") return json({ ok: false, message: "Alertes indisponibles." }, 503);
-  for (const k of ["BREVO_API_KEY", "BREVO_LIST_ID", "BREVO_DOI_TEMPLATE_ID", "TURNSTILE_SECRET_KEY", "SITE_URL"]) {
+  for (const k of ["BREVO_API_KEY", "BREVO_LIST_ID", "BREVO_DOI_TEMPLATE_ID", "TURNSTILE_SECRET_KEY"]) {
     if (!env[k]) return json({ ok: false, message: "Alertes indisponibles." }, 503);
   }
 
   // même origine uniquement
-  const origin = request.headers.get("origin");
-  const allowed = [siteUrl(env), ...String(env.ALLOWED_ORIGINS || "").split(",").map((o) => o.trim().replace(/\/+$/, "")).filter(Boolean)];
-  if (origin && !allowed.includes(origin)) return json({ ok: false }, 403);
+  if (!originOk(request, env)) return json({ ok: false }, 403);
 
   const ip = request.headers.get("cf-connecting-ip") || "0.0.0.0";
   if (await rateLimited(env, ip, { limit: 5, windowSec: 600 })) {

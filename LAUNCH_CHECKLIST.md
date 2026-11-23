@@ -66,14 +66,17 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 ## 🧑‍💻 Ce que TU dois faire à la main
 
 ### Avant la mise en ligne
-- [ ] **Créer les boîtes `contact@`, `courses@` (et l'expéditeur `alertes@`) sur calendrun.fr** — ex. Cloudflare *Email Routing* vers ta boîte perso (gratuit)
+- [ ] **Créer les boîtes `contact@calend.run`, `courses@calend.run` (et l'expéditeur `alertes@calend.run` dans Brevo)** — voir « Tester les e-mails » ci-dessous
 - [ ] **Communiquer tes éléments d'identification à Cloudflare** (nom, adresse, téléphone dans le profil du compte) : c'est la condition de l'adresse « non publiée » (art. 1-1 LCEN)
 - [ ] **Formulaire de contact** : il fonctionne dès que `BREVO_API_KEY` et `SENDER_EMAIL` sont définis dans Cloudflare Pages (compte Brevo + domaine expéditeur vérifié, voir docs/ALERTES.md étapes 1, 4, 5). Avant ça, il propose l'envoi par e-mail
 - [ ] **Umami Cloud** : choisir la région **UE** à la création du site (la politique de confidentialité l'annonce)
 - [ ] À chaque modification des pages légales : mettre à jour `LEGAL_UPDATED_AT` dans `brand.config.js`
-- [ ] Choisir et **acheter le nom de domaine**
-- [ ] Créer le projet **Cloudflare Pages** depuis le dépôt GitHub (README §3) et définir `SITE_URL`
-- [ ] **Brancher le domaine** (README §4) et choisir www ↔ apex
+- [x] Nom de domaine : **calend.run**
+- [ ] Définir `SITE_URL=https://calend.run` dans Cloudflare Pages (Production **et** Preview) et `ALLOWED_ORIGINS=https://calendrun.pages.dev` pendant la transition
+- [ ] **Brancher le domaine** `calend.run` + `www.calend.run` (README §4)
+- [ ] **Redirect Rule** `www.calend.run` → `calend.run` en 301 (README §4.4) — vérifier : `curl -sI https://www.calend.run/carte` → `301` + `location: https://calend.run/carte`
+- [ ] **Bulk Redirect** `calendrun.pages.dev` → `calend.run` en 301 (README §4.5) — vérifier : `curl -sI https://calendrun.pages.dev/mentions-legales/` → `301`
+- [ ] Google Search Console : déclarer `calend.run` (pas l'URL `pages.dev`)
 - [ ] Vérifier les **liens d'inscription** (section ci-dessous)
 
 ### Pour activer les alertes e-mail (optionnel au lancement)
@@ -87,13 +90,27 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 
 ### Après la mise en ligne
 - [ ] **Umami Cloud** : créer le site → `UMAMI_SRC` + `UMAMI_WEBSITE_ID`, redéployer
-- [ ] **Google Search Console** : ajouter le domaine (vérification DNS), soumettre `https://ton-domaine.fr/sitemap.xml`
+- [ ] **Google Search Console** : ajouter le domaine (vérification DNS), soumettre `https://calend.run/sitemap.xml`
 - [ ] (optionnel) Bing Webmaster Tools, même sitemap
 - [ ] Tester les en-têtes sur https://securityheaders.com et les aperçus de partage (Open Graph) sur un réseau social
 - [ ] Relancer Lighthouse sur l'URL de production
 - [ ] Fusionner la branche `launch` dans `main` et pousser sur GitHub
 
 ---
+
+### 📬 Tester les e-mails
+1. Cloudflare > zone `calend.run` > **Email > Email Routing** > *Enable* (Cloudflare ajoute les enregistrements MX et SPF : accepter).
+2. *Destination addresses* > ajouter ta boîte perso, puis cliquer le lien de vérification reçu.
+3. *Routing rules* > créer `contact@calend.run` et `courses@calend.run` → ta boîte vérifiée (statut *Active*).
+4. Depuis une adresse **externe** (ex. un autre fournisseur que ta boîte de destination), envoyer un mail de test à chacune des deux adresses → vérifier qu'il arrive (et pas en spam).
+5. Sur **ordinateur puis téléphone**, cliquer chaque bouton mailto du site et vérifier que le mail s'ouvre vers la bonne adresse, avec le bon objet et le bon corps, puis qu'il arrive :
+   - [ ] pied de page « Contact » → `contact@calend.run` (sans objet)
+   - [ ] mentions légales / confidentialité (adresse affichée) → `contact@calend.run`
+   - [ ] « Proposer une course » (bas de l'accueil) → `courses@calend.run`, objet « Proposer une course — [nom] », corps avec Nom / Date / Ville / Distances / Lien / Organisateur
+   - [ ] fiche d'une course > « Signaler une erreur » → `courses@calend.run`, objet « Signaler une erreur — <nom de la course> », corps avec le lien de la fiche
+   - [ ] page course statique (`/course/…`) > « Signaler une erreur » → idem
+   - [ ] page Contact, repli « envoyer par e-mail » (tant que Brevo n'est pas branché) → `contact@calend.run`
+6. Brevo : l'expéditeur `alertes@calend.run` doit être vérifié (domaine authentifié, docs/ALERTES.md) avant d'activer les alertes et le formulaire de contact.
 
 ## 🔗 Liens à vérifier
 1. **140 / 149 courses** ont un lien principal vers un agrégateur (135 vers running.life) au lieu du site de l'organisateur. Liste complète : **[LINKS_AUDIT.md](LINKS_AUDIT.md)**.

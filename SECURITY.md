@@ -21,7 +21,7 @@ Vérifié localement (wrangler, copie statique de `dist`) : en-têtes présents,
 
 ## Formulaire d'alerte (`/api/subscribe`)
 - validation serveur (format e-mail, id de course, types d'alerte, consentement, taille du corps ≤ 4 Ko) ;
-- contrôle d'origine (`SITE_URL` + `ALLOWED_ORIGINS`) ;
+- contrôle d'origine : en-tête `Origin` **obligatoire** et dans la liste `SITE_URL` + `ALLOWED_ORIGINS` (une requête sans `Origin` est refusée) ;
 - limitation par IP : 5 requêtes / 10 min (KV `RATE_LIMIT`, sinon mémoire de l'isolat) ;
 - champ piège (`website`) : un robot qui le remplit reçoit la réponse générique, rien n'est fait ;
 - Cloudflare Turnstile vérifié côté serveur ;

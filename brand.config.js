@@ -4,7 +4,7 @@
    générées (plugin Vite), les images Open Graph, le manifest, le
    sitemap et les fonctions serveur (mails).
    Changer de nom / d'accroche = modifier ce fichier.
-   Changer de domaine = modifier la variable d'environnement SITE_URL.
+   Domaine : SITE_URL ci-dessous (surchargeable par la variable d'environnement SITE_URL).
    ========================================================= */
 export const BRAND = {
   SITE_NAME: "CalendRun",
@@ -18,12 +18,16 @@ export const BRAND = {
   REGION: "Île-de-France",
   REGION_SHORT: "IDF",
   LOCALE: "fr_FR",
+  // domaine public (canonical, sitemap, Open Graph, e-mails) ; la variable d'environnement SITE_URL a priorité
+  SITE_URL: "https://calend.run",
   // couleurs du logo (identiques aux tokens --accent / --accent-2 / --on-accent)
   LOGO: { from: "#FC4C02", to: "#FF9F1C", ink: "#0A0A0B", bg: "#0A0A0B" },
   // coordonnées légales et contact (utilisées par les pages légales, le pied de page et les fiches ;
   // les adresses sont assemblées en JS côté navigateur, jamais écrites en clair dans le HTML)
-  CONTACT_EMAIL: "contact@calendrun.fr",
-  COURSES_EMAIL: "courses@calendrun.fr",
+  CONTACT_EMAIL: "contact@calend.run",
+  COURSES_EMAIL: "courses@calend.run",
+  // expéditeur des e-mails automatiques (Brevo) ; la variable d'environnement SENDER_EMAIL a priorité
+  SENDER_EMAIL: "alertes@calend.run",
   // nom affiché sur les pages légales (mentions légales, confidentialité)
   PUBLISHER_NAME: "Nassim MTK",
   // à mettre à jour à chaque modification des pages légales
@@ -44,11 +48,8 @@ export const mailParts = (email) => String(email).split("@");
 
 /** URL publique du site, sans « / » final. Vient de la variable d'environnement SITE_URL. */
 export function siteUrl(env = (typeof process !== "undefined" ? process.env : {})) {
-  // SITE_URL (domaine final) > CF_PAGES_URL (fourni par Cloudflare Pages au build) > local
-  const url = env.SITE_URL || env.CF_PAGES_URL || "http://localhost:5173";
-  if (!env.SITE_URL && env.CF_PAGES === "1" && typeof console !== "undefined") {
-    console.warn(`[brand] SITE_URL non défini : utilisation de ${url}. Définis SITE_URL dans Cloudflare Pages pour le domaine final.`);
-  }
+  // variable SITE_URL > build Cloudflare Pages (domaine de BRAND) > local
+  const url = env.SITE_URL || (env.CF_PAGES === "1" ? BRAND.SITE_URL : "http://localhost:5173");
   return String(url).replace(/\/+$/, "");
 }
 

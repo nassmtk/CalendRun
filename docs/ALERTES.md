@@ -33,7 +33,7 @@ et `/api/subscribe` répond 503 : aucun faux formulaire en production.
 2. *Contacts > Paramètres > Attributs* : créer `ALERT_RACES` (texte) et `CONSENT_AT` (texte).
 3. *Templates* : créer un template de **double opt-in** (bouton contenant la balise `{{ doubleoptin }}`) → noter son id (`BREVO_DOI_TEMPLATE_ID`).
 4. *SMTP & API > Clés API* : créer une clé → `BREVO_API_KEY` (secret).
-5. **Domaine expéditeur** : *Expéditeurs, domaines et IP dédiées > Domaines* → ajouter ton domaine et créer les enregistrements DNS ci-dessous. Ajouter l'expéditeur `SENDER_EMAIL` (ex. `alertes@ton-domaine.fr`).
+5. **Domaine expéditeur** : *Expéditeurs, domaines et IP dédiées > Domaines* → ajouter `calend.run` et créer les enregistrements DNS ci-dessous. Ajouter l'expéditeur `SENDER_EMAIL` (ex. `alertes@calend.run`).
 6. **Turnstile** (tableau de bord Cloudflare > Turnstile) : ajouter le domaine → `TURNSTILE_SITE_KEY` (public) et `TURNSTILE_SECRET_KEY` (secret).
 7. **KV** (recommandé, limitation par IP) : `npx wrangler kv namespace create RATE_LIMIT` puis lier le namespace au projet Pages sous le nom `RATE_LIMIT` (*Settings > Functions > KV namespace bindings*).
 8. `UNSUB_SECRET` : une longue chaîne aléatoire (ex. `openssl rand -hex 32`), **identique** côté Pages et côté worker.
@@ -52,10 +52,10 @@ Les **valeurs exactes** sont affichées par Brevo à l'étape 5 : copie-les tell
 | Type | Nom | Valeur (exemple — prends celle de Brevo) | Rôle |
 |---|---|---|---|
 | TXT | `@` | `brevo-code:xxxxxxxxxxxxxxxx` | preuve de propriété du domaine |
-| TXT | `@` | `v=spf1 include:spf.brevo.com ~all` | **SPF** : autorise Brevo à envoyer pour ton domaine. ⚠️ un seul enregistrement SPF par domaine : si tu en as déjà un, ajoute seulement `include:spf.brevo.com` dedans |
-| CNAME | `brevo1._domainkey` | `b1.ton-domaine-fr.dkim.brevo.com` | **DKIM** : signature des e-mails |
-| CNAME | `brevo2._domainkey` | `b2.ton-domaine-fr.dkim.brevo.com` | **DKIM** (clé de rotation) |
-| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:dmarc@ton-domaine.fr` | **DMARC** : obligatoire pour Gmail/Yahoo. Commence en `p=none`, passe à `p=quarantine` après 2–4 semaines de rapports propres |
+| TXT | `@` | `v=spf1 include:spf.brevo.com ~all` | **SPF** : autorise Brevo à envoyer pour ton domaine. ⚠️ un seul enregistrement SPF par domaine : si tu en as déjà un, ajoute seulement `include:spf.brevo.com` dedans. Avec Email Routing : `v=spf1 include:_spf.mx.cloudflare.net include:spf.brevo.com ~all` |
+| CNAME | `brevo1._domainkey` | `b1.calend-run.dkim.brevo.com` | **DKIM** : signature des e-mails |
+| CNAME | `brevo2._domainkey` | `b2.calend-run.dkim.brevo.com` | **DKIM** (clé de rotation) |
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:contact@calend.run` | **DMARC** : obligatoire pour Gmail/Yahoo. Commence en `p=none`, passe à `p=quarantine` après 2–4 semaines de rapports propres |
 
 Vérifie ensuite dans Brevo que le domaine est « authentifié », puis envoie-toi un test et contrôle les en-têtes (`spf=pass`, `dkim=pass`, `dmarc=pass`).
 

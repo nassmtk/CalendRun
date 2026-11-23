@@ -46,7 +46,7 @@ function mail(env, { race, kind, unsub }) {
     <p style="color:#5F5C57;font-size:12px">Tu reçois cet e-mail car tu as demandé une alerte sur ${esc(BRAND.SITE_NAME)}. <a href="${unsub}" style="color:#9A968F">Se désinscrire en un clic</a>.</p>
   </div></body></html>`;
   return {
-    sender: { name: BRAND.SITE_NAME, email: env.SENDER_EMAIL },
+    sender: { name: BRAND.SITE_NAME, email: env.SENDER_EMAIL || BRAND.SENDER_EMAIL },
     subject: title,
     htmlContent: html,
     headers: { "List-Unsubscribe": `<${unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },

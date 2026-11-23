@@ -35,7 +35,7 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 
 | Variable | Où | Rôle |
 |---|---|---|
-| `SITE_URL` | build + fonctions | **domaine public** (sans `/` final) : canonical, sitemap, Open Graph, liens des e-mails. Changer de domaine = changer cette seule variable (+ la même dans le worker de rappels). |
+| `SITE_URL` | build + fonctions | **domaine public** (sans `/` final) : canonical, sitemap, Open Graph, liens des e-mails. Valeur : `https://calend.run` (défaut de `brand.config.js` sur un build Cloudflare). Même valeur dans le worker de rappels. |
 | `ALERTS_ENABLED` | build + fonctions | `true` pour afficher et activer les alertes. Sinon : cloche et formulaire masqués, API en 503. |
 | `TURNSTILE_SITE_KEY` | build | clé **publique** Turnstile |
 | `UMAMI_SRC`, `UMAMI_WEBSITE_ID` | build | mesure d'audience Umami (vide = désactivée ; la CSP s'adapte) |
@@ -43,9 +43,9 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 | `BREVO_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` | fonctions + worker | liste « Alertes » et template double opt-in |
 | `TURNSTILE_SECRET_KEY` 🔒 | fonctions | vérification Turnstile côté serveur |
 | `UNSUB_SECRET` 🔒 | fonctions + worker | signature des liens de désinscription (même valeur des deux côtés) |
-| `SENDER_EMAIL` | worker | expéditeur vérifié dans Brevo |
+| `SENDER_EMAIL` | fonctions + worker | expéditeur vérifié dans Brevo (défaut : `alertes@calend.run`, `brand.config.js`) |
 | `CONTACT_TO` | fonctions | destinataire du formulaire `/contact/` (défaut : `CONTACT_EMAIL`). Le formulaire a besoin de `BREVO_API_KEY` + `SENDER_EMAIL` ; sinon il propose d'envoyer le message par e-mail |
-| `ALLOWED_ORIGINS` | fonctions | origines en plus de `SITE_URL` (ex. l'URL `*.pages.dev` de préproduction) |
+| `ALLOWED_ORIGINS` | fonctions | origines en plus de `SITE_URL`, séparées par des virgules (ex. `https://calendrun.pages.dev` le temps de la transition). Toute requête qui modifie des données doit avoir un en-tête `Origin` de cette liste. |
 
 🔒 = secret : à définir comme **secret chiffré**, jamais dans le code ni dans une variable lue au build.
 
@@ -62,11 +62,12 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 Alternative en ligne de commande : `npx wrangler login` puis `npm run deploy`.
 
 ## 4. Brancher le domaine
-1. *Pages > ton projet > Custom domains > Set up a domain* → saisir `ton-domaine.fr` (et `www.ton-domaine.fr`).
+1. *Pages > ton projet > Custom domains > Set up a domain* → saisir `calend.run` (et `www.calend.run`).
 2. Si le domaine est géré par Cloudflare DNS, les enregistrements sont créés automatiquement ; sinon, ajouter chez le registrar le `CNAME` indiqué (vers `<projet>.pages.dev`).
-3. Mettre `SITE_URL=https://ton-domaine.fr` puis **redéployer** (le sitemap, les canonical et les images OG sont générés au build).
-4. Rediriger `www` → apex (ou l'inverse) via *Rules > Redirect rules* pour n'avoir qu'une URL canonique.
-5. HTTPS est automatique. Le HSTS est envoyé par `_headers` (sans `preload` : à ajouter seulement après inscription sur hstspreload.org).
+3. Mettre `SITE_URL=https://calend.run` puis **redéployer** (le sitemap, les canonical et les images OG sont générés au build).
+4. **`www.calend.run` → `calend.run` en 301** : zone `calend.run` > *Rules > Redirect Rules > Create rule* (modèle *Redirect from WWW to root*) : si `Hostname` égale `www.calend.run`, alors *Dynamic* `concat("https://calend.run", http.request.uri.path)`, code **301**, *Preserve query string* coché. (Le fichier `_redirects` de Pages ne sait pas rediriger un domaine, et un middleware ferait passer chaque visite par une Function.)
+5. **`calendrun.pages.dev` → `calend.run` (contenu dupliqué)** : compte Cloudflare > *Bulk Redirects* > créer une liste `calendrun` avec l'URL source `calendrun.pages.dev` → cible `https://calend.run`, code **301**, cocher *Preserve query string*, *Subpath matching*, *Preserve path suffix* et *Include subdomains* (les aperçus `xxx.calendrun.pages.dev` restent accessibles si on décoche cette dernière), puis créer la règle *Bulk Redirect* qui utilise la liste.
+6. HTTPS est automatique. Le HSTS est envoyé par `_headers` (sans `preload` : à ajouter seulement après inscription sur hstspreload.org).
 
 ## 5. Alertes e-mail et DNS (SPF, DKIM, DMARC)
 Tout est décrit dans **[docs/ALERTES.md](docs/ALERTES.md)** : compte Brevo, liste, template double opt-in, Turnstile, KV, worker de rappels (`workers/reminders`), enregistrements DNS SPF / DKIM / DMARC et vérification.

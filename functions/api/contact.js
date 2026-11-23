@@ -9,7 +9,7 @@
                TURNSTILE_SECRET_KEY, ALLOWED_ORIGINS ; KV optionnel : RATE_LIMIT
    ========================================================= */
 import { BRAND } from "../../brand.config.js";
-import { json, isEmail, rateLimited, turnstileOk, brevo, siteUrl } from "../_lib/util.js";
+import { json, isEmail, rateLimited, turnstileOk, brevo, siteUrl, originOk, senderEmail } from "../_lib/util.js";
 
 const TOPICS = { question: "Question", course: "Proposer une course", erreur: "Signaler une erreur", partenariat: "Partenariat / presse", autre: "Autre" };
 const MAX_BODY = 8192;
@@ -17,11 +17,9 @@ const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<
 const oneLine = (s) => String(s).replace(/[\r\n\t]+/g, " ").trim();
 
 export async function onRequestPost({ request, env }) {
-  if (!env.BREVO_API_KEY || !env.SENDER_EMAIL || !env.SITE_URL) return json({ ok: false, message: "Formulaire indisponible." }, 503);
+  if (!env.BREVO_API_KEY) return json({ ok: false, message: "Formulaire indisponible." }, 503);
 
-  const origin = request.headers.get("origin");
-  const allowed = [siteUrl(env), ...String(env.ALLOWED_ORIGINS || "").split(",").map((o) => o.trim().replace(/\/+$/, "")).filter(Boolean)];
-  if (origin && !allowed.includes(origin)) return json({ ok: false }, 403);
+  if (!originOk(request, env)) return json({ ok: false }, 403);
 
   const ip = request.headers.get("cf-connecting-ip") || "0.0.0.0";
   if (await rateLimited(env, ip, { limit: 3, windowSec: 600, scope: "contact" })) {
@@ -58,7 +56,7 @@ export async function onRequestPost({ request, env }) {
   const r = await brevo(env, "/smtp/email", {
     method: "POST",
     body: {
-      sender: { name: `${BRAND.SITE_NAME} — contact`, email: env.SENDER_EMAIL },
+      sender: { name: `${BRAND.SITE_NAME} — contact`, email: senderEmail(env) },
       to: [{ email: to }],
       replyTo: name ? { email, name } : { email },
       subject,

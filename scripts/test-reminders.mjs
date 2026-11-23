@@ -18,7 +18,7 @@ globalThis.fetch = async (url, opt = {}) => {
   if (u.endsWith("/smtp/email")) { sent.push(JSON.parse(opt.body)); return new Response(null, { status: 201 }); }
   return res({}, 404);
 };
-const env = { ALERTS_ENABLED: "true", SITE_URL: "https://exemple.fr", BREVO_API_KEY: "k", BREVO_LIST_ID: "1", SENDER_EMAIL: "alertes@exemple.fr", UNSUB_SECRET: "s" };
+const env = { ALERTS_ENABLED: "true", SITE_URL: "https://calend.run", BREVO_API_KEY: "k", BREVO_LIST_ID: "1", SENDER_EMAIL: "alertes@calend.run", UNSUB_SECRET: "s" };
 const out = await runReminders(env, new Date("2027-09-19T07:00:00Z"));
 const ok = (c, l) => { console.log(c ? "  ✓" : "  ✗", l); if (!c) process.exitCode = 1; };
 ok(out.sent === 2, `2 e-mails envoyés (reçu ${out.sent})`);
