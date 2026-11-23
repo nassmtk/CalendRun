@@ -37,6 +37,8 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 |---|---|---|
 | `SITE_URL` | build + fonctions | **domaine public** (sans `/` final) : canonical, sitemap, Open Graph, liens des e-mails. Valeur : `https://calend.run` (défaut de `brand.config.js` sur un build Cloudflare). Même valeur dans le worker de rappels. |
 | `ALERTS_ENABLED` | build + fonctions | `true` pour afficher et activer les alertes. Sinon : cloche et formulaire masqués, API en 503. |
+| `ACCOUNTS_ENABLED` | build | `true` pour afficher « Connexion » (comptes et amis). Exige la base D1 + `AUTH_PEPPER` : voir [docs/COMPTES.md](docs/COMPTES.md) |
+| `AUTH_PEPPER` 🔒 | fonctions | poivre des mots de passe (ne jamais le changer une fois des comptes créés) |
 | `TURNSTILE_SITE_KEY` | build | clé **publique** Turnstile |
 | `UMAMI_SRC`, `UMAMI_WEBSITE_ID` | build | mesure d'audience Umami (vide = désactivée ; la CSP s'adapte) |
 | `BREVO_API_KEY` 🔒 | fonctions + worker | clé API Brevo |
@@ -68,6 +70,9 @@ Alternative en ligne de commande : `npx wrangler login` puis `npm run deploy`.
 4. **`www.calend.run` → `calend.run` en 301** : zone `calend.run` > *Rules > Redirect Rules > Create rule* (modèle *Redirect from WWW to root*) : si `Hostname` égale `www.calend.run`, alors *Dynamic* `concat("https://calend.run", http.request.uri.path)`, code **301**, *Preserve query string* coché. (Le fichier `_redirects` de Pages ne sait pas rediriger un domaine, et un middleware ferait passer chaque visite par une Function.)
 5. **`calendrun.pages.dev` → `calend.run` (contenu dupliqué)** : compte Cloudflare > *Bulk Redirects* > créer une liste `calendrun` avec l'URL source `calendrun.pages.dev` → cible `https://calend.run`, code **301**, cocher *Preserve query string*, *Subpath matching*, *Preserve path suffix* et *Include subdomains* (les aperçus `xxx.calendrun.pages.dev` restent accessibles si on décoche cette dernière), puis créer la règle *Bulk Redirect* qui utilise la liste.
 6. HTTPS est automatique. Le HSTS est envoyé par `_headers` (sans `preload` : à ajouter seulement après inscription sur hstspreload.org).
+
+## Comptes utilisateurs et amis
+Base Cloudflare D1, migrations dans `/migrations`, choix techniques et mise en place pas à pas : **[docs/COMPTES.md](docs/COMPTES.md)**. Tests : `npm test` (API sur D1 locale) ; QA navigateur : `npm run qa:accounts`, `npm run qa:friends`, `npm run qa:mobile`.
 
 ## 5. Alertes e-mail et DNS (SPF, DKIM, DMARC)
 Tout est décrit dans **[docs/ALERTES.md](docs/ALERTES.md)** : compte Brevo, liste, template double opt-in, Turnstile, KV, worker de rappels (`workers/reminders`), enregistrements DNS SPF / DKIM / DMARC et vérification.

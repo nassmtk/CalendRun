@@ -7,7 +7,7 @@ const BASE = process.argv[2] || "http://127.0.0.1:5173";
 const only = process.argv.slice(3);
 const OUT = "qa/shots";
 fs.mkdirSync(OUT, { recursive: true });
-const WIDTHS = [[1440, 900], [1024, 768], [390, 844]];
+const WIDTHS = [[1440, 900], [1024, 768], [390, 844], [360, 780]];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const SCENARIOS = {
@@ -58,7 +58,10 @@ const SCENARIOS = {
   notfound: async (p) => { await p.goto(BASE + "/404.html", { waitUntil: "load" }); await wait(800); },
   legal: async (p) => { await p.goto(BASE + "/mentions-legales/", { waitUntil: "load" }); await wait(500); },
   privacy: async (p) => { await p.goto(BASE + "/confidentialite/", { waitUntil: "load" }); await wait(500); },
-  race: async (p) => { await p.goto(BASE + "/courses/paris-versailles-2027/", { waitUntil: "load" }); await wait(1500); }
+  race: async (p) => { await p.goto(BASE + "/courses/paris-versailles-2027/", { waitUntil: "load" }); await wait(1500); },
+  compte: async (p) => { await p.goto(BASE + "/compte/", { waitUntil: "load" }); await wait(800); },
+  amis: async (p) => { await p.goto(BASE + "/amis/", { waitUntil: "load" }); await wait(800); },
+  contact: async (p) => { await p.goto(BASE + "/contact/", { waitUntil: "load" }); await wait(800); }
 };
 
 const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: "new", args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });

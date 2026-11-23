@@ -1,6 +1,6 @@
 # Checklist de mise en ligne
 
-Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
+Branche git : `launch` (lancement), puis `v3-comptes` (domaine, mobile, comptes, amis — une phase = un commit). Relevé du 23/11/2026.
 
 ## ✅ Ce qui est fait
 
@@ -63,7 +63,27 @@ Branche git : `launch` (une phase = un commit). Relevé du 22/11/2026.
 
 ---
 
+### v3 — Domaine calend.run, mobile, comptes & amis (branche `v3-comptes`)
+- [x] Domaine `calend.run` partout (config, Functions, worker, docs) ; adresses `contact@` / `courses@` / `alertes@calend.run` issues de `brand.config.js`, jamais en clair dans le build (`scripts/test-domain.mjs`)
+- [x] `Origin` désormais obligatoire sur toutes les requêtes qui modifient des données
+- [x] Bug mobile des départements corrigé (tiroir piégé dans le `transform` de la barre du haut) : bottom sheet 2 colonnes, cibles ≥ 44 px, « Effacer » / « Voir les X courses », glisser / fond / Échap, scroll bloqué puis rendu
+- [x] Barre du haut mobile sur une ligne : logo, Départements, « J-41 », menu compact (Favoris, Inscrites, Contact, thème, compte) — QA Playwright iOS Safari + Android Chrome à 360 / 390 / 430 px (`npm run qa:mobile`)
+- [x] Comptes pseudo + mot de passe sans e-mail (D1), code de récupération, sessions `__Host-`, CSRF, rate limit, Mon compte (mot de passe, code, visibilité, export JSON, suppression réelle), confidentialité mise à jour — [docs/COMPTES.md](docs/COMPTES.md)
+- [x] Amis : demandes par pseudo exact ou lien d'invitation, accepter / refuser / retirer / bloquer, visibilité contrôlée côté serveur, avatars sur les cartes et les fiches, filtre « Courses de mes potes », profil d'un ami
+- [x] Tests : 23 tests d'API sur D1 locale (dont IDOR, blocage, cascade, purge) + QA navigateur comptes (29) et amis (24) ; QA visuelle 1440 / 1024 / 390 / 360 px, aucune erreur console
+- [ ] `npm audit` : 2 failles modérées connues dans `satori` → `fflate` (outil de build des images OG, n'ouvre aucun fichier externe). Le correctif proposé rétrograde `satori` (changement cassant) : à revoir quand `satori` publie une version corrigée
+
 ## 🧑‍💻 Ce que TU dois faire à la main
+
+### Comptes & amis (docs/COMPTES.md)
+- [ ] **Créer la base D1** : `npx wrangler login` puis `npx wrangler d1 create calendrun` → noter le `database_id`
+- [ ] **Ajouter le binding `DB`** : décommenter le bloc `[[d1_databases]]` de `wrangler.toml` et y coller le `database_id` (ou *Pages > Settings > Bindings > D1*, variable `DB`, Production + Preview, si le tableau de bord le permet)
+- [ ] **Appliquer les migrations** : `npx wrangler d1 migrations apply calendrun --remote` (et `--local` pour le dev). À refaire à chaque nouveau fichier dans `/migrations`, avant le déploiement
+- [ ] **Secret `AUTH_PEPPER`** (Pages > Settings > Variables and secrets, Production + Preview) : `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. ⚠️ Ne jamais le changer ensuite ; en garder une copie dans ton gestionnaire de mots de passe
+- [ ] **`ACCOUNTS_ENABLED=true`** puis redéployer (affiche « Connexion »)
+- [ ] **Turnstile** : si `TURNSTILE_SECRET_KEY` est défini, l'inscription l'exige → vérifier que `TURNSTILE_SITE_KEY` est bien défini aussi (sinon personne ne peut s'inscrire)
+- [ ] **Worker de rappels** : décommenter le binding D1 dans `workers/reminders/wrangler.toml` (même `database_id`) et redéployer → purge quotidienne des comptes inactifs depuis 3 ans
+- [ ] Test en production : créer un compte, noter le code, se déconnecter, « Mot de passe oublié » avec le code, ajouter un ami depuis un 2ᵉ navigateur, vérifier les avatars sur la carte de course, supprimer les comptes de test
 
 ### Avant la mise en ligne
 - [ ] **Créer les boîtes `contact@calend.run`, `courses@calend.run` (et l'expéditeur `alertes@calend.run` dans Brevo)** — voir « Tester les e-mails » ci-dessous
