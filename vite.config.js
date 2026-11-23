@@ -48,6 +48,10 @@ export const fill = ${fill.toString()};`
 /** lien Contact de la barre du haut (même style que Favoris / Inscrites) */
 const NAV_CONTACT = `<a href="/contact/" class="nav-contact" aria-label="Contact"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><span class="lbl">Contact</span></a>`;
 
+/** emplacement du compte dans la barre du haut : rempli par src/account/core.js
+ *  (« Connexion », ou avatar + menu). Vide si les comptes sont désactivés. */
+const navAccount = (on) => (on ? `<div class="nav-account-slot" data-account-slot></div>` : "");
+
 /** bouton jour / nuit (src/theme.js) : l'icône affichée est celle du thème vers lequel on bascule */
 const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle aria-label="Activer le mode jour" title="Mode jour / nuit">
       <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
@@ -109,6 +113,7 @@ export default defineConfig(({ mode }) => {
     LOGO_INK: BRAND.LOGO.ink,
     LOGO_SVG: logoSvg("currentColor"),
     NAV_CONTACT,
+    NAV_ACCOUNT: navAccount(env.ACCOUNTS_ENABLED === "true"),
     THEME_TOGGLE,
     PUBLISHER_NAME: BRAND.PUBLISHER_NAME,
     LEGAL_UPDATED_AT: BRAND.LEGAL_UPDATED_AT,
@@ -128,6 +133,8 @@ export default defineConfig(({ mode }) => {
           mentions: "mentions-legales/index.html",
           confidentialite: "confidentialite/index.html",
           contact: "contact/index.html",
+          compte: "compte/index.html",
+          compteOubli: "compte/oubli/index.html",
           notfound: "404.html",
           alertOk: "alertes/confirmee/index.html",
           alertOff: "alertes/desinscription/index.html",
@@ -138,6 +145,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __SITE_URL__: JSON.stringify(SITE_URL),
       __ALERTS_ENABLED__: JSON.stringify(env.ALERTS_ENABLED === "true"),
+      __ACCOUNTS_ENABLED__: JSON.stringify(env.ACCOUNTS_ENABLED === "true"),
       __TURNSTILE_SITE_KEY__: JSON.stringify(env.TURNSTILE_SITE_KEY || ""),
       __UMAMI__: JSON.stringify({ src: env.UMAMI_SRC || "", id: env.UMAMI_WEBSITE_ID || "" })
     },

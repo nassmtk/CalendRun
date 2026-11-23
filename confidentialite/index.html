@@ -21,6 +21,7 @@
     <div class="nav-right">
       {{NAV_CONTACT}}
       <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{NAV_ACCOUNT}}
       {{THEME_TOGGLE}}
     </div>
   </header>
@@ -28,7 +29,7 @@
   <main class="doc" id="contenu">
     <p class="eyebrow">RGPD</p>
     <h1>Politique de confidentialité</h1>
-    <p class="lead">En bref : <strong>pas de compte, pas de cookie publicitaire, pas de pistage.</strong> La seule donnée personnelle que nous collectons est ton adresse e-mail, et seulement si tu demandes une alerte.</p>
+    <p class="lead">En bref : <strong>pas de cookie publicitaire, pas de pistage, pas d'e-mail demandé pour créer un compte.</strong> Le compte est facultatif : sans compte, le site fonctionne entièrement, et tes favoris restent dans ton navigateur.</p>
 
     <h2>Responsable du traitement</h2>
     <p>{{PUBLISHER_NAME}} — contact : {{MAIL_CONTACT}}.</p>
@@ -52,23 +53,34 @@
       <dt>Durée</dt><dd>Le temps de traiter ta demande, et au plus tard 12 mois après notre dernier échange.</dd>
     </dl>
 
-    <h2>3. Favoris, courses inscrites, préférences</h2>
-    <p>Tes favoris, les courses que tu marques « inscrit », ta vue préférée et le thème choisi (jour / nuit) sont stockés <strong>uniquement dans ton navigateur</strong> (localStorage). Ils ne nous sont jamais transmis et disparaissent si tu effaces les données du site.</p>
+    <h2>3. Favoris, courses inscrites, préférences (sans compte)</h2>
+    <p>Sans compte, tes favoris, les courses que tu marques « inscrit », ta vue préférée et le thème choisi (jour / nuit) sont stockés <strong>uniquement dans ton navigateur</strong> (localStorage). Ils ne nous sont jamais transmis et disparaissent si tu effaces les données du site.</p>
 
-    <h2>4. Mesure d'audience</h2>
+    <h2 id="comptes">4. Compte utilisateur (facultatif) et amis</h2>
+    <dl class="doc-dl">
+      <dt>Données</dt><dd>Ton <strong>pseudo</strong> ; le <strong>hash de ton mot de passe</strong> et celui de ton code de récupération (jamais les valeurs elles-mêmes, que nous ne connaissons pas) ; tes <strong>favoris</strong> et tes <strong>courses inscrites</strong> ; ta <strong>liste d'amis</strong> (demandes envoyées et reçues, amitiés, utilisateurs bloqués), ton code ami et ton réglage de visibilité ; tes <strong>sessions</strong> de connexion (empreinte du jeton, dates de création et d'expiration) ; les dates de création du compte et de dernière activité. Aucune adresse e-mail n'est demandée.</dd>
+      <dt>Finalité</dt><dd>Te permettre de retrouver tes favoris et tes inscriptions sur tous tes appareils, et de les partager avec les amis que tu as acceptés, si tu le souhaites. Des compteurs techniques temporaires (adresse IP et pseudo, pendant au plus 24 h) servent à bloquer les tentatives de connexion abusives.</dd>
+      <dt>Base légale</dt><dd>L'exécution du service que tu demandes en créant un compte (contrat, art. 6.1.b du RGPD).</dd>
+      <dt>Visibilité</dt><dd>Tes favoris et tes inscriptions ne sont visibles que par tes amis <strong>acceptés</strong>, et seulement si ton réglage « Qui voit mes courses ? » est sur « Mes amis » (réglage par défaut). Avec « Personne », même tes amis ne voient rien. Ton pseudo est visible par les personnes avec qui tu échanges une demande d'ami.</dd>
+      <dt>Hébergement</dt><dd>Base de données Cloudflare D1 (Cloudflare, Inc., sous-traitant). Les données peuvent transiter et être stockées hors de l'Union européenne, dans le cadre du Data Privacy Framework UE–États-Unis et des clauses contractuelles types de Cloudflare.</dd>
+      <dt>Durée</dt><dd>Jusqu'à la suppression de ton compte. Les comptes inactifs depuis <strong>3 ans</strong> sont supprimés automatiquement. Les sessions expirent après 30 jours sans visite.</dd>
+      <dt>Tes outils</dt><dd>Depuis la page <a href="/compte/">Mon compte</a> : changer de mot de passe, régénérer ton code de récupération, choisir qui voit tes courses, <strong>exporter tes données</strong> (fichier JSON), déconnecter tous tes appareils et <strong>supprimer ton compte</strong> (suppression réelle et immédiate de toutes les données ci-dessus).</dd>
+    </dl>
+
+    <h2>5. Mesure d'audience</h2>
     <p>Nous utilisons Umami, un outil de mesure d'audience <strong>sans cookie</strong> qui ne collecte aucune donnée personnelle identifiante et produit uniquement des statistiques agrégées (pages vues, provenance). Aucun bandeau cookies n'est donc nécessaire. Région d'hébergement des statistiques : Union européenne.</p>
 
-    <h2>5. Services tiers techniques</h2>
+    <h2>6. Services tiers techniques</h2>
     <ul>
-      <li><strong>Cloudflare</strong> (hébergement, protection anti-robots Turnstile sur les formulaires) : traite des données techniques de connexion (adresse IP, navigateur) pour délivrer le site et bloquer les abus.</li>
+      <li><strong>Cloudflare</strong> (hébergement, base de données des comptes D1, protection anti-robots Turnstile sur les formulaires) : traite des données techniques de connexion (adresse IP, navigateur) pour délivrer le site et bloquer les abus.</li>
       <li><strong>OpenStreetMap</strong> : les tuiles de la vue Carte sont chargées depuis les serveurs de la fondation OpenStreetMap, qui reçoivent ton adresse IP. Elles ne sont chargées que si tu ouvres la vue Carte.</li>
     </ul>
 
-    <h2>6. Tes droits</h2>
+    <h2>7. Tes droits</h2>
     <p>Tu disposes d'un droit d'accès, de rectification, d'effacement, d'opposition, de limitation et de portabilité, ainsi que du droit de retirer ton consentement à tout moment. Pour les exercer : {{MAIL_CONTACT}}. Tu peux aussi introduire une réclamation auprès de la <a href="https://www.cnil.fr/fr/plaintes" rel="noopener noreferrer" target="_blank">CNIL</a>.</p>
 
-    <h2>7. Cookies</h2>
-    <p>Le site ne dépose <strong>aucun cookie</strong> de mesure ou de publicité.</p>
+    <h2>8. Cookies</h2>
+    <p>Le site ne dépose <strong>aucun cookie</strong> de mesure ou de publicité. Si tu te connectes à ton compte, deux cookies <strong>strictement nécessaires</strong> sont posés : <code>__Host-cr_session</code> (ta session, inaccessible au JavaScript, 30 jours) et <code>cr_auth</code> (indique simplement au site qu'une session existe, sans aucune donnée). Ils sont exemptés de consentement : il n'y a donc pas de bandeau cookies. Ils sont supprimés à la déconnexion.</p>
 
     <p class="doc-meta">Dernière mise à jour : {{LEGAL_UPDATED_AT}}</p>
     <p class="doc-links"><a href="/mentions-legales/">Mentions légales</a> · <a href="/">Retour à l'accueil</a></p>

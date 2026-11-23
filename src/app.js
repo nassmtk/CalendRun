@@ -818,7 +818,7 @@
       if (!res.ok) throw new Error(out.message || "HTTP " + res.status);
       alerts[r.id] = { email, alerts: sel, createdAt: new Date().toISOString(), pending: true };
       store.set("alerts", alerts); store.set("email", email);
-      favs.add(r.id); store.set("favs", [...favs]);
+      if (!favs.has(r.id)) { favs.add(r.id); store.set("favs", [...favs]); run("fav", r.id, true); }
       toast("Vérifie ta boîte mail pour confirmer 📬");
       openSheet(r.id);
       render();
@@ -900,6 +900,7 @@
   function toggleFav(id, btn) {
     favs.has(id) ? favs.delete(id) : favs.add(id);
     store.set("favs", [...favs]);
+    run("fav", id, favs.has(id));
     $$(`[data-fav="${id}"]`).forEach((b) => { b.setAttribute("aria-pressed", favs.has(id)); b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); });
     updateNav();
     toast(favs.has(id) ? "Ajoutée à tes favoris ❤️" : "Retirée de tes favoris");
@@ -1006,7 +1007,7 @@
 
 
   /* ---------- API pour la couche motion & la scène 3D ---------- */
-  const hooks = { afterAppend: [], beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], viewSelected: [], alertForm: [] };
+  const hooks = { afterAppend: [], beforeRender: [], afterRender: [], afterHero: [], openSheet: [], closeSheet: [], navUpdate: [], registered: [], fav: [], viewSelected: [], alertForm: [] };
   const run = (k, ...a) => hooks[k].forEach((f) => { try { f(...a); } catch (e) { console.error("[site]", k, e); } });
   window.CALENDRUN = {
     races: RACES, openSheet, fmtShort, esc, hooks, state,
@@ -1022,6 +1023,14 @@
       window.CALENDRUN.scrollTo($("#results-count"));
     },
     isRegistered: (id) => registered.has(id),
+    // comptes : lecture / remplacement des listes locales (miroir du compte quand on est connecté)
+    getLists: () => ({ fav: [...favs], reg: [...registered] }),
+    replaceLists({ fav = [], reg = [] } = {}) {
+      favs = new Set(fav); registered = new Set(reg);
+      store.set("favs", [...favs]); store.set("v1:registered", [...registered]);
+      if (this.catalogReady) render(); else updateNav();
+    },
+    rerender: () => render(),
     scrollTo: (el) => el.scrollIntoView({ behavior: "smooth" }),
     favCount: () => favs.size,
     boot({ deferCatalog = false } = {}) {

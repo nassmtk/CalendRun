@@ -10,3 +10,14 @@ compatibility_date = "2026-11-01"
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT"
 # id = "<id du namespace>"
+
+# Comptes utilisateurs — base D1 (voir docs/COMPTES.md) :
+#   1. npx wrangler d1 create calendrun              → copier le database_id affiché ci-dessous
+#   2. décommenter le bloc, puis : npx wrangler d1 migrations apply calendrun --remote
+#   3. ACCOUNTS_ENABLED=true + secret AUTH_PEPPER dans Pages, redéployer
+# ⚠️ Ne pas décommenter avant l'étape 1 : un database_id invalide fait échouer le déploiement.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "calendrun"
+# database_id = "<id de la base>"
+# migrations_dir = "migrations"

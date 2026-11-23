@@ -13,3 +13,10 @@ ALERTS_ENABLED = "false"          # passer à "true" une fois Brevo configuré
 SITE_URL = "https://calend.run"   # même valeur que le site
 BREVO_LIST_ID = "0"
 SENDER_EMAIL = "alertes@calend.run"
+
+# Comptes : purge quotidienne des comptes inactifs depuis 3 ans (docs/COMPTES.md §1.5)
+# Décommenter avec le même database_id que le site :
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "calendrun"
+# database_id = "<id de la base>"

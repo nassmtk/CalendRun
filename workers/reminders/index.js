@@ -13,6 +13,8 @@
    ========================================================= */
 import { BRAND } from "../../brand.config.js";
 import { brevo, unsubscribeUrl, siteUrl } from "../../functions/_lib/util.js";
+import { purgeInactive } from "../../functions/_lib/accounts/account.js";
+import { purgeRateLimits } from "../../functions/_lib/accounts/ratelimit.js";
 
 const DAY = 86400000;
 const iso = (d) => d.toISOString().slice(0, 10);
@@ -109,6 +111,18 @@ export async function runReminders(env, now = new Date()) {
   return { sent, purged, today };
 }
 
+/** comptes (D1, si le binding DB est présent) : comptes inactifs depuis 3 ans, sessions expirées, compteurs de tentatives */
+export async function purgeAccounts(env) {
+  if (!env.DB) return { skipped: true };
+  const users = await purgeInactive(env.DB, 3);
+  const sessions = await env.DB.prepare("DELETE FROM sessions WHERE expires_at < ?").bind(Math.floor(Date.now() / 1000)).run();
+  await purgeRateLimits(env.DB);
+  return { inactiveUsers: users.meta?.changes ?? 0, expiredSessions: sessions.meta?.changes ?? 0 };
+}
+
 export default {
-  async scheduled(_event, env, ctx) { ctx.waitUntil(runReminders(env).then((r) => console.log("reminders", JSON.stringify(r)))); }
+  async scheduled(_event, env, ctx) {
+    ctx.waitUntil(runReminders(env).then((r) => console.log("reminders", JSON.stringify(r))));
+    ctx.waitUntil(purgeAccounts(env).then((r) => console.log("comptes", JSON.stringify(r))).catch((e) => console.error("comptes", e)));
+  }
 };

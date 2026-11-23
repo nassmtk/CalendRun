@@ -6,3 +6,6 @@ import "./styles/pages.css";
 import "./analytics.js";
 import "./mail.js";
 import "./theme.js";
+import { initAccount } from "./account/core.js";
+
+export const account = initAccount();

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mon compte — {{SITE_NAME}}</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+</head>
+<body class="page-doc page-account">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <div class="nav-right">
+      {{NAV_CONTACT}}
+      <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{NAV_ACCOUNT}}
+      {{THEME_TOGGLE}}
+    </div>
+  </header>
+
+  <main class="doc doc--narrow" id="contenu">
+    <noscript><p class="cf-error">Les comptes ont besoin de JavaScript.</p></noscript>
+    <p class="acct-loading" id="acct-loading" aria-live="polite">Chargement…</p>
+    <p class="cf-error" id="acct-off" hidden>Les comptes arrivent bientôt sur {{SITE_NAME}}. En attendant, tes favoris et tes inscriptions restent enregistrés sur cet appareil.</p>
+
+    <!-- ===== déconnecté : connexion / inscription ===== -->
+    <section id="view-auth" hidden>
+      <p class="eyebrow">Ton compte</p>
+      <h1 id="auth-title">Connexion</h1>
+      <p class="lead">Retrouve tes favoris et tes inscriptions sur tous tes appareils, et vois les courses de tes potes. <strong>Pas d'e-mail demandé</strong> : juste un pseudo et un mot de passe.</p>
+      <div class="acct-tabs" role="tablist" aria-label="Connexion ou création de compte">
+        <button type="button" role="tab" id="tab-login" aria-selected="true" aria-controls="form-login">J'ai un compte</button>
+        <button type="button" role="tab" id="tab-signup" aria-selected="false" aria-controls="form-signup" tabindex="-1">Créer un compte</button>
+      </div>
+      <div class="contact-card">
+        <form class="cf" id="form-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
+          <div class="cf-field">
+            <label for="li-pseudo">Pseudo</label>
+            <input id="li-pseudo" name="pseudo" type="text" required maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" />
+          </div>
+          <div class="cf-field">
+            <label for="li-password">Mot de passe</label>
+            <div class="pw-wrap"><input id="li-password" name="password" type="password" required maxlength="128" autocomplete="current-password" /><button type="button" class="pw-eye" data-pw-toggle aria-label="Afficher le mot de passe" aria-pressed="false"></button></div>
+          </div>
+          <p class="cf-error" id="li-error" role="alert" hidden></p>
+          <div class="cf-foot">
+            <a class="link-btn" href="/compte/oubli/">Mot de passe oublié ?</a>
+            <button class="btn btn--primary" type="submit">Se connecter</button>
+          </div>
+        </form>
+
+        <form class="cf" id="form-signup" role="tabpanel" aria-labelledby="tab-signup" novalidate hidden>
+          <div class="cf-field">
+            <label for="su-pseudo">Pseudo</label>
+            <input id="su-pseudo" name="pseudo" type="text" required minlength="3" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" aria-describedby="su-pseudo-help" />
+            <span class="cf-help" id="su-pseudo-help">3 à 20 caractères : lettres, chiffres, point, tiret, tiret bas. Tes amis te trouveront avec.</span>
+          </div>
+          <div class="cf-field">
+            <label for="su-password">Mot de passe</label>
+            <div class="pw-wrap"><input id="su-password" name="password" type="password" required minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="su-pw-help su-strength" /><button type="button" class="pw-eye" data-pw-toggle aria-label="Afficher le mot de passe" aria-pressed="false"></button></div>
+            <div class="pw-meter" aria-hidden="true"><span id="su-meter"></span></div>
+            <span class="cf-help" id="su-pw-help">12 caractères minimum. Une phrase de plusieurs mots, c'est solide et facile à retenir.</span>
+            <span class="cf-help pw-label" id="su-strength" aria-live="polite"></span>
+          </div>
+          <div class="cf-turnstile" id="su-turnstile"></div>
+          <p class="cf-error" id="su-error" role="alert" hidden></p>
+          <div class="cf-foot">
+            <p class="cf-legal">Aucun e-mail, aucun pistage. Détails dans la <a href="/confidentialite/#comptes">politique de confidentialité</a>.</p>
+            <button class="btn btn--primary" type="submit">Créer mon compte</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== code de récupération (affiché une seule fois) ===== -->
+    <section id="view-code" hidden>
+      <p class="eyebrow">Important</p>
+      <h1 id="code-title" tabindex="-1">Ton code de récupération</h1>
+      <p class="lead">Comme on ne te demande pas d'e-mail, <strong>ce code est le seul moyen de récupérer ton compte</strong> si tu oublies ton mot de passe. Il ne sera plus jamais affiché : copie-le ou télécharge-le maintenant.</p>
+      <div class="contact-card code-card">
+        <p class="recovery-code" id="recovery-code"></p>
+        <div class="code-actions">
+          <button type="button" class="btn btn--ghost" id="code-copy">Copier</button>
+          <button type="button" class="btn btn--ghost" id="code-dl">Télécharger (.txt)</button>
+        </div>
+        <p class="cf-help" id="code-status" aria-live="polite"></p>
+        <label class="acct-check"><input type="checkbox" id="code-ok" /> J'ai bien noté mon code dans un endroit sûr</label>
+        <button type="button" class="btn btn--primary" id="code-continue" disabled>Continuer</button>
+      </div>
+    </section>
+
+    <!-- ===== connecté : Mon compte ===== -->
+    <section id="view-account" hidden>
+      <p class="eyebrow">Mon compte</p>
+      <h1 class="acct-hello"><span id="acct-avatar"></span><span id="acct-pseudo"></span></h1>
+      <p class="lead">Tes favoris et tes inscriptions sont enregistrés dans ton compte. <a href="/amis/">Voir mes amis →</a></p>
+
+      <div class="acct-grid">
+        <section class="contact-card" aria-labelledby="h-vis">
+          <h2 id="h-vis">Qui voit mes courses ?</h2>
+          <form class="cf" id="form-vis">
+            <fieldset class="acct-radios">
+              <legend class="sr-only">Visibilité de mes favoris et inscriptions</legend>
+              <label><input type="radio" name="visibility" value="friends" /> <span><b>Mes amis</b><small>Tes amis voient tes favoris et tes courses inscrites.</small></span></label>
+              <label><input type="radio" name="visibility" value="none" /> <span><b>Personne</b><small>Même tes amis ne voient rien.</small></span></label>
+            </fieldset>
+            <p class="cf-help" id="vis-status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-pw">
+          <h2 id="h-pw">Changer de mot de passe</h2>
+          <form class="cf" id="form-pw" novalidate>
+            <div class="cf-field"><label for="pw-current">Mot de passe actuel</label><input id="pw-current" type="password" required autocomplete="current-password" maxlength="128" /></div>
+            <div class="cf-field"><label for="pw-next">Nouveau mot de passe</label><input id="pw-next" type="password" required minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="pw-strength" />
+              <div class="pw-meter" aria-hidden="true"><span id="pw-meter"></span></div><span class="cf-help pw-label" id="pw-strength" aria-live="polite"></span></div>
+            <p class="cf-error" id="pw-error" role="alert" hidden></p>
+            <p class="cf-help" id="pw-status" aria-live="polite"></p>
+            <button class="btn btn--primary" type="submit">Changer le mot de passe</button>
+          </form>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-rc">
+          <h2 id="h-rc">Code de récupération</h2>
+          <p class="cf-help">Perdu ton code ? Génère-en un nouveau : l'ancien ne marchera plus.</p>
+          <form class="cf" id="form-rc" novalidate>
+            <div class="cf-field"><label for="rc-password">Mot de passe</label><input id="rc-password" type="password" required autocomplete="current-password" maxlength="128" /></div>
+            <p class="cf-error" id="rc-error" role="alert" hidden></p>
+            <button class="btn btn--ghost" type="submit">Générer un nouveau code</button>
+          </form>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-dev">
+          <h2 id="h-dev">Appareils et données</h2>
+          <div class="acct-actions">
+            <button type="button" class="btn btn--ghost" data-logout>Me déconnecter</button>
+            <button type="button" class="btn btn--ghost" id="logout-all">Déconnecter tous mes appareils</button>
+            <a class="btn btn--ghost" href="/api/me/export" download>Exporter mes données (JSON)</a>
+          </div>
+        </section>
+
+        <section class="contact-card acct-danger" aria-labelledby="h-del">
+          <h2 id="h-del">Supprimer mon compte</h2>
+          <p class="cf-help">Suppression immédiate et définitive : compte, sessions, favoris, inscriptions, amis et blocages.</p>
+          <form class="cf" id="form-del" novalidate>
+            <div class="cf-field"><label for="del-password">Mot de passe</label><input id="del-password" type="password" required autocomplete="current-password" maxlength="128" /></div>
+            <label class="acct-check"><input type="checkbox" id="del-ok" /> Je comprends que c'est définitif</label>
+            <p class="cf-error" id="del-error" role="alert" hidden></p>
+            <button class="btn btn--danger" type="submit">Supprimer définitivement</button>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/account/page-compte.js"></script>
+</body>
+</html>

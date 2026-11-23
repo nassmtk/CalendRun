@@ -116,3 +116,48 @@
 @keyframes cf-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .cf-check svg { animation: none; stroke-dashoffset: 0; } .cf-done.in .cf-check { animation: none; } }
 @media (max-width: 640px) { .cf-row { grid-template-columns: 1fr; } .contact-card { padding: 20px; } }
+
+/* =========================================================
+   v3 — pages Compte / Mot de passe oublié / Amis
+   ========================================================= */
+.doc--narrow { width: min(calc(100% - 2 * var(--gutter)), 720px); }
+.acct-loading { color: var(--muted); }
+.acct-tabs { display: inline-flex; gap: 4px; padding: 4px; margin: 6px 0 16px; border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--border); }
+.acct-tabs button { min-height: 40px; padding: 0 16px; border-radius: var(--r-pill); font-weight: 700; font-size: 14px; color: var(--muted); }
+.acct-tabs button[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+.cf-help { font-size: 13px !important; color: var(--muted); margin: 0; line-height: 1.5 !important; }
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 48px !important; }
+.pw-eye { position: absolute; top: 50%; right: 4px; width: 40px; height: 40px; transform: translateY(-50%); border-radius: var(--r-sm); color: var(--muted); }
+.pw-eye::before { content: ""; position: absolute; inset: 11px 9px; border: 2px solid currentColor; border-radius: 50% / 60%; }
+.pw-eye::after { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: currentColor; }
+.pw-eye[aria-pressed="true"] { color: var(--accent-ink); }
+.pw-meter { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.pw-meter span { --s: 0; display: block; height: 100%; width: calc(var(--s) * 25%); border-radius: 3px; background: var(--st-closed, #e5484d); transition: width var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease); }
+.pw-meter span[data-score="2"] { background: #f5a524; }
+.pw-meter span[data-score="3"], .pw-meter span[data-score="4"] { background: #2fb36b; }
+.pw-label:empty { display: none; }
+.code-card { display: grid; gap: 14px; justify-items: start; }
+.recovery-code {
+  margin: 0; width: 100%; padding: 18px; border-radius: var(--r); text-align: center;
+  font-family: var(--f-mono); font-size: clamp(17px, 4.6vw, 24px); font-weight: 700; letter-spacing: .06em; color: var(--text) !important;
+  background: var(--bg-0); border: 2px dashed var(--accent); user-select: all; word-break: break-all;
+}
+.code-actions, .acct-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.acct-check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; color: var(--text); cursor: pointer; }
+.acct-check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.acct-hello { display: flex; align-items: center; gap: 18px; font-size: clamp(30px, 6vw, 48px) !important; word-break: break-all; }
+.acct-grid { display: grid; gap: 18px; margin-top: 24px; }
+.acct-grid h2 { margin: 0 0 12px !important; font-size: 20px !important; }
+.acct-radios { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
+.acct-radios label { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-sm); border: 1px solid var(--border); cursor: pointer; }
+.acct-radios label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.acct-radios input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); }
+.acct-radios b { display: block; color: var(--text); }
+.acct-radios small { display: block; color: var(--muted); font-size: 13px; }
+.acct-danger { border-color: color-mix(in srgb, #e5484d 40%, var(--border)); }
+.btn--danger { background: #c9343a; color: #fff; }
+.btn--danger:hover { background: #b0262c; }
+.acct-note { margin-top: 16px !important; }
+.doc-done { text-align: center; padding: 40px 0; }
+.contact-card > .cf-help { margin-bottom: 12px !important; }

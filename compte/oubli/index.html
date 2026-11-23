@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mot de passe oublié — {{SITE_NAME}}</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+</head>
+<body class="page-doc page-account">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <div class="nav-right">
+      {{NAV_CONTACT}}
+      <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{NAV_ACCOUNT}}
+      {{THEME_TOGGLE}}
+    </div>
+  </header>
+
+  <main class="doc doc--narrow" id="contenu">
+    <section id="view-recover">
+      <p class="eyebrow">Mot de passe oublié</p>
+      <h1>Récupérer mon compte</h1>
+      <p class="lead">Saisis ton pseudo, le <strong>code de récupération</strong> reçu à la création du compte, puis choisis un nouveau mot de passe. Tous tes appareils seront déconnectés.</p>
+      <div class="contact-card">
+        <form class="cf" id="form-recover" novalidate>
+          <div class="cf-field"><label for="rv-pseudo">Pseudo</label><input id="rv-pseudo" type="text" required maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false" /></div>
+          <div class="cf-field"><label for="rv-code">Code de récupération</label><input id="rv-code" type="text" required maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXX-XXXXX-XXXXX-XXXXX" /></div>
+          <div class="cf-field"><label for="rv-password">Nouveau mot de passe</label>
+            <div class="pw-wrap"><input id="rv-password" type="password" required minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="rv-strength" /><button type="button" class="pw-eye" data-pw-toggle aria-label="Afficher le mot de passe" aria-pressed="false"></button></div>
+            <div class="pw-meter" aria-hidden="true"><span id="rv-meter"></span></div><span class="cf-help pw-label" id="rv-strength" aria-live="polite"></span></div>
+          <p class="cf-error" id="rv-error" role="alert" hidden></p>
+          <div class="cf-foot">
+            <a class="link-btn" href="/compte/">← Retour à la connexion</a>
+            <button class="btn btn--primary" type="submit">Changer mon mot de passe</button>
+          </div>
+        </form>
+      </div>
+      <p class="cf-help acct-note">Plus de code ? Sans e-mail, on ne peut pas vérifier que le compte est à toi : il faudra en créer un nouveau.</p>
+    </section>
+
+    <section id="view-code" hidden>
+      <p class="eyebrow">C'est bon !</p>
+      <h1 id="code-title" tabindex="-1">Ton nouveau code de récupération</h1>
+      <p class="lead">L'ancien code ne marche plus. <strong>Note celui-ci</strong> : il ne sera plus jamais affiché.</p>
+      <div class="contact-card code-card">
+        <p class="recovery-code" id="recovery-code"></p>
+        <div class="code-actions">
+          <button type="button" class="btn btn--ghost" id="code-copy">Copier</button>
+          <button type="button" class="btn btn--ghost" id="code-dl">Télécharger (.txt)</button>
+        </div>
+        <p class="cf-help" id="code-status" aria-live="polite"></p>
+        <label class="acct-check"><input type="checkbox" id="code-ok" /> J'ai bien noté mon code dans un endroit sûr</label>
+        <button type="button" class="btn btn--primary" id="code-continue" disabled>Continuer</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/account/page-compte.js"></script>
+</body>
+</html>

@@ -16,6 +16,7 @@ import "../config.js";
 import "../data/races.js";
 import "./app.js";
 import { initNav } from "./ui/nav.js";
+import { initAccount } from "./account/core.js";
 import { canHover, reduced } from "./motion/env.js";
 
 const A = window.CALENDRUN;
@@ -27,6 +28,7 @@ document.documentElement.classList.add("intro"); // entrée du hero en CSS (aucu
 
 A.boot({ deferCatalog: true });
 initNav();
+initAccount();
 
 // motion puis catalogue (sous la ligne de flottaison), en tâches séparées
 const idle = (fn, t = 600) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: t }) : setTimeout(fn, 1));
