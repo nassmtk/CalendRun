@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
-import { BRAND, siteUrl, fill, logoSvg, mailParts } from "./brand.config.js";
+import { BRAND, siteUrl, fill, logoSvg, mailParts, accountsEnabled, turnstileSiteKey } from "./brand.config.js";
 import { loadRaces } from "./scripts/lib/races.mjs";
 import { THEME_INIT } from "./scripts/lib/theme-init.mjs";
 
@@ -113,7 +113,7 @@ export default defineConfig(({ mode }) => {
     LOGO_INK: BRAND.LOGO.ink,
     LOGO_SVG: logoSvg("currentColor"),
     NAV_CONTACT,
-    NAV_ACCOUNT: navAccount(env.ACCOUNTS_ENABLED === "true"),
+    NAV_ACCOUNT: navAccount(accountsEnabled(env)),
     THEME_TOGGLE,
     PUBLISHER_NAME: BRAND.PUBLISHER_NAME,
     LEGAL_UPDATED_AT: BRAND.LEGAL_UPDATED_AT,
@@ -146,8 +146,8 @@ export default defineConfig(({ mode }) => {
     define: {
       __SITE_URL__: JSON.stringify(SITE_URL),
       __ALERTS_ENABLED__: JSON.stringify(env.ALERTS_ENABLED === "true"),
-      __ACCOUNTS_ENABLED__: JSON.stringify(env.ACCOUNTS_ENABLED === "true"),
-      __TURNSTILE_SITE_KEY__: JSON.stringify(env.TURNSTILE_SITE_KEY || ""),
+      __ACCOUNTS_ENABLED__: JSON.stringify(accountsEnabled(env)),
+      __TURNSTILE_SITE_KEY__: JSON.stringify(turnstileSiteKey(env)),
       __UMAMI__: JSON.stringify({ src: env.UMAMI_SRC || "", id: env.UMAMI_WEBSITE_ID || "" })
     },
     server: {

@@ -7,7 +7,7 @@ import { BRAND } from "../brand.config.js";
 
 const OLD = /calendrun\.fr|calendrun\.pages\.dev|exemple\.fr/i;
 // fichiers qui citent volontairement l'ancien domaine (redirection documentée, ce test)
-const ALLOW = new Set(["scripts/test-domain.mjs", "README.md", "LAUNCH_CHECKLIST.md", ".env.example", "docs/COMPTES.md"]);
+const ALLOW = new Set(["scripts/test-domain.mjs", "README.md", "LAUNCH_CHECKLIST.md", ".env.example", "docs/COMPTES.md", "wrangler.toml"]);
 const SKIP = /^(qa\/|package-lock\.json$|public\/.*\.(png|ico)$)/;
 const bad = [];
 const files = execSync("git ls-files", { encoding: "utf8" }).split("\n").filter(Boolean);

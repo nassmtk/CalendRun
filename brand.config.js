@@ -28,6 +28,11 @@ export const BRAND = {
   COURSES_EMAIL: "courses@calend.run",
   // expéditeur des e-mails automatiques (Brevo) ; la variable d'environnement SENDER_EMAIL a priorité
   SENDER_EMAIL: "alertes@calend.run",
+  // comptes utilisateurs et amis (docs/COMPTES.md) ; la variable d'environnement ACCOUNTS_ENABLED a priorité
+  ACCOUNTS_ENABLED: true,
+  // clé PUBLIQUE Cloudflare Turnstile (le secret TURNSTILE_SECRET_KEY reste dans le tableau de bord) ;
+  // la variable d'environnement TURNSTILE_SITE_KEY a priorité
+  TURNSTILE_SITE_KEY: "0x4AAAAAAAGPelaCQqcGhMRPN",
   // nom affiché sur les pages légales (mentions légales, confidentialité)
   PUBLISHER_NAME: "Nassim MTK",
   // à mettre à jour à chaque modification des pages légales
@@ -52,6 +57,15 @@ export function siteUrl(env = (typeof process !== "undefined" ? process.env : {}
   const url = env.SITE_URL || (env.CF_PAGES === "1" ? BRAND.SITE_URL : "http://localhost:5173");
   return String(url).replace(/\/+$/, "");
 }
+
+/** valeur de build : variable d'environnement si elle est définie (non vide), sinon brand.config.js.
+ *  Les [vars] de wrangler.toml ne sont pas garanties au build Cloudflare Pages : d'où ce repli. */
+export function buildFlag(env, key) {
+  const v = env[key];
+  return v !== undefined && v !== "" ? v : BRAND[key];
+}
+export const accountsEnabled = (env) => String(buildFlag(env, "ACCOUNTS_ENABLED")) === "true";
+export const turnstileSiteKey = (env) => String(buildFlag(env, "TURNSTILE_SITE_KEY") || "");
 
 /** remplace {count} dans un texte de marque */
 export const fill = (txt, vars = {}) => String(txt).replace(/\{(\w+)\}/g, (_, k) => (k in vars ? vars[k] : `{${k}}`));

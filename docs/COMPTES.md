@@ -21,7 +21,7 @@ Le `wrangler.toml` du dépôt contient `pages_build_output_dir` : **c'est lui qu
 1. Dans `wrangler.toml`, décommenter le bloc `[[d1_databases]]` et coller le `database_id`.
 2. Commit + push : le prochain déploiement crée le binding.
 
-> Alternative tableau de bord : *Workers & Pages > calendrun-idf > Settings > Bindings > Add > D1 database*, nom de variable **`DB`**, base **`calendrun`**, pour **Production et Preview**, puis redéployer. Si le tableau de bord indique que la configuration est gérée par le fichier Wrangler, utilise la méthode ci-dessus.
+> Fait : le binding est déclaré pour la production (`[[d1_databases]]`) **et** la préproduction (`[[env.preview.d1_databases]]`, même base). Alternative tableau de bord : *Workers & Pages > calendrun > Settings > Bindings > Add > D1 database*, nom de variable **`DB`**, base **`calendrun`**, pour **Production et Preview**, puis redéployer. Si le tableau de bord indique que la configuration est gérée par le fichier Wrangler, utilise la méthode ci-dessus.
 
 ### 1.3 Appliquer les migrations
 Les migrations versionnées sont dans [`/migrations`](../migrations) (`0001_accounts.sql`, `0002_friends.sql`…). Wrangler garde la trace de celles déjà appliquées (table `d1_migrations`).
@@ -36,11 +36,12 @@ npx wrangler d1 execute calendrun --remote --command "SELECT name FROM sqlite_ma
 ```
 À refaire à chaque nouvelle migration, **avant** de déployer le code qui l'utilise.
 
-### 1.4 Variables et secrets (Pages > Settings > Variables and secrets, Production **et** Preview)
+### 1.4 Variables (wrangler.toml) et secrets (tableau de bord, Production **et** Preview)
+Les variables sont dans `wrangler.toml` (`[vars]` + `[env.preview.vars]`) ; le tableau de bord n'accepte que les secrets. Pour le build du front, `ACCOUNTS_ENABLED` et `TURNSTILE_SITE_KEY` ont un repli dans `brand.config.js`.
 | Nom | Type | Valeur |
 |---|---|---|
 | `AUTH_PEPPER` | **secret** | 64 caractères aléatoires : `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. ⚠️ **Ne jamais le changer** une fois des comptes créés : tous les mots de passe et codes de récupération deviendraient invalides. Garde-en une copie hors de Cloudflare (gestionnaire de mots de passe). |
-| `ACCOUNTS_ENABLED` | variable | `true` : affiche « Connexion » dans la barre du haut (lue au build → redéployer). |
+| `ACCOUNTS_ENABLED` | variable (`wrangler.toml` + `brand.config.js`) | `true` : affiche « Connexion » dans la barre du haut (lue au build → redéployer). |
 | `TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` | variable / secret | déjà utilisés par les alertes et le contact. Si le secret est défini, **l'inscription exige Turnstile**. |
 
 ### 1.5 Purge des comptes inactifs (3 ans)

@@ -31,13 +31,13 @@ Ce que fait `npm run build` :
 ---
 
 ## 2. Variables d'environnement
-Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `.dev.vars` (fonctions, `npm run pages:dev`). En production : *Cloudflare Pages > Settings > Environment variables* (Production **et** Preview).
+Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `.dev.vars` (fonctions, `npm run pages:dev`). En production : les **variables** sont dans `wrangler.toml` (`[vars]` pour la production **et** `[env.preview.vars]` pour la préproduction : elles ne sont pas héritées) ; le tableau de bord Pages n'accepte que les **secrets** (🔒). Les valeurs lues au **build** (`ACCOUNTS_ENABLED`, `TURNSTILE_SITE_KEY`, `SITE_URL`) ont un repli dans `brand.config.js`, car les `[vars]` ne sont pas garanties pendant le build Pages.
 
 | Variable | Où | Rôle |
 |---|---|---|
 | `SITE_URL` | build + fonctions | **domaine public** (sans `/` final) : canonical, sitemap, Open Graph, liens des e-mails. Valeur : `https://calend.run` (défaut de `brand.config.js` sur un build Cloudflare). Même valeur dans le worker de rappels. |
 | `ALERTS_ENABLED` | build + fonctions | `true` pour afficher et activer les alertes. Sinon : cloche et formulaire masqués, API en 503. |
-| `ACCOUNTS_ENABLED` | build | `true` pour afficher « Connexion » (comptes et amis). Exige la base D1 + `AUTH_PEPPER` : voir [docs/COMPTES.md](docs/COMPTES.md) |
+| `ACCOUNTS_ENABLED` | build | `true` pour afficher « Connexion » (comptes et amis) — défaut `brand.config.js` : `true`. Exige la base D1 + `AUTH_PEPPER` : voir [docs/COMPTES.md](docs/COMPTES.md) |
 | `AUTH_PEPPER` 🔒 | fonctions | poivre des mots de passe (ne jamais le changer une fois des comptes créés) |
 | `TURNSTILE_SITE_KEY` | build | clé **publique** Turnstile |
 | `UMAMI_SRC`, `UMAMI_WEBSITE_ID` | build | mesure d'audience Umami (vide = désactivée ; la CSP s'adapte) |
@@ -56,7 +56,7 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 ## 3. Déployer (Cloudflare Pages)
 1. Pousser le dépôt sur GitHub.
 2. Cloudflare > *Workers & Pages > Create > Pages > Connect to Git* → choisir le dépôt.
-3. Réglages de build : **Framework preset** `None` · **Build command** `npm run build` · **Output directory** `dist` · variable `NODE_VERSION` = `22`.
+3. Réglages de build : **Framework preset** `None` · **Build command** `npm run build` · **Output directory** `dist` · Node 22 via le fichier `.node-version` (lu par le build Pages).
 4. Définir les variables d'environnement (section 2). Au minimum : `SITE_URL`.
 5. Déployer. Les fonctions de `functions/` (`/api/subscribe`, `/api/unsubscribe`) sont déployées automatiquement ; `_headers` et `_redirects` sont appliqués.
 6. (recommandé) Namespace KV `RATE_LIMIT` pour la limitation par IP : voir [docs/ALERTES.md](docs/ALERTES.md).

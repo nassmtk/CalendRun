@@ -1,20 +1,48 @@
 # Cloudflare Pages — projet du site (build : npm run build → dist/)
-# Les variables et secrets se règlent dans le tableau de bord Pages
-# (Settings > Environment variables), voir README et .env.example.
-name = "calendrun-idf"
+# Ce fichier fait foi pour la configuration (variables et liaisons) :
+# le tableau de bord Pages n'accepte plus que les SECRETS.
+#   Secrets (tableau de bord, Production + Preview, JAMAIS ici) :
+#   AUTH_PEPPER, TURNSTILE_SECRET_KEY, BREVO_API_KEY, UNSUB_SECRET
+# Les [vars] ci-dessous sont lues par les Functions à l'exécution. Le build
+# du front, lui, lit ces valeurs dans brand.config.js (repli si la variable
+# d'environnement est absente au build). Version de Node : fichier .node-version.
+# ⚠️ Les clés d'environnement ne sont pas héritées : toute variable ou liaison
+# doit être déclarée à la fois en haut (production) et dans [env.preview].
+name = "calendrun"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-11-01"
 
 # Limitation par IP du formulaire d'alerte (recommandé) :
 #   npx wrangler kv namespace create RATE_LIMIT   → copier l'id ci-dessous puis décommenter
+#   (et le déclarer aussi dans [env.preview])
 # [[kv_namespaces]]
 # binding = "RATE_LIMIT"
 # id = "<id du namespace>"
 
+# ---------------------------------------------------------------- production
+[vars]
+SITE_URL = "https://calend.run"
+ACCOUNTS_ENABLED = "true"
+TURNSTILE_SITE_KEY = "0x4AAAAAAAGPelaCQqcGhMRPN" # clé PUBLIQUE (le secret reste dans le tableau de bord)
+
 # Comptes utilisateurs — base D1 (voir docs/COMPTES.md) :
 #   migrations : npx wrangler d1 migrations apply calendrun --remote (et --local pour le dev)
-#   puis ACCOUNTS_ENABLED=true + secret AUTH_PEPPER dans Pages, et redéployer
 [[d1_databases]]
+binding = "DB"
+database_name = "calendrun"
+database_id = "7b02396e-1cb9-460c-9e00-acdff1910e95"
+migrations_dir = "migrations"
+
+# ---------------------------------------------------------------- préproduction (déploiements de branche)
+[env.preview.vars]
+SITE_URL = "https://calend.run"
+ACCOUNTS_ENABLED = "true"
+TURNSTILE_SITE_KEY = "0x4AAAAAAAGPelaCQqcGhMRPN"
+# formulaires et comptes utilisables depuis l'URL de la branche (contrôle d'Origin)
+ALLOWED_ORIGINS = "https://v3-comptes.calendrun.pages.dev,https://calendrun.pages.dev"
+
+# ⚠️ même base que la production (une seule base D1 existe) : les comptes créés en préproduction sont réels
+[[env.preview.d1_databases]]
 binding = "DB"
 database_name = "calendrun"
 database_id = "7b02396e-1cb9-460c-9e00-acdff1910e95"

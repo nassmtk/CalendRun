@@ -76,11 +76,11 @@ Branche git : `launch` (lancement), puis `v3-comptes` (domaine, mobile, comptes,
 ## 🧑‍💻 Ce que TU dois faire à la main
 
 ### Comptes & amis (docs/COMPTES.md)
-- [ ] **Créer la base D1** : `npx wrangler login` puis `npx wrangler d1 create calendrun` → noter le `database_id`
-- [ ] **Ajouter le binding `DB`** : décommenter le bloc `[[d1_databases]]` de `wrangler.toml` et y coller le `database_id` (ou *Pages > Settings > Bindings > D1*, variable `DB`, Production + Preview, si le tableau de bord le permet)
-- [ ] **Appliquer les migrations** : `npx wrangler d1 migrations apply calendrun --remote` (et `--local` pour le dev). À refaire à chaque nouveau fichier dans `/migrations`, avant le déploiement
-- [ ] **Secret `AUTH_PEPPER`** (Pages > Settings > Variables and secrets, Production + Preview) : `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. ⚠️ Ne jamais le changer ensuite ; en garder une copie dans ton gestionnaire de mots de passe
-- [ ] **`ACCOUNTS_ENABLED=true`** puis redéployer (affiche « Connexion »)
+- [x] **Créer la base D1** : `npx wrangler login` puis `npx wrangler d1 create calendrun` → noter le `database_id`
+- [x] **Ajouter le binding `DB`** (production + préproduction, `wrangler.toml`) : décommenter le bloc `[[d1_databases]]` de `wrangler.toml` et y coller le `database_id` (ou *Pages > Settings > Bindings > D1*, variable `DB`, Production + Preview, si le tableau de bord le permet)
+- [x] **Appliquer les migrations** : `npx wrangler d1 migrations apply calendrun --remote` (et `--local` pour le dev). À refaire à chaque nouveau fichier dans `/migrations`, avant le déploiement
+- [ ] **Secrets `AUTH_PEPPER` et `TURNSTILE_SECRET_KEY`** (tableau de bord Pages, Production + Preview — jamais dans le code) : `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. ⚠️ Ne jamais le changer ensuite ; en garder une copie dans ton gestionnaire de mots de passe
+- [x] **`ACCOUNTS_ENABLED=true`** et `TURNSTILE_SITE_KEY` : `wrangler.toml` (`[vars]` + `[env.preview.vars]`) avec repli dans `brand.config.js` pour le build
 - [ ] **Turnstile** : si `TURNSTILE_SECRET_KEY` est défini, l'inscription l'exige → vérifier que `TURNSTILE_SITE_KEY` est bien défini aussi (sinon personne ne peut s'inscrire)
 - [ ] **Worker de rappels** : décommenter le binding D1 dans `workers/reminders/wrangler.toml` (même `database_id`) et redéployer → purge quotidienne des comptes inactifs depuis 3 ans
 - [ ] Test en production : créer un compte, noter le code, se déconnecter, « Mot de passe oublié » avec le code, ajouter un ami depuis un 2ᵉ navigateur, vérifier les avatars sur la carte de course, supprimer les comptes de test
