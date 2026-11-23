@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amis — {{SITE_NAME}}</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="{{LOGO_INK}}" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+</head>
+<body class="page-doc page-account page-friends">
+  <header class="nav nav--doc">
+    <a href="/" class="brand" aria-label="{{SITE_NAME}}, accueil">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">{{LOGO_SVG}}</svg></span>
+      <span class="brand-name">{{SITE_NAME}}</span>
+    </a>
+    <div class="nav-right">
+      {{NAV_CONTACT}}
+      <a class="btn btn--ghost" href="/?view=calendar">Voir le calendrier</a>
+      {{NAV_ACCOUNT}}
+      {{THEME_TOGGLE}}
+    </div>
+  </header>
+
+  <main class="doc doc--narrow" id="contenu">
+    <noscript><p class="cf-error">Cette page a besoin de JavaScript.</p></noscript>
+    <p class="acct-loading" id="acct-loading" aria-live="polite">Chargement…</p>
+
+    <!-- déconnecté -->
+    <section id="view-out" hidden>
+      <p class="eyebrow">Amis</p>
+      <h1>Cours avec tes potes</h1>
+      <p class="lead">Connecte-toi pour ajouter tes amis, voir les courses où ils sont inscrits et repérer d'un coup d'œil celles où vous serez ensemble.</p>
+      <p class="code-actions"><a class="btn btn--primary" id="out-login" href="/compte/">Se connecter</a><a class="btn btn--ghost" href="/compte/#creer">Créer un compte</a></p>
+    </section>
+
+    <!-- invitation -->
+    <section id="view-invite" hidden>
+      <p class="eyebrow">Invitation</p>
+      <h1>On t'invite à courir ensemble</h1>
+      <div class="contact-card">
+        <p class="lead">Envoyer une demande d'ami avec le code <b class="mono" id="invite-code"></b> ?</p>
+        <p class="cf-error" id="invite-error" role="alert" hidden></p>
+        <p class="cf-help" id="invite-status" role="status"></p>
+        <div class="code-actions"><button type="button" class="btn btn--primary" id="invite-go">Envoyer la demande</button><a class="btn btn--ghost" href="/amis/">Plus tard</a></div>
+      </div>
+    </section>
+
+    <!-- profil d'un ami -->
+    <section id="view-profile" hidden>
+      <p><a class="link-btn" href="/amis/">← Mes amis</a></p>
+      <h1 class="acct-hello" tabindex="-1" id="pf-title"><span id="pf-avatar"></span><span id="pf-pseudo"></span></h1>
+      <p class="cf-error" id="pf-error" role="alert" hidden></p>
+      <div id="pf-body">
+        <h2>Ses prochaines courses</h2>
+        <ul class="race-list" id="pf-reg"></ul>
+        <h2>Ses favoris</h2>
+        <ul class="race-list" id="pf-fav"></ul>
+      </div>
+    </section>
+
+    <!-- liste -->
+    <section id="view-friends" hidden>
+      <p class="eyebrow">Amis</p>
+      <h1>Mes amis</h1>
+      <p class="cf-help" id="fr-status" role="status" aria-live="polite"></p>
+
+      <div class="acct-grid">
+        <section class="contact-card" aria-labelledby="h-add">
+          <h2 id="h-add">Ajouter un ami</h2>
+          <form class="cf" id="form-add" novalidate>
+            <div class="cf-field">
+              <label for="add-pseudo">Son pseudo exact</label>
+              <div class="add-row"><input id="add-pseudo" type="text" required maxlength="20" autocomplete="off" autocapitalize="none" spellcheck="false" aria-describedby="add-help" /><button class="btn btn--primary" type="submit">Envoyer</button></div>
+              <span class="cf-help" id="add-help">Le pseudo complet, majuscules non comprises. Pas de recherche : c'est pour protéger les comptes.</span>
+            </div>
+            <p class="cf-error" id="add-error" role="alert" hidden></p>
+          </form>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-code">
+          <h2 id="h-code">Mon code ami</h2>
+          <p class="recovery-code recovery-code--sm" id="my-code"></p>
+          <div class="code-actions">
+            <button type="button" class="btn btn--ghost" id="copy-link">Copier mon lien d'invitation</button>
+            <button type="button" class="btn btn--ghost" id="share-link" hidden>Partager</button>
+            <button type="button" class="btn btn--ghost" id="regen-code">Nouveau code</button>
+          </div>
+          <p class="cf-help">Envoie ce lien à un pote : il pourra t'ajouter en un clic. « Nouveau code » rend l'ancien lien inutilisable.</p>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-in" id="box-in">
+          <h2 id="h-in">Demandes reçues <span class="badge on" id="in-count" hidden></span></h2>
+          <ul class="people" id="list-in"></ul>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-friends">
+          <h2 id="h-friends">Mes amis</h2>
+          <ul class="people" id="list-friends"></ul>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-out" id="box-out">
+          <h2 id="h-out">Demandes envoyées</h2>
+          <ul class="people" id="list-out"></ul>
+        </section>
+
+        <section class="contact-card" aria-labelledby="h-blocked" id="box-blocked" hidden>
+          <h2 id="h-blocked">Utilisateurs bloqués</h2>
+          <ul class="people" id="list-blocked"></ul>
+        </section>
+      </div>
+      <p class="cf-help acct-note">Tes amis voient tes favoris et tes courses inscrites, sauf si tu choisis « Personne » dans <a href="/compte/">Mon compte</a>.</p>
+    </section>
+  </main>
+
+  <footer class="footer" id="site-footer">{{FOOTER}}</footer>
+  <script type="module" src="/src/account/page-amis.js"></script>
+</body>
+</html>

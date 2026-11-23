@@ -135,6 +135,7 @@ export default defineConfig(({ mode }) => {
           contact: "contact/index.html",
           compte: "compte/index.html",
           compteOubli: "compte/oubli/index.html",
+          amis: "amis/index.html",
           notfound: "404.html",
           alertOk: "alertes/confirmee/index.html",
           alertOff: "alertes/desinscription/index.html",

@@ -1168,3 +1168,32 @@ html.scroll-locked body { position: fixed; left: 0; right: 0; width: 100%; overf
   .nav:not(.nav--doc) .nav-account-slot { display: none; }
   .nav--doc .nav-right .btn--ghost { display: none; }
 }
+
+/* ---------- amis : pastille « 2 potes inscrits · 1 en favori » ---------- */
+.pals {
+  position: relative; z-index: 2;
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; max-width: 100%;
+  min-height: 36px; padding: 3px 12px 3px 4px; border-radius: var(--r-pill);
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  font-size: 13px; font-weight: 600; text-align: left;
+  transition: border-color var(--dur-1) var(--ease);
+}
+.pals:hover, .pals[aria-expanded="true"] { border-color: var(--accent); }
+.pals-faces { display: inline-flex; align-items: center; }
+.pals-faces .avatar { box-shadow: 0 0 0 2px var(--surface-2); }
+.pals-faces .avatar + .avatar, .pals-faces .pals-more { margin-left: -8px; }
+.pals-more { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-3); font-size: 11px; font-weight: 800; box-shadow: 0 0 0 2px var(--surface-2); }
+.pals-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pals--sheet { margin: 14px 0 0; }
+.pals-pop {
+  position: fixed; z-index: calc(var(--z-overlay) + 1); padding: 10px;
+  border-radius: var(--r); background: var(--bg-1); border: 1px solid var(--border-strong); box-shadow: var(--shadow-2);
+}
+.pals-pop[hidden] { display: none; }
+.pals-pop-title { margin: 2px 6px 8px; font-size: 12px; font-family: var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pals-pop ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pals-pop a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 8px; border-radius: var(--r-sm); color: var(--text); font-weight: 600; }
+.pals-pop a:hover { background: var(--surface-2); }
+.pals-pop a > span:not(.avatar) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pals-pop em { font-style: normal; font-size: 12px; color: var(--muted); }
+.switch--pals { color: var(--accent-ink); font-weight: 600; }

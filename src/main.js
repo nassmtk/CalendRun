@@ -28,7 +28,7 @@ document.documentElement.classList.add("intro"); // entrée du hero en CSS (aucu
 
 A.boot({ deferCatalog: true });
 initNav();
-initAccount();
+initAccount().then((me) => me && import("./account/pals.js").then((m) => m.initPals(A)).catch((e) => console.warn("[site] potes indisponibles", e)));
 
 // motion puis catalogue (sous la ligne de flottaison), en tâches séparées
 const idle = (fn, t = 600) => (typeof requestIdleCallback === "function" ? requestIdleCallback(fn, { timeout: t }) : setTimeout(fn, 1));

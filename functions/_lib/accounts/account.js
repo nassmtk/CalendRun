@@ -12,6 +12,7 @@ import { hit, lockedFor, reset } from "./ratelimit.js";
 import {
   json, err, readJson, createSession, getSession, csrfToken, csrfOk, withCookies, clearCookies, clientIp
 } from "./http.js";
+import { handleFriends } from "./friends.js";
 
 const now = () => Math.floor(Date.now() / 1000);
 const BAD_LOGIN = "Pseudo ou mot de passe incorrect.";
@@ -231,6 +232,11 @@ export async function handleAccount(request, env, path) {
     if (!session) return err(401, "Non connecté.");
     return exportData(env, session);
   }
+  const isFriends = path === "friends" || path.startsWith("friends/");
+  if (method === "GET" && isFriends) {
+    if (!session) return err(401, "Non connecté.");
+    return done(await handleFriends(env, session, "GET", path));
+  }
   if (method !== "POST") return err(405, "Méthode non autorisée.");
   if (!session) return withCookies(err(401, "Non connecté."), clearCookies());
   if (!(await csrfOk(request, env, session))) return err(403, "Requête refusée.");
@@ -281,7 +287,9 @@ export async function handleAccount(request, env, path) {
       ]);
       return withCookies(json({ ok: true }), clearCookies());
     }
-    default: return err(404, "Introuvable.");
+    default:
+      if (isFriends) return done(await handleFriends(env, session, "POST", path, body));
+      return err(404, "Introuvable.");
   }
 }
 

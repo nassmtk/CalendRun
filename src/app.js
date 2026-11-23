@@ -166,6 +166,7 @@
   let favs = new Set(store.get("favs", []));
   let registered = new Set(store.get("v1:registered", [])); // clé versionnée : calendrun:v1:registered
   let alerts = store.get("alerts", {});
+  let extraFilter = null; // filtre ajouté par un module (ex. « Courses de mes potes ») : { test(r), clear() }
 
   function matches(r, ignore) {
     if (state.q && !norm(state.q).split(/\s+/).every((w) => r._search.includes(w))) return false;
@@ -174,6 +175,7 @@
     if (ignore !== "month" && state.month !== null && r._date.getMonth() !== state.month) return false;
     if (state.open && !["open", "lottery"].includes(regInfo(r).key)) return false;
     if (state.confirmed && r.dateStatus !== "confirmed") return false;
+    if (extraFilter && !extraFilter.test(r)) return false;
     return inScope(r);
   }
   /* périmètre : Favoris / Inscrites ont leur propre ensemble, indépendant des filtres */
@@ -190,7 +192,7 @@
     else if (s === "dplus") list.sort((a, b) => b._maxDplus - a._maxDplus);
     return list;
   }
-  const isFiltered = () => !!(state.q || state.cats.size || state.depts.size || state.month !== null || state.open || state.confirmed);
+  const isFiltered = () => !!(state.q || state.cats.size || state.depts.size || state.month !== null || state.open || state.confirmed || extraFilter);
 
   /* ---------- filtres : un jeu pour la liste principale, un jeu local pour Favoris / Inscrites ---------- */
   const blankFilters = () => ({ q: "", cats: new Set(), depts: new Set(), month: null, open: false, confirmed: false, sort: "date" });
@@ -215,7 +217,7 @@
     state.list = l;
     syncControls();
   }
-  const activeFilterCount = () => state.cats.size + state.depts.size + (state.month !== null) + state.open + state.confirmed + (state.q ? 1 : 0);
+  const activeFilterCount = () => state.cats.size + state.depts.size + (state.month !== null) + state.open + state.confirmed + (state.q ? 1 : 0) + (extraFilter ? 1 : 0);
 
   /* ---------- icons ---------- */
   const I = {
@@ -909,6 +911,7 @@
 
   /* ---------- events ---------- */
   function resetFilters() {
+    if (extraFilter) { const f = extraFilter; extraFilter = null; f.clear && f.clear(); }
     const keepSort = state.sort;
     Object.assign(state, blankFilters(), { sort: keepSort });
     syncControls();
@@ -1031,6 +1034,7 @@
       if (this.catalogReady) render(); else updateNav();
     },
     rerender: () => render(),
+    setExtraFilter(f) { extraFilter = f; render(); },
     scrollTo: (el) => el.scrollIntoView({ behavior: "smooth" }),
     favCount: () => favs.size,
     boot({ deferCatalog = false } = {}) {

@@ -161,3 +161,25 @@
 .acct-note { margin-top: 16px !important; }
 .doc-done { text-align: center; padding: 40px 0; }
 .contact-card > .cf-help { margin-bottom: 12px !important; }
+
+/* ---------- page Amis ---------- */
+.mono { font-family: var(--f-mono); letter-spacing: .06em; }
+.recovery-code--sm { font-size: 22px; padding: 12px; margin-bottom: 14px !important; }
+.add-row { display: flex; gap: 8px; }
+.add-row input { flex: 1; min-width: 0; }
+.btn--sm { padding: 0 14px; min-height: 40px; font-size: 13px; }
+.people, .race-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.person { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.person:last-child { border-bottom: 0; }
+.person-main { display: flex; align-items: center; gap: 12px; min-width: 0; color: var(--text) !important; text-decoration: none !important; }
+.person-main b { display: block; color: var(--text); word-break: break-all; }
+.person-main small { display: block; font-size: 12.5px; color: var(--muted); }
+a.person-main small { color: var(--accent-ink); }
+.person-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.people .empty, .race-list .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+.race-list a { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--border); color: var(--text) !important; text-decoration: none !important; }
+.race-list a:hover { border-color: var(--border-hover); }
+.race-main { display: grid; min-width: 0; }
+.race-main small { color: var(--muted); font-size: 13px; }
+.race-cd { flex: none; min-width: 64px; padding: 6px 10px; border-radius: var(--r-pill); text-align: center; font-family: var(--f-num); font-weight: 800; font-size: 15px; background: var(--grad-signature-diag); color: var(--on-accent); }
+@media (max-width: 640px) { .person-actions { width: 100%; } }

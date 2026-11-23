@@ -13,6 +13,7 @@
     "qa:shots": "node scripts/qa-shots.mjs",
     "qa:mobile": "node scripts/qa-mobile.mjs",
     "qa:accounts": "node scripts/qa-accounts.mjs",
+    "qa:friends": "node scripts/qa-friends.mjs",
     "pages:dev": "npm run build && wrangler pages dev dist",
     "deploy": "npm run build && wrangler pages deploy dist",
     "postbuild": "node scripts/postbuild.mjs"
