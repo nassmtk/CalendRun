@@ -15,8 +15,7 @@ BREVO_LIST_ID = "0"
 SENDER_EMAIL = "alertes@calend.run"
 
 # Comptes : purge quotidienne des comptes inactifs depuis 3 ans (docs/COMPTES.md §1.5)
-# Décommenter avec le même database_id que le site :
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "calendrun"
-# database_id = "<id de la base>"
+[[d1_databases]]
+binding = "DB"
+database_name = "calendrun"
+database_id = "7b02396e-1cb9-460c-9e00-acdff1910e95"
