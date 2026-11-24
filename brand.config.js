@@ -32,7 +32,7 @@ export const BRAND = {
   ACCOUNTS_ENABLED: true,
   // clé PUBLIQUE Cloudflare Turnstile (le secret TURNSTILE_SECRET_KEY reste dans le tableau de bord) ;
   // la variable d'environnement TURNSTILE_SITE_KEY a priorité
-  TURNSTILE_SITE_KEY: "0x4AAAAAAAGPelaCQqcGhMRPN",
+  TURNSTILE_SITE_KEY: "0x4AAAAAAGPelQqaCwO4myNxtt-ACB0bIXk",
   // nom affiché sur les pages légales (mentions légales, confidentialité)
   PUBLISHER_NAME: "Nassim MTK",
   // à mettre à jour à chaque modification des pages légales

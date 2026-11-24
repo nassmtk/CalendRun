@@ -23,7 +23,7 @@ compatibility_date = "2026-11-01"
 [vars]
 SITE_URL = "https://calend.run"
 ACCOUNTS_ENABLED = "true"
-TURNSTILE_SITE_KEY = "0x4AAAAAAAGPelaCQqcGhMRPN" # clé PUBLIQUE (le secret reste dans le tableau de bord)
+TURNSTILE_SITE_KEY = "0x4AAAAAAGPelQqaCwO4myNxtt-ACB0bIXk" # clé PUBLIQUE (le secret reste dans le tableau de bord)
 
 # Comptes utilisateurs — base D1 (voir docs/COMPTES.md) :
 #   migrations : npx wrangler d1 migrations apply calendrun --remote (et --local pour le dev)
@@ -37,7 +37,7 @@ migrations_dir = "migrations"
 [env.preview.vars]
 SITE_URL = "https://calend.run"
 ACCOUNTS_ENABLED = "true"
-TURNSTILE_SITE_KEY = "0x4AAAAAAAGPelaCQqcGhMRPN"
+TURNSTILE_SITE_KEY = "0x4AAAAAAGPelQqaCwO4myNxtt-ACB0bIXk"
 # formulaires et comptes utilisables depuis l'URL de la branche (contrôle d'Origin)
 ALLOWED_ORIGINS = "https://v3-comptes.calendrun.pages.dev,https://calendrun.pages.dev"
 
