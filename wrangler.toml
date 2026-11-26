@@ -58,3 +58,11 @@ migrations_dir = "migrations"
 [[env.preview.services]]
 binding = "MAILER"
 service = "calendrun-mailer"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "e7aa222f7297488eb37038950669373c"
+
+[[env.preview.kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "e7aa222f7297488eb37038950669373c"
