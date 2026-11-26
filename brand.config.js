@@ -36,7 +36,7 @@ export const BRAND = {
   // nom affiché sur les pages légales (mentions légales, confidentialité)
   PUBLISHER_NAME: "Nassim MTK",
   // à mettre à jour à chaque modification des pages légales
-  LEGAL_UPDATED_AT: "23 novembre 2026"
+  LEGAL_UPDATED_AT: "26 novembre 2026"
 };
 
 /** pictogramme du logo (viewBox 0 0 64 64) : calendrier dont s'échappe un coureur.

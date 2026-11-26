@@ -46,7 +46,7 @@ Modèle complet : [`.env.example`](.env.example). En local : `.env` (build) et `
 | `TURNSTILE_SECRET_KEY` 🔒 | fonctions | vérification Turnstile côté serveur |
 | `UNSUB_SECRET` 🔒 | fonctions + worker | signature des liens de désinscription (même valeur des deux côtés) |
 | `SENDER_EMAIL` | fonctions + worker | expéditeur vérifié dans Brevo (défaut : `alertes@calend.run`, `brand.config.js`) |
-| `CONTACT_TO` | fonctions | destinataire du formulaire `/contact/` (défaut : `CONTACT_EMAIL`). Le formulaire a besoin de `BREVO_API_KEY` + `SENDER_EMAIL` ; sinon il propose d'envoyer le message par e-mail |
+| `MAILER` | fonctions (service binding) | formulaire `/contact/` : envoi via le Worker [`workers/mailer`](workers/mailer/README.md) (Cloudflare Email Routing → `calendrun@gmail.com`). Exige aussi `TURNSTILE_SECRET_KEY`. Sans eux, le formulaire propose d'envoyer le message par e-mail |
 | `ALLOWED_ORIGINS` | fonctions | origines en plus de `SITE_URL`, séparées par des virgules (ex. `https://calendrun.pages.dev` le temps de la transition). Toute requête qui modifie des données doit avoir un en-tête `Origin` de cette liste. |
 
 🔒 = secret : à définir comme **secret chiffré**, jamais dans le code ni dans une variable lue au build.
@@ -103,6 +103,7 @@ src/hero/              hero : barres 3D (Three.js) ou repli SVG
 src/ui/drawer.js       tiroirs mobiles, menu des départements
 src/styles/            tokens, styles, pages secondaires, polices
 functions/             Cloudflare Pages Functions (/api/subscribe, /api/unsubscribe, /api/contact)
+workers/mailer/        Worker d'envoi du formulaire de contact (Email Routing, binding send_email)
 workers/reminders/     worker planifié d'envoi des alertes
 scripts/               build (prebuild/postbuild, OG, headers) + QA (tests, captures, Lighthouse)
 docs/ALERTES.md        alertes e-mail + DNS

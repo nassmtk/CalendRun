@@ -1,8 +1,8 @@
 /* =========================================================
-   Page Contact : formulaire → POST /api/contact (Cloudflare Pages Function → Brevo)
+   Page Contact : formulaire → POST /api/contact (Pages Function → Worker mailer → Email Routing)
    - validation côté navigateur (le serveur revalide tout)
-   - champ piège + Turnstile (si configuré)
-   - succès : écran « Message envoyé »
+   - champ piège + Turnstile
+   - succès : message de confirmation dans le formulaire, champs vidés
    - service indisponible (pas encore configuré, hors ligne, dev local) :
      on propose d'envoyer le même message par e-mail, déjà pré-rempli
    ========================================================= */
@@ -12,8 +12,8 @@ import { mountTurnstile, resetTurnstile } from "./turnstile.js";
 
 const $ = (s) => document.querySelector(s);
 const form = $("#contact-form");
-const card = $("#contact-card");
 const errBox = $("#cf-error");
+const okBox = $("#cf-success");
 const btn = $("#cf-submit");
 const msg = $("#cf-message");
 const count = $("#cf-count");
@@ -46,21 +46,30 @@ function mailtoFallback(data) {
   return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
+// page d'où vient le visiteur (même site uniquement), sinon la page Contact elle-même
+function originPath() {
+  try {
+    const r = new URL(document.referrer);
+    if (r.origin === location.origin && r.pathname !== location.pathname) return r.pathname + r.search;
+  } catch { /* pas de référent */ }
+  return location.pathname + location.search;
+}
+
 function done(data) {
-  card.innerHTML = `<div class="cf-done in" role="status" tabindex="-1">
-    <div class="cf-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
-    <h2>Message envoyé${data.name ? `, merci ${esc(data.name)}` : ""}&nbsp;!</h2>
-    <p>On l'a bien reçu. On te répond à <strong>${esc(data.email)}</strong> dès que possible.</p>
-    <a class="btn btn--primary" href="/">Retour au calendrier</a>
-    <a class="btn btn--ghost" href="/contact/">Envoyer un autre message</a>
-  </div>`;
-  card.querySelector(".cf-done").focus({ preventScroll: true });
-  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  const topic = form.querySelector("input[name=topic]:checked")?.value;
+  form.reset();
+  if (topic) form.querySelector(`input[name=topic][value="${topic}"]`).checked = true;
+  count.textContent = "0 / 3000";
+  okBox.innerHTML = `<strong>Message envoyé${data.name ? `, merci ${esc(data.name)}` : ""}&nbsp;!</strong> On te répond à <strong>${esc(data.email)}</strong> dès que possible.`;
+  okBox.hidden = false;
+  okBox.focus({ preventScroll: true });
+  okBox.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errBox.hidden = true;
+  okBox.hidden = true;
   const fd = new FormData(form);
   const data = {
     topic: String(fd.get("topic") || "question"),
@@ -68,6 +77,7 @@ form.addEventListener("submit", async (e) => {
     email: String(fd.get("email") || "").trim(),
     message: String(fd.get("message") || "").trim(),
     website: String(fd.get("website") || ""),
+    page: originPath(),
     turnstileToken: token
   };
 
@@ -91,8 +101,8 @@ form.addEventListener("submit", async (e) => {
   btn.disabled = false;
   btn.textContent = "Envoyer le message";
 
-  if (res && res.ok && out.ok) return done(data);
   resetTurnstile(widget); token = "";
+  if (res && res.ok && out.ok) return done(data);
   if (res && (res.status === 400 || res.status === 429) && out.message) return showError(esc(out.message));
   // service pas encore actif / indisponible : rien n'est perdu, on passe par l'e-mail
   showError(`L'envoi depuis le site n'est pas disponible pour le moment. <a href="${esc(mailtoFallback(data))}">Envoie ce message par e-mail</a> (il est déjà rédigé).`);

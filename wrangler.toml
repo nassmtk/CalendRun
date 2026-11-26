@@ -33,6 +33,12 @@ database_name = "calendrun"
 database_id = "7b02396e-1cb9-460c-9e00-acdff1910e95"
 migrations_dir = "migrations"
 
+# Formulaire de contact : envoi délégué au Worker workers/mailer (Email Routing, binding send_email,
+# que les Pages Functions ne gèrent pas). Déployer ce Worker AVANT le site : voir workers/mailer/README.md
+[[services]]
+binding = "MAILER"
+service = "calendrun-mailer"
+
 # ---------------------------------------------------------------- préproduction (déploiements de branche)
 [env.preview.vars]
 SITE_URL = "https://calend.run"
@@ -47,3 +53,8 @@ binding = "DB"
 database_name = "calendrun"
 database_id = "7b02396e-1cb9-460c-9e00-acdff1910e95"
 migrations_dir = "migrations"
+
+# même Worker d'envoi (un seul existe) : les messages envoyés depuis la préproduction arrivent aussi dans la boîte réelle
+[[env.preview.services]]
+binding = "MAILER"
+service = "calendrun-mailer"

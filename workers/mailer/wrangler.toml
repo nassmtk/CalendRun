@@ -1,0 +1,19 @@
+# Worker d'envoi du formulaire de contact (Cloudflare Email Routing, gratuit)
+# Déploiement : npx wrangler deploy --config workers/mailer/wrangler.toml
+# Les Pages Functions ne gèrent pas le binding send_email : le site appelle ce Worker
+# par un service binding (MAILER dans le wrangler.toml racine). Voir workers/mailer/README.md.
+name = "calendrun-mailer"
+main = "index.js"
+compatibility_date = "2026-11-01"
+
+# aucune URL publique : le Worker n'est joignable que par le service binding du site
+workers_dev = false
+preview_urls = false
+
+[vars]
+CONTACT_FROM = "formulaire@calend.run"   # adresse du domaine où Email Routing est actif
+CONTACT_TO = "calendrun@gmail.com"       # doit être une adresse de destination VÉRIFIÉE dans Email Routing
+
+[[send_email]]
+name = "CONTACT_MAIL"
+destination_address = "calendrun@gmail.com"

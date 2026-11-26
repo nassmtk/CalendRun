@@ -105,16 +105,9 @@
 .cf-legal { margin: 0; font-size: 12.5px !important; max-width: 46ch; }
 .cf .btn[disabled] { opacity: .6; cursor: progress; }
 .cf-error { margin: 0; padding: 12px 14px; border-radius: var(--r-sm); font-size: 14px; color: var(--text) !important; background: color-mix(in srgb, var(--cat-ultra) 10%, transparent); border: 1px solid color-mix(in srgb, var(--cat-ultra) 35%, transparent); }
+.cf-success { margin: 0; padding: 12px 14px; border-radius: var(--r-sm); font-size: 14px; color: var(--text) !important; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+.cf-success:focus { outline: none; }
 .cf-turnstile:empty { display: none; }
-.cf-done { text-align: center; padding: 18px 8px 8px; }
-.cf-done h2 { margin: 18px 0 8px !important; }
-.cf-done .btn { margin: 8px 4px 0; }
-.cf-check { width: 72px; height: 72px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; background: var(--grad-signature-diag); box-shadow: var(--shadow-accent); }
-.cf-check svg { width: 34px; height: 34px; fill: none; stroke: var(--on-accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; stroke-dashoffset: 30; animation: cf-draw .5s .15s var(--ease) forwards; }
-.cf-done.in .cf-check { animation: cf-pop .55s var(--ease) both; }
-@keyframes cf-draw { to { stroke-dashoffset: 0; } }
-@keyframes cf-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .cf-check svg { animation: none; stroke-dashoffset: 0; } .cf-done.in .cf-check { animation: none; } }
 @media (max-width: 640px) { .cf-row { grid-template-columns: 1fr; } .contact-card { padding: 20px; } }
 
 /* =========================================================
